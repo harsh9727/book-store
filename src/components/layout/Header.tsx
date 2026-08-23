@@ -66,44 +66,67 @@ function Header() {
     {
       name: "Home",
       href: "/",
+      sectionId: null,
     },
     {
       name: "New Releases",
       href: "/new-releases",
+      sectionId: "new-releases",
     },
     {
       name: "Best Sellers",
       href: "/best-sellers",
+      sectionId: "best-sellers",
     },
     {
       name: "Magazines",
       href: "/magazines",
+      sectionId: "magazines",
     },
     {
       name: "Trending Books",
       href: "/trending-books",
+      sectionId: "trending-books",
     },
     {
       name: "All Books",
       href: "/allbooks",
+      sectionId: null,
     },
     {
       name: "About",
       href: "/about",
+      sectionId: null,
     },
     {
       name: "Gellery",
       href: "/gellery",
+      sectionId: null,
     },
     {
       name: "Blogs",
       href: "/blogs",
+      sectionId: null,
     },
     {
       name: "Contact",
       href: "/contact",
+      sectionId: null,
     },
   ];
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string | null) => {
+    if (pathname === "/" && sectionId) {
+      e.preventDefault();
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  };
 
   /* =========================================================
      CATEGORY ITEMS
@@ -163,7 +186,7 @@ function Header() {
       ===================================================== */}
 
       <div className="h-10 overflow-hidden bg-black">
-        <div className="container mx-auto flex h-full items-center justify-between px-4">
+        <div className="container mx-auto px-3 lg:px-6 flex h-full items-center justify-between">
           {/* ================= EMAIL + PHONE ================= */}
 
           <div className="flex items-center gap-4 sm:gap-5">
@@ -224,7 +247,7 @@ function Header() {
       ===================================================== */}
 
       <div className="border-b border-gray-100">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-3 lg:px-6 py-3">
           {/* =================================================
               MAIN HEADER ROW
           ================================================= */}
@@ -551,7 +574,7 @@ function Header() {
       ===================================================== */}
 
       <div className="border-b border-gray-100 py-3 lg:border-0 lg:py-0">
-        <div className="container mx-auto">
+        <div className="container px-3 lg:px-6 mx-auto">
           <div className="relative lg:hidden">
             <div className="relative overflow-hidden rounded-full border border-gray-300 bg-white transition-all duration-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
               <input
@@ -579,7 +602,7 @@ function Header() {
       ===================================================== */}
 
       <nav className="hidden border-b border-gray-100 bg-white lg:block">
-        <div className="container mx-auto flex items-center justify-between gap-6 overflow-hidden px-4">
+        <div className="container px-3 lg:px-6 mx-auto flex items-center justify-between gap-6 overflow-hidden">
           {/* ================= CATEGORIES ================= */}
 
           <div className="relative group">
@@ -657,9 +680,10 @@ function Header() {
               const active = isActive(item.href);
 
               return (
-                <Link
+                <a
                   key={item.href}
                   href={item.href}
+                  onClick={(e) => handleSmoothScroll(e, item.sectionId)}
                   className={`py-2 text-sm font-medium transition-colors duration-200 ${
                     active
                       ? "text-orange-500"
@@ -667,7 +691,7 @@ function Header() {
                   }`}
                 >
                   {item.name}
-                </Link>
+                </a>
               );
             })}
           </div>
@@ -818,10 +842,13 @@ function Header() {
               const active = isActive(item.href);
 
               return (
-                <Link
+                <a
                   key={item.href}
                   href={item.href}
-                  onClick={closeSidebar}
+                  onClick={(e) => {
+                    handleSmoothScroll(e, item.sectionId);
+                    closeSidebar();
+                  }}
                   className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     active
                       ? "bg-orange-50 text-orange-500"
@@ -833,7 +860,7 @@ function Header() {
                   </span>
 
                   <ChevronRight className="h-4 w-4" />
-                </Link>
+                </a>
               );
             })}
           </div>

@@ -35,7 +35,7 @@ const magazines = [
 const Magazines = () => {
   return (
     <section className="bg-white py-10">
-      <div className="container px-5 lg:px-8">
+      <div className="container px-3 lg:px-6">
 
         {/* Section Header */}
         <div className="mb-10 flex items-end justify-between gap-6">

@@ -35,8 +35,9 @@ const features = [
 const FeaturesSection = () => {
   return (
     <section className="py-6">
-      <div className="container overflow-hidden bg-[#fffaf0] rounded-2xl p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="container px-3 lg:px-6">
+        <div className="overflow-hidden bg-[#fffaf0] rounded-2xl p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
@@ -71,6 +72,7 @@ const FeaturesSection = () => {
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </section>

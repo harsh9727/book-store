@@ -33,7 +33,7 @@ function Footer() {
       {/* thin gradient accent line at the very top of the footer */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
 
-      <div className="container">
+      <div className="container px-3 lg:px-6">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12">
           {/* Brand */}
           <div className="lg:col-span-4">

@@ -19,7 +19,7 @@ const Newsletter = () => {
 
   return (
     <section className="bg-white py-10 md:py-12">
-      <div className="container px-5 lg:px-8">
+      <div className="container px-3 lg:px-6">
         <div className="relative overflow-hidden rounded-2xl bg-orange-50 px-6 py-8 sm:px-8 md:px-10">
 
           {/* Decorative Circle */}

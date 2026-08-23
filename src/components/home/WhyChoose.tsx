@@ -47,7 +47,7 @@ const benefits = [
 const WhyChoose = () => {
   return (
     <section className="bg-white py-12">
-      <div className="container px-5 lg:px-8">
+      <div className="container px-3 lg:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
 
           {/* Image */}

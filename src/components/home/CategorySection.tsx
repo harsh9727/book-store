@@ -67,7 +67,7 @@ const categories = [
 const CategorySection = () => {
   return (
     <section className="bg-[#fffaf0] py-12">
-      <div className="container px-5 lg:px-8">
+      <div className="container px-3 lg:px-6">
 
         {/* Header */}
         <div className="mb-10 text-center">

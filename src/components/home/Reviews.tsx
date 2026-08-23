@@ -59,7 +59,7 @@ const Reviews = () => {
 
   return (
     <section className="bg-white py-14 md:py-16">
-      <div className="container px-5 lg:px-8">
+      <div className="container px-3 lg:px-6">
 
         {/* Section Header */}
         <div className="mb-9 text-center">
@@ -87,11 +87,11 @@ const Reviews = () => {
             slidesPerView={1}
             loop={true}
             speed={700}
-            // autoplay={{
-            //   delay: 4000,
-            //   disableOnInteraction: false,
-            //   pauseOnMouseEnter: true,
-            // }}
+            autoplay={{
+              delay: 4000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
             navigation={{
               prevEl: prevRef.current,
               nextEl: nextRef.current,

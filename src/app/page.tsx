@@ -15,10 +15,18 @@ export default function Home() {
     <div className="py-3">
       <HeroSection />
       <FeaturesSection />
-      <NewArrivals />
-      <Magazines />
-      <BestSallers />
-      <Trendings />
+      <div id="new-releases">
+        <NewArrivals />
+      </div>
+      <div id="magazines">
+        <Magazines />
+      </div>
+      <div id="best-sellers">
+        <BestSallers />
+      </div>
+      <div id="trending-books">
+        <Trendings />
+      </div>
       <CategorySection />
       <WhyChoose />
       <Newsletter />
