@@ -1,0 +1,846 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import {
+  Mail,
+  Phone,
+  User,
+  Search,
+  ShoppingBag,
+  Heart,
+  Settings,
+  LogOut,
+  ChevronDown,
+  Headset,
+  Languages,
+  Menu,
+  X,
+  ChevronRight,
+} from "lucide-react";
+
+import Logo from "../../../public/images/logo/logo.webp";
+
+function Header() {
+  const pathname = usePathname();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] =
+    useState(false);
+
+  // Mobile/tablet dropdowns must work with tap/click, not only hover.
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+
+  const languageRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
+
+  // Close header dropdowns when clicking outside.
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (languageRef.current && !languageRef.current.contains(target)) {
+        setIsLanguageOpen(false);
+      }
+
+      if (accountRef.current && !accountRef.current.contains(target)) {
+        setIsAccountOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  /* =========================================================
+     NAVIGATION ITEMS
+  ========================================================= */
+
+  const menuItems = [
+    {
+      name: "Home",
+      href: "/",
+    },
+    {
+      name: "New Releases",
+      href: "/new-releases",
+    },
+    {
+      name: "Best Sellers",
+      href: "/best-sellers",
+    },
+    {
+      name: "Magazines",
+      href: "/magazines",
+    },
+    {
+      name: "Trending Books",
+      href: "/trending-books",
+    },
+    {
+      name: "All Books",
+      href: "/allbooks",
+    },
+    {
+      name: "About",
+      href: "/about",
+    },
+    {
+      name: "Gellery",
+      href: "/gellery",
+    },
+    {
+      name: "Blogs",
+      href: "/blogs",
+    },
+    {
+      name: "Contact",
+      href: "/contact",
+    },
+  ];
+
+  /* =========================================================
+     CATEGORY ITEMS
+  ========================================================= */
+
+  const categories = [
+    {
+      name: "Bibles",
+      href: "/books/bibles",
+    },
+    {
+      name: "Christian Books",
+      href: "/books/christian-books",
+    },
+    {
+      name: "Devotional Books",
+      href: "/books/devotional",
+    },
+    {
+      name: "Magazines",
+      href: "/books/magazines",
+    },
+    {
+      name: "Accessories",
+      href: "/books/accessories",
+    },
+  ];
+
+  /* =========================================================
+     ACTIVE CHECK
+  ========================================================= */
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const isCategoryActive = categories.some((category) =>
+    isActive(category.href)
+  );
+
+  /* =========================================================
+     CLOSE SIDEBAR
+  ========================================================= */
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  return (
+    <header className="w-full bg-white">
+      {/* =====================================================
+          TOP BAR
+      ===================================================== */}
+
+      <div className="h-10 overflow-hidden bg-black">
+        <div className="container mx-auto flex h-full items-center justify-between px-4">
+          {/* ================= EMAIL + PHONE ================= */}
+
+          <div className="flex items-center gap-4 sm:gap-5">
+            {/* Email */}
+
+            <Link
+              href="mailto:gtbs-1852@yahoo.in"
+              title="Email us"
+              aria-label="Email us"
+              className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+
+              <span className="hidden sm:inline">
+                gtbs-1852@yahoo.in
+              </span>
+            </Link>
+
+            {/* Divider */}
+
+            <span className="h-5 w-px bg-white/40" />
+
+            {/* Phone */}
+
+            <Link
+              href="tel:+919106339980"
+              title="Call us"
+              aria-label="Call us"
+              className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
+            >
+              <Phone className="h-4 w-4 shrink-0" />
+
+              <span className="hidden sm:inline">
+                +91 9106339980
+              </span>
+            </Link>
+          </div>
+
+          {/* ================= HELP CENTER ================= */}
+
+          <Link
+            href="/contact"
+            title="Help Center"
+            aria-label="Help Center"
+            className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
+          >
+            <Headset className="h-4 w-4 shrink-0" />
+
+            <span className="hidden sm:inline">
+              Help Center
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      {/* =====================================================
+          MAIN HEADER
+      ===================================================== */}
+
+      <div className="border-b border-gray-100">
+        <div className="container mx-auto px-4 py-3">
+          {/* =================================================
+              MAIN HEADER ROW
+          ================================================= */}
+
+          <div className="flex items-center justify-between gap-4 lg:gap-8">
+            {/* ================= LOGO ================= */}
+
+            <Link
+              href="/"
+              className="shrink-0"
+              aria-label="Book Store Home"
+            >
+              <Image
+                src={Logo}
+                alt="Book Store Logo"
+                className="h-auto w-20 sm:w-24"
+                priority
+              />
+            </Link>
+
+            {/* =================================================
+                DESKTOP SEARCH
+                Visible only lg+
+            ================================================= */}
+
+            <div className="relative hidden flex-1 lg:block">
+              <input
+                type="search"
+                placeholder="Search books..."
+                aria-label="Search books"
+                className="w-full rounded-full border border-gray-300 bg-white py-2.5 pl-4 pr-12 text-sm text-gray-700 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              />
+
+              <button
+                type="button"
+                aria-label="Search"
+                className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* =================================================
+                RIGHT ACTIONS
+            ================================================= */}
+
+            <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-4">
+              {/* =================================================
+                  LANGUAGE
+                  Click/tap dropdown — works on desktop + mobile
+              ================================================= */}
+
+              <div ref={languageRef} className="relative">
+                <button
+                  type="button"
+                  aria-label="Select language"
+                  aria-expanded={isLanguageOpen}
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setIsLanguageOpen((open) => !open);
+                    setIsAccountOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600 sm:gap-2 sm:px-2.5"
+                >
+                  {/* Language icon on mobile, text on sm+ */}
+
+                  <Languages className="h-5 w-5 sm:hidden" />
+
+                  <span className="hidden sm:inline">
+                    English
+                  </span>
+
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      isLanguageOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Language Dropdown */}
+
+                <div
+                  className={`absolute left-1/2 top-full z-[120] mt-2 w-[calc(100vw-24px)] max-w-[240px] -translate-x-1/2 origin-top overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 sm:left-auto sm:right-0 sm:translate-x-0 sm:origin-top-right ${
+                    isLanguageOpen
+                      ? "visible translate-y-0 scale-100 opacity-100"
+                      : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <div className="border-b border-gray-100 px-4 py-3.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                      Select Language
+                    </p>
+                  </div>
+
+                  <div className="p-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsLanguageOpen(false)}
+                      className="flex w-full items-center justify-between rounded-xl bg-orange-50 px-3 py-3 text-orange-600 transition-all duration-200"
+                    >
+                      <div className="text-left">
+                        <p className="text-sm font-medium">
+                          English
+                        </p>
+
+                        <p className="text-[11px] text-gray-400">
+                          English
+                        </p>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsLanguageOpen(false)}
+                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-lg">
+                        🇮🇳
+                      </span>
+
+                      <div className="text-left">
+                        <p className="text-sm font-medium">
+                          ગુજરાતી
+                        </p>
+
+                        <p className="text-[11px] text-gray-400">
+                          Gujarati
+                        </p>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsLanguageOpen(false)}
+                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-lg">
+                        🇮🇳
+                      </span>
+
+                      <div className="text-left">
+                        <p className="text-sm font-medium">
+                          हिन्दी
+                        </p>
+
+                        <p className="text-[11px] text-gray-400">
+                          Hindi
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= DIVIDER ================= */}
+
+              <span className="hidden h-7 w-px bg-gray-200 sm:block" />
+
+              {/* =================================================
+                  ACCOUNT
+                  Click/tap dropdown — works on desktop + mobile
+              ================================================= */}
+
+              <div ref={accountRef} className="relative">
+                {/* Account Button */}
+
+                <button
+                  type="button"
+                  aria-label="Account menu"
+                  aria-expanded={isAccountOpen}
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setIsAccountOpen((open) => !open);
+                    setIsLanguageOpen(false);
+                  }}
+                  className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                >
+                  <User className="h-5 w-5" />
+
+                  <span className="hidden sm:inline">
+                    Account
+                  </span>
+
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      isAccountOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* =================================================
+                    ACCOUNT DROPDOWN
+                    Fixed mobile positioning
+                ================================================= */}
+
+                <div
+                  className={`absolute right-0 top-full z-[120] mt-2 w-[min(250px,calc(100vw-24px))] origin-top-right overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 ${
+                    isAccountOpen
+                      ? "visible translate-y-0 scale-100 opacity-100"
+                      : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  {/* Account Header */}
+
+                  <div className="border-b border-gray-100 bg-gray-50 px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+                        <User className="h-5 w-5" />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">
+                          My Account
+                        </p>
+
+                        <p className="text-xs text-gray-500">
+                          Manage your account
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Account Menu */}
+
+                  <div className="p-2">
+                    {/* My Account */}
+
+                    <Link
+                      href="/account"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <User className="h-4 w-4 shrink-0" />
+
+                      <span>
+                        My Account
+                      </span>
+                    </Link>
+
+                    {/* My Orders */}
+
+                    <Link
+                      href="/orders"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <ShoppingBag className="h-4 w-4 shrink-0" />
+
+                      <span>
+                        My Orders
+                      </span>
+                    </Link>
+
+                    {/* Wishlist */}
+
+                    <Link
+                      href="/wishlist"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <Heart className="h-4 w-4 shrink-0" />
+
+                      <span>
+                        Wishlist
+                      </span>
+                    </Link>
+
+                    {/* Settings */}
+
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
+                    >
+                      <Settings className="h-4 w-4 shrink-0" />
+
+                      <span>
+                        Settings
+                      </span>
+                    </Link>
+
+                    {/* Divider */}
+
+                    <div className="my-2.5 border-t border-gray-100" />
+
+                    {/* Logout */}
+
+                    <button
+                      type="button"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-red-500 transition-colors duration-200 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4 shrink-0" />
+
+                      <span>
+                        Logout
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* =================================================
+                  HAMBURGER
+                  Visible below lg
+              ================================================= */}
+
+              <button
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded={isSidebarOpen}
+                onClick={() => setIsSidebarOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-700 transition-all duration-200 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500 lg:hidden"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =====================================================
+          MOBILE SEARCH
+      ===================================================== */}
+
+      <div className="border-b border-gray-100 py-3 lg:border-0 lg:py-0">
+        <div className="container mx-auto">
+          <div className="relative lg:hidden">
+            <div className="relative overflow-hidden rounded-full border border-gray-300 bg-white transition-all duration-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+              <input
+                type="search"
+                placeholder="Search books..."
+                aria-label="Search books"
+                className="block h-12 w-full appearance-none border-0 bg-transparent py-2.5 pl-5 pr-14 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-0 focus:outline-none focus:ring-0"
+              />
+
+              <button
+                type="button"
+                aria-label="Search"
+                className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =====================================================
+          DESKTOP NAVIGATION
+          Visible only lg+
+      ===================================================== */}
+
+      <nav className="hidden border-b border-gray-100 bg-white lg:block">
+        <div className="container mx-auto flex items-center justify-between gap-6 overflow-hidden px-4">
+          {/* ================= CATEGORIES ================= */}
+
+          <div className="relative group">
+            <button
+              type="button"
+              className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all duration-200 ${
+                isCategoryActive
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
+              }`}
+            >
+              Categories
+
+              <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
+            </button>
+
+            {/* Categories Dropdown */}
+
+            <div className="invisible absolute left-0 top-full z-50 mt-3 w-64 translate-y-2 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              {/* Dropdown Header */}
+
+              <div className="mb-2 px-2 py-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  Browse Categories
+                </p>
+              </div>
+
+              {/* Categories */}
+
+              <div className="space-y-1">
+                {categories.map((category) => {
+                  const active = isActive(category.href);
+
+                  return (
+                    <Link
+                      key={category.href}
+                      href={category.href}
+                      className={`flex items-center justify-between rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                        active
+                          ? "border-orange-200 bg-orange-50 text-orange-600"
+                          : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                      }`}
+                    >
+                      <span>
+                        {category.name}
+                      </span>
+
+                      <span className="text-base">
+                        →
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Divider */}
+
+              <div className="my-3 border-t border-gray-100" />
+
+              {/* View All */}
+
+              <Link
+                href="/books"
+                className="flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
+              >
+                View All Books
+              </Link>
+            </div>
+          </div>
+
+          {/* ================= DESKTOP MENU ================= */}
+
+          <div className="flex items-center py-2 lg:gap-5 xl:gap-6">
+            {menuItems.map((item) => {
+              const active = isActive(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`py-2 text-sm font-medium transition-colors duration-200 ${
+                    active
+                      ? "text-orange-500"
+                      : "text-gray-700 hover:text-orange-500"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* =====================================================
+          MOBILE / TABLET SIDEBAR OVERLAY
+      ===================================================== */}
+
+      <div
+        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
+          isSidebarOpen
+            ? "visible opacity-100"
+            : "invisible opacity-0"
+        }`}
+        onClick={closeSidebar}
+      />
+
+      {/* =====================================================
+          RIGHT SIDEBAR
+      ===================================================== */}
+
+      <aside
+        className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          isSidebarOpen
+            ? "translate-x-0"
+            : "translate-x-full"
+        }`}
+      >
+        {/* ================= SIDEBAR HEADER ================= */}
+
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+          <Link
+            href="/"
+            onClick={closeSidebar}
+            className="shrink-0"
+          >
+            <Image
+              src={Logo}
+              alt="Book Store Logo"
+              className="h-auto w-20"
+            />
+          </Link>
+
+          {/* Close Button */}
+
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            onClick={closeSidebar}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-all duration-200 hover:bg-orange-500 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* ================= SIDEBAR CONTENT ================= */}
+
+        <div className="flex-1 overflow-y-auto px-4 py-5">
+          {/* =================================================
+              CATEGORIES
+          ================================================= */}
+
+          <div className="mb-3">
+            {/* Categories Button */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setIsMobileCategoriesOpen(
+                  !isMobileCategoriesOpen
+                )
+              }
+              className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                isCategoryActive
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
+              }`}
+            >
+              <span>
+                Categories
+              </span>
+
+              <ChevronDown
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  isMobileCategoriesOpen
+                    ? "rotate-180"
+                    : ""
+                }`}
+              />
+            </button>
+
+            {/* Category Items */}
+
+            <div
+              className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+                isMobileCategoriesOpen
+                  ? "mt-2 grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="min-h-0 overflow-hidden">
+                <div className="space-y-1 rounded-xl bg-gray-50 p-2">
+                  {categories.map((category) => {
+                    const active = isActive(category.href);
+
+                    return (
+                      <Link
+                        key={category.href}
+                        href={category.href}
+                        onClick={closeSidebar}
+                        className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                          active
+                            ? "bg-orange-50 text-orange-600"
+                            : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                        }`}
+                      >
+                        <span>
+                          {category.name}
+                        </span>
+
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
+                    );
+                  })}
+
+                  {/* View All */}
+
+                  <Link
+                    href="/books"
+                    onClick={closeSidebar}
+                    className="mt-2 flex items-center justify-center rounded-lg bg-orange-500 px-3 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
+                  >
+                    View All Books
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* =================================================
+              MOBILE NAVIGATION
+          ================================================= */}
+
+          <div className="space-y-1">
+            {menuItems.map((item) => {
+              const active = isActive(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeSidebar}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-orange-50 text-orange-500"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
+                  }`}
+                >
+                  <span>
+                    {item.name}
+                  </span>
+
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </aside>
+    </header>
+  );
+}
+
+export default Header;

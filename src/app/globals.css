@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+.title {
+  font-family: "Fraunces", serif !important;
+}
+
+.description {
+  font-family: "Inter", sans-serif !important;
+}
+
+.container {
+  width: 100%;
+  margin:0 auto;
+}
+
+/* Small devices */
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+    margin:0 auto;
+  }
+}
+
+/* Medium devices */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    margin:0 auto;
+  }
+}
+
+/* Large devices */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    margin:0 auto;
+  }
+}
+
+/* Extra large devices */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+}
+
+/* 2XL devices */
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+}
