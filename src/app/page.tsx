@@ -29,7 +29,10 @@ export default function Home() {
       </div>
       <CategorySection />
       <WhyChoose />
-      <Newsletter />
+      <Newsletter 
+        title="Get Updates on New Releases & Exclusive Deals"
+        description="Subscribe to our newsletter and never miss a great read!"
+      />
       <Reviews />
       <FaqAndBlog />
     </div>

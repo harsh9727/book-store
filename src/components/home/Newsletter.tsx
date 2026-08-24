@@ -3,7 +3,12 @@
 import { Mail, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
-const Newsletter = () => {
+interface NewsletterProps {
+  title: string;
+  description?: string;
+}
+
+const Newsletter = ({ title, description }: NewsletterProps) => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,12 +43,14 @@ const Newsletter = () => {
 
               <div>
                 <h2 className="title text-2xl font-semibold text-gray-900 sm:text-3xl">
-                  Get Updates on New Releases & Exclusive Deals
+                  {title}
                 </h2>
 
-                <p className="description mt-1.5 text-sm text-gray-500 sm:text-[15px]">
-                  Subscribe to our newsletter and never miss a great read!
-                </p>
+                {description && (
+                  <p className="description mt-1.5 text-sm text-gray-500 sm:text-[15px]">
+                    {description}
+                  </p>
+                )}
               </div>
             </div>
 
