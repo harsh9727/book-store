@@ -1,21 +1,17 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { useRef, useState } from "react";
-import {
-  Heart,
-  ChevronLeft,
-  ChevronRight,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import ProductImg from "../../../public/images/products/atomic-habits.jpg"
+import ProductImg from "../../../public/images/products/atomic-habits.jpg";
+import ProductCard from "@/components/product/ProductCard";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-type Product = {
+type ProductItem = {
   id: number;
   title: string;
   author: string;
@@ -26,17 +22,7 @@ type Product = {
   cta: string;
 };
 
-type BadgeTagProps = {
-  label: string;
-};
-
-type ProductCardProps = {
-  product: Product;
-  isLiked: boolean;
-  onToggleLike: (id: number) => void;
-};
-
-const products: Product[] = [
+const products: ProductItem[] = [
   {
     id: 1,
     title: "The Silent Forest",
@@ -171,122 +157,13 @@ const products: Product[] = [
   },
 ];
 
-function BadgeTag({ label }: BadgeTagProps) {
-  const styles: Record<string, string> = {
-    New: "bg-orange-600",
-    Sale: "bg-orange-600",
-    "Best Seller": "bg-orange-600",
-  };
-
-  return (
-    <span
-      className={`absolute left-4 top-4 z-10 rounded-lg px-3 py-1.5 text-[11px] font-semibold tracking-wide text-white ${
-        styles[label] || "bg-orange-600"
-      }`}
-    >
-      {label}
-    </span>
-  );
-}
-
-function ProductCard({
-  product,
-  isLiked,
-  onToggleLike,
-}: ProductCardProps) {
-  return (
-    <article className="group h-full">
-      {/* Product Image */}
-      <div
-        className="relative aspect-[3/3] w-full overflow-hidden rounded-2xl bg-gray-100"
-      >
-        <Image
-          src={product.cover}
-          alt={product.title}
-          fill
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105  border border-gray-200 overflow-hidden rounded-2xl"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-
-        {product.badge && <BadgeTag label={product.badge} />}
-
-        {/* Wishlist */}
-        <button
-          type="button"
-          onClick={() => onToggleLike(product.id)}
-          aria-label={
-            isLiked ? "Remove from wishlist" : "Add to wishlist"
-          }
-          className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:scale-105 hover:text-orange-600"
-        >
-          <Heart
-            size={17}
-            strokeWidth={1.8}
-            className={
-              isLiked
-                ? "fill-orange-600 text-orange-600"
-                : ""
-            }
-          />
-        </button>
-
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/[0.04]" />
-      </div>
-
-      {/* Product Details */}
-      <div className="pt-4">
-        {/* Title */}
-        <h3 className="line-clamp-2 min-h-[48px] text-[16px] title font-semibold leading-6 text-gray-900 transition-colors duration-200 group-hover:text-orange-600">
-          {product.title}
-        </h3>
-
-        {/* Author */}
-        <p className="mt-1 text-sm text-gray-500">
-          By{" "}
-          <span className="font-medium text-gray-700">
-            {product.author}
-          </span>
-        </p>
-
-        {/* Description */}
-        <p className="mt-2 line-clamp-2 min-h-[40px] text-[14px] leading-5 text-gray-500">
-          {product.description}
-        </p>
-
-        {/* Price */}
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <p className="text-[17px] font-bold text-orange-600">
-            ₹{product.price.toFixed(2)}
-          </p>
-
-          {product.badge === "Sale" && (
-            <span className="text-xs text-gray-400 line-through">
-              ₹{(product.price + 50).toFixed(2)}
-            </span>
-          )}
-        </div>
-
-        {/* Add to Cart */}
-        <button
-          type="button"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-orange-700"
-        >
-          {product.cta}
-          <ArrowRight size={15} />
-        </button>
-      </div>
-    </article>
-  );
-}
-
 const NewArrivals = () => {
   const [likedIds, setLikedIds] = useState<number[]>([]);
 
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
 
-  const toggleLike = (id: number) => {
+  const toggleLike = (id: any) => {
     setLikedIds((prev) =>
       prev.includes(id)
         ? prev.filter((x) => x !== id)
