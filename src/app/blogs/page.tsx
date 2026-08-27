@@ -14,6 +14,7 @@ import {
 import { blogs } from "@/data/blogs";
 import { blogsFaqs } from "@/data/faqs";
 import Faq from "@/components/common/Faq";
+import SearchBar from "@/components/common/SearchBar";
 
 export default function BlogsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -78,14 +79,14 @@ export default function BlogsPage() {
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full md:w-72">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
+        <div className="relative w-full md:w-80">
+          <SearchBar
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={setSearchQuery}
+            onSearch={setSearchQuery}
+            debounceMs={300}
+            size="sm"
             placeholder="Search articles or topics..."
-            className="w-full rounded-full border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm font-medium text-gray-900 description tracking-wide focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
       </div>

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import Logo from "../../../public/images/logo/logo.webp";
+import SearchBar from "@/components/common/SearchBar";
 
 function Header() {
   const pathname = usePathname();
@@ -273,21 +274,12 @@ function Header() {
                 Visible only lg+
             ================================================= */}
 
-            <div className="relative hidden flex-1 lg:block">
-              <input
-                type="search"
-                placeholder="Search books..."
-                aria-label="Search books"
-                className="w-full rounded-full border border-gray-300 bg-white py-2.5 pl-4 pr-12 text-sm text-gray-700 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+            <div className="relative hidden flex-1 lg:block max-w-3xl xl:max-w-4xl mx-2 sm:mx-6">
+              <SearchBar
+                redirectToAllBooks
+                size="md"
+                placeholder="Search books by title, author, genre..."
               />
-
-              <button
-                type="button"
-                aria-label="Search"
-                className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white"
-              >
-                <Search className="h-5 w-5" />
-              </button>
             </div>
 
             {/* =================================================
@@ -572,22 +564,11 @@ function Header() {
       <div className="border-b border-gray-100 py-3 lg:border-0 lg:py-0">
         <div className="container px-3 lg:px-6 mx-auto">
           <div className="relative lg:hidden">
-            <div className="relative overflow-hidden rounded-full border border-gray-300 bg-white transition-all duration-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
-              <input
-                type="search"
-                placeholder="Search books..."
-                aria-label="Search books"
-                className="block h-12 w-full appearance-none border-0 bg-transparent py-2.5 pl-5 pr-14 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-0 focus:outline-none focus:ring-0"
-              />
-
-              <button
-                type="button"
-                aria-label="Search"
-                className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white"
-              >
-                <Search className="h-5 w-5" />
-              </button>
-            </div>
+            <SearchBar
+              redirectToAllBooks
+              size="lg"
+              placeholder="Search books by title, author, genre..."
+            />
           </div>
         </div>
       </div>

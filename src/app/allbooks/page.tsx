@@ -19,6 +19,7 @@ import { shopFaqs } from "@/data/faqs";
 import ProductGrid from "@/components/product/ProductGrid";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import Faq from "@/components/common/Faq";
+import SearchBar from "@/components/common/SearchBar";
 
 function AllBooksContent() {
   const searchParams = useSearchParams();
@@ -204,26 +205,14 @@ function AllBooksContent() {
 
           {/* Search Field (Mobile) */}
           <div className="relative flex-1">
-            <Search
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
+            <SearchBar
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={setSearchQuery}
+              onSearch={setSearchQuery}
+              debounceMs={300}
+              size="sm"
               placeholder="Search books..."
-              className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-8 pr-8 text-xs sm:text-sm font-medium text-gray-900 description focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                <X size={14} />
-              </button>
-            )}
           </div>
         </div>
 
@@ -379,16 +368,13 @@ function AllBooksContent() {
           <div className="mb-6 hidden lg:flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             {/* Search Input */}
             <div className="relative flex-1 max-w-md">
-              <Search
-                size={17}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
+              <SearchBar
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={setSearchQuery}
+                onSearch={setSearchQuery}
+                debounceMs={300}
+                size="sm"
                 placeholder="Search by title, author, genre..."
-                className="w-full rounded-full border border-gray-200 bg-gray-50/50 py-2 pl-9 pr-4 text-xs font-medium text-gray-900 description tracking-wide focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
 
