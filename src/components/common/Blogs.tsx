@@ -70,13 +70,13 @@ const Blogs = ({ limit }: BlogsProps = {}) => {
                     </p>
                 </div>
                 <div>
-                    <a
-                        href="/new-releases"
+                    <Link
+                        href="/blogs"
                         className="description hidden shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-orange-600 hover:text-orange-600 sm:flex"
                     >
                         View All
                         <ArrowRight size={16} />
-                    </a>
+                    </Link>
                 </div>
             </div>
 
@@ -88,7 +88,7 @@ const Blogs = ({ limit }: BlogsProps = {}) => {
                     >
                         {/* Image */}
                         <Link
-                            href={`/blog/${blog.id}`}
+                            href={`/blogs/${blog.id}`}
                             className="relative block aspect-[16/10] overflow-hidden bg-gray-100"
                         >
                             <Image
@@ -116,7 +116,7 @@ const Blogs = ({ limit }: BlogsProps = {}) => {
                             </div>
 
                             {/* Title */}
-                            <Link href={`/blog/${blog.id}`}>
+                            <Link href={`/blogs/${blog.id}`}>
                                 <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
                                     {blog.title}
                                 </h3>
@@ -124,7 +124,7 @@ const Blogs = ({ limit }: BlogsProps = {}) => {
 
                             {/* Read More */}
                             <Link
-                                href={`/blog/${blog.id}`}
+                                href={`/blogs/${blog.id}`}
                                 className="group/link mt-auto flex w-fit items-center gap-1.5 pt-4 text-xs font-semibold text-gray-800 transition-colors duration-300 hover:text-orange-600"
                             >
                                 Read More
