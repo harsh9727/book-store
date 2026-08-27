@@ -157,4 +157,100 @@ export const galleries: GalleryItem[] = [
       },
     ],
   },
+  {
+    id: "5",
+    slug: "theology-and-scripture-symposium",
+    title: "Theology & Scripture Symposium 2024",
+    subtitle: "Exploring historical Christian manuscripts, translations, and devotionals",
+    category: "Exhibitions",
+    date: "February 22, 2024",
+    location: "ProBooks Academic Annex",
+    coverImage: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=1200&auto=format&fit=crop",
+    description:
+      "Scholars, pastors, and theology students gathered to examine rare historical biblical translations, illuminated manuscripts, and contemporary devotional literature.",
+    story:
+      "A peaceful day of learning, manuscript displays, and panel discussions on preserving scriptural integrity across generations.",
+    organizer: "Christian Heritage Study Group",
+    tags: ["Theology", "Manuscripts", "Exhibition", "Faith"],
+    photos: [
+      {
+        id: "p15",
+        url: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=1200&auto=format&fit=crop",
+        title: "Rare Manuscript Showcase",
+        caption: "Preserved biblical commentaries dating back centuries.",
+      },
+    ],
+  },
+  {
+    id: "6",
+    slug: "poetry-and-acoustic-open-mic",
+    title: "Poetry & Acoustic Coffeehouse Evening",
+    subtitle: "An intimate night of spoken word, reflective poetry, and artisan brews",
+    category: "Community",
+    date: "February 10, 2024",
+    location: "ProBooks Mezzanine Lounge",
+    coverImage: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1200&auto=format&fit=crop",
+    description:
+      "Local poets, songwriters, and prose writers performed original compositions to a warm audience in our atmospheric bookstore lounge.",
+    story:
+      "Over 80 community members enjoyed freshly roasted coffee and soothing acoustic melodies alongside heartfelt spoken word poetry.",
+    organizer: "ProBooks Literary Society",
+    tags: ["Poetry", "Acoustic", "Community", "Open Mic"],
+    photos: [
+      {
+        id: "p16",
+        url: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1200&auto=format&fit=crop",
+        title: "Spoken Word Performance",
+        caption: "Local poet sharing verses from their newly published chapbook.",
+      },
+    ],
+  },
+  {
+    id: "7",
+    slug: "spring-book-club-roundtable",
+    title: "Spring Book Club Leaders Summit & Mixer",
+    subtitle: "Connecting book club hosts from across the region to share reading curricula",
+    category: "Events",
+    date: "January 28, 2024",
+    location: "ProBooks Conference Suite",
+    coverImage: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1200&auto=format&fit=crop",
+    description:
+      "A collaborative summit for reading group moderators to exchange discussion prompts, author interview schedules, and reading challenges.",
+    story:
+      "Book club leaders networked, shared best practices for engaging quiet readers, and received curated reading kit boxes.",
+    organizer: "ProBooks Reader Network",
+    tags: ["Book Club", "Roundtable", "Networking", "Events"],
+    photos: [
+      {
+        id: "p17",
+        url: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1200&auto=format&fit=crop",
+        title: "Roundtable Discussion",
+        caption: "Group leaders collaborating on annual reading lists.",
+      },
+    ],
+  },
+  {
+    id: "8",
+    slug: "young-authors-writing-masterclass",
+    title: "Young Authors Creative Writing Masterclass",
+    subtitle: "Hands-on narrative crafting workshops led by award-winning novelists",
+    category: "Book Launches",
+    date: "January 15, 2024",
+    location: "ProBooks Creative Studio",
+    coverImage: "https://images.unsplash.com/photo-1507842229451-7f01be8860ee?q=80&w=1200&auto=format&fit=crop",
+    description:
+      "Aspiring novelists aged 14-22 learned world-building, dialogue writing, and character development in an interactive daylong workshop.",
+    story:
+      "Students received one-on-one editorial critique on their manuscript outlines and participated in live character sketching exercises.",
+    organizer: "ProBooks Youth Literacy Foundation",
+    tags: ["Creative Writing", "Masterclass", "Youth", "Workshop"],
+    photos: [
+      {
+        id: "p18",
+        url: "https://images.unsplash.com/photo-1507842229451-7f01be8860ee?q=80&w=1200&auto=format&fit=crop",
+        title: "Manuscript Workshop",
+        caption: "Instructor giving feedback on student plot outlines.",
+      },
+    ],
+  },
 ];

@@ -199,4 +199,149 @@ export const blogs: BlogPost[] = [
       },
     ],
   },
+  {
+    id: "7",
+    title: "The Art of Annotating: Transforming How You Read & Retain Knowledge",
+    slug: "the-art-of-annotating-books",
+    category: "Reading Tips",
+    date: "May 10, 2024",
+    readTime: "5 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "Discover margin notes, indexing systems, and color-coded tabs that turn your personal library into an active conversation with brilliant authors.",
+    author: {
+      name: "Marcus Vance",
+      role: "Cognitive Scientist & Writer",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop",
+      bio: "Marcus specializes in cognitive behavioral research and mindful living.",
+    },
+    tags: ["Annotations", "Study Habits", "Reading Tips", "Note Taking"],
+    content: [
+      {
+        heading: "Writing in the Margins",
+        body: "Annotating is not vandalism; it is active intellectual engagement. Engaging with key arguments, marking contradictions, and noting personal insights ensures deep comprehension.",
+      },
+    ],
+  },
+  {
+    id: "8",
+    title: "Top Christian Classics That Every Believer Should Cherish",
+    slug: "top-christian-classics-for-every-believer",
+    category: "Christian Books",
+    date: "April 28, 2024",
+    readTime: "7 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "Explore foundational works by C.S. Lewis, A.W. Tozer, Brother Lawrence, and Hannah Whitehall Smith that continue to shape spiritual journeys.",
+    author: {
+      name: "Pastor Jonathan Samuel",
+      role: "Theological Educator & Author",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&auto=format&fit=crop",
+      bio: "Pastor Jonathan has authored several devotionals and guides on Christian spirituality.",
+    },
+    tags: ["Christian Books", "Classics", "Faith", "Devotion"],
+    content: [
+      {
+        heading: "Enduring Spiritual Anchors",
+        body: "From 'Mere Christianity' to 'The Pursuit of God', these classics offer theological clarity alongside deep pastoral warmth.",
+      },
+    ],
+  },
+  {
+    id: "9",
+    title: "Unlocking Financial Freedom: Essential Books on Money & Wealth",
+    slug: "essential-books-on-money-and-wealth",
+    category: "Book Recommendations",
+    date: "April 20, 2024",
+    readTime: "6 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "A curated guide to the best literature on personal finance, index investing, behavioral economics, and sustainable wealth creation.",
+    author: {
+      name: "Marcus Vance",
+      role: "Cognitive Scientist & Writer",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop",
+      bio: "Marcus specializes in cognitive behavioral research and mindful living.",
+    },
+    tags: ["Finance", "Money", "Bestsellers", "Book Recommendations"],
+    content: [
+      {
+        heading: "Mastering the Psychology of Wealth",
+        body: "Wealth is not just what you earn; it is how you manage impulses and structure compounding over decades.",
+      },
+    ],
+  },
+  {
+    id: "10",
+    title: "How to Build a Cozy Home Library on Any Budget",
+    slug: "how-to-build-a-cozy-home-library",
+    category: "Book Guide",
+    date: "April 12, 2024",
+    readTime: "4 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "Simple design principles, thrift bookstore strategies, and ambient lighting tips to create your dream reading sanctuary at home.",
+    author: {
+      name: "Sophia Martinez",
+      role: "Senior Literary Critic & Book Curator",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop",
+      bio: "Sophia has reviewed over 500 books across classic fiction, psychology, and modern memoirs.",
+    },
+    tags: ["Home Library", "Book Décor", "Book Guide", "Reading Nook"],
+    content: [
+      {
+        heading: "Creating a Sacred Reading Corner",
+        body: "A dedicated reading nook with natural illumination and comfortable seating significantly increases your monthly reading consistency.",
+      },
+    ],
+  },
+  {
+    id: "11",
+    title: "The Golden Age of Historical Fiction: Novels That Bring the Past to Life",
+    slug: "golden-age-of-historical-fiction",
+    category: "New Releases",
+    date: "April 05, 2024",
+    readTime: "8 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "Step back in time with breathtaking historical sagas that meticulously blend authentic historical events with compelling character arcs.",
+    author: {
+      name: "Sophia Martinez",
+      role: "Senior Literary Critic & Book Curator",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop",
+      bio: "Sophia has reviewed over 500 books across classic fiction, psychology, and modern memoirs.",
+    },
+    tags: ["Historical Fiction", "New Releases", "Literature", "Novels"],
+    content: [
+      {
+        heading: "Living History Through Fiction",
+        body: "Meticulous world-building and empathetic characterization allow historical fiction to educate and mesmerize readers simultaneously.",
+      },
+    ],
+  },
+  {
+    id: "12",
+    title: "Cultivating Quietness: Meditations for Busy Urban Minds",
+    slug: "cultivating-quietness-meditations-for-busy-minds",
+    category: "Christian Books",
+    date: "March 29, 2024",
+    readTime: "5 min read",
+    image: "/images/blog/blog.jpg",
+    summary:
+      "How reflective literature and contemplative prayer restore inner equilibrium in an age of constant digital noise and notifications.",
+    author: {
+      name: "Pastor Jonathan Samuel",
+      role: "Theological Educator & Author",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&auto=format&fit=crop",
+      bio: "Pastor Jonathan has authored several devotionals and guides on Christian spirituality.",
+    },
+    tags: ["Christian Books", "Meditation", "Peace", "Mindfulness"],
+    content: [
+      {
+        heading: "The Discipline of Stillness",
+        body: "Reclaiming moments of quiet reflection each evening recalibrates our spirit and invites genuine gratitude.",
+      },
+    ],
+  },
 ];
+

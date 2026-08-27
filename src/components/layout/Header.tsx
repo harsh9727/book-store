@@ -212,18 +212,29 @@ function Header() {
 
             {/* Phone */}
 
-            <Link
-              href="tel:+919106339980"
-              title="Call us"
-              aria-label="Call us"
-              className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
-            >
+            <div className="flex items-center gap-2 text-sm leading-none text-white">
               <Phone className="h-4 w-4 shrink-0" />
 
-              <span className="hidden sm:inline">
-                +91 9106339980
-              </span>
-            </Link>
+              <Link
+                href="tel:+919265429338"
+                title="Call +91 9265429338"
+                aria-label="Call +91 9265429338"
+                className="transition-colors duration-200 hover:text-amber-400"
+              >
+                +91 9265429338
+              </Link>
+
+              <span className="text-white/40">|</span>
+
+              <Link
+                href="tel:+917490028867"
+                title="Call +91 7490028867"
+                aria-label="Call +91 7490028867"
+                className="transition-colors duration-200 hover:text-amber-400"
+              >
+                +91 7490028867
+              </Link>
+            </div>
           </div>
 
           {/* ================= HELP CENTER ================= */}
