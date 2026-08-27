@@ -193,13 +193,13 @@ const NewArrivals = () => {
           </div>
 
           {/* Desktop View All */}
-          <a
-            href="/new-releases"
+          <Link
+            href="/allbooks?collection=new"
             className="description hidden shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-orange-600 hover:text-orange-600 sm:flex"
           >
             View All
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
 
         {/* Carousel */}
@@ -281,13 +281,13 @@ const NewArrivals = () => {
 
         {/* Mobile View All */}
         <div className="mt-10 flex justify-center sm:hidden">
-          <a
-            href="/new-releases"
+          <Link
+            href="/allbooks?collection=new"
             className="description flex items-center gap-2 rounded-full border border-orange-600 px-6 py-2.5 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-600 hover:text-white"
           >
             View All
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

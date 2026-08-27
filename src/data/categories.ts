@@ -6,26 +6,6 @@ export interface Category {
 
 export const categories: Category[] = [
   {
-    id: "fiction",
-    name: "Fiction",
-    slug: "fiction",
-  },
-  {
-    id: "non-fiction",
-    name: "Non-Fiction",
-    slug: "non-fiction",
-  },
-  {
-    id: "romance",
-    name: "Romance",
-    slug: "romance",
-  },
-  {
-    id: "mystery",
-    name: "Mystery",
-    slug: "mystery",
-  },
-  {
     id: "self-help",
     name: "Self Help",
     slug: "self-help",
