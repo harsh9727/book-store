@@ -12,6 +12,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { blogs } from "@/data/blogs";
+import { blogsFaqs } from "@/data/faqs";
+import Faq from "@/components/common/Faq";
 
 export default function BlogsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -163,6 +165,18 @@ export default function BlogsPage() {
           ))}
         </div>
       )}
+
+      {/* Blogs & Journal FAQ Section */}
+      <div className="mt-20 border-t border-gray-100 pt-12">
+        <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
+          <Faq
+            faqs={blogsFaqs}
+            badge="Literary Journal"
+            title="Book Reviews & Blog FAQs"
+            subtitle="Frequently asked questions about guest submissions, book curation, and reading lists."
+          />
+        </div>
+      </div>
     </div>
   );
 }

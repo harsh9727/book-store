@@ -12,6 +12,8 @@ import {
   Search,
 } from "lucide-react";
 import { galleries } from "@/data/galleries";
+import { galleryFaqs } from "@/data/faqs";
+import Faq from "@/components/common/Faq";
 
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -157,6 +159,18 @@ export default function GalleryPage() {
           ))}
         </div>
       )}
+
+      {/* Gallery FAQ Section */}
+      <div className="mt-20 border-t border-gray-100 pt-12">
+        <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
+          <Faq
+            faqs={galleryFaqs}
+            badge="Events & Exhibitions"
+            title="Bookstore Gallery & Events FAQ"
+            subtitle="Common questions about event admissions, photography rights, and hosting book launches."
+          />
+        </div>
+      </div>
     </div>
   );
 }
