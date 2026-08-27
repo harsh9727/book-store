@@ -29,12 +29,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-3.5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 p-1 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">
       {/* Cover Image Container */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-50">
+      <div className="relative aspect-[4/4] w-full overflow-hidden rounded-xl bg-gray-50">
         {/* Badge */}
         {product.badge && (
-          <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-orange-600 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+          <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-orange-600 px-2.5 py-1 text-xs description tracking-wide font-semibold text-white shadow-sm">
             {product.badge}
           </span>
         )}
@@ -43,9 +43,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           type="button"
           onClick={handleToggleLike}
-          className={`absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-            isLiked ? "text-red-500" : "text-gray-500 hover:text-red-500"
-          }`}
+          className={`absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 border-1 border-gray-200 shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 ${isLiked ? "text-red-500" : "text-gray-500 hover:text-red-500"
+            }`}
           aria-label="Add to wishlist"
         >
           <Heart size={16} className={isLiked ? "fill-red-500" : ""} />
@@ -57,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={product.image}
             alt={product.title}
             fill
-            className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-105"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </Link>
 
@@ -65,7 +64,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="absolute inset-x-2 bottom-2 z-10 translate-y-12 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           <Link
             href={`/product/${product.id}`}
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-white/95 py-2 text-xs font-semibold text-gray-900 shadow-md backdrop-blur-sm transition-colors hover:bg-orange-600 hover:text-white"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg description tracking-wide bg-white/95 py-2 text-xs font-semibold text-gray-900 shadow-md backdrop-blur-sm transition-colors hover:bg-orange-600 hover:text-white"
           >
             <Eye size={14} />
             <span>View Details</span>
@@ -74,24 +73,19 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Book Metadata */}
-      <div className="flex flex-1 flex-col pt-3.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-orange-600">
+      <div className="flex flex-1 flex-col p-3.5">
+        <span className="text-[13px] description tracking-wide font-semibold text-orange-600">
           {product.category}
         </span>
 
         <Link href={`/product/${product.id}`}>
-          <h3 className="line-clamp-2 mt-1 text-sm font-semibold text-gray-900 transition-colors hover:text-orange-600">
+          <h3 className="line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600">
             {product.title}
           </h3>
         </Link>
 
-        <p className="mt-1 text-xs text-gray-500">by {product.author}</p>
 
-        {product.rating && (
-          <div className="mt-2">
-            <ProductRating rating={product.rating} reviewsCount={product.reviewsCount} size={13} />
-          </div>
-        )}
+        <p className="mt-1 text-sm text-gray-600">by {product.author}</p>
 
         {/* Price & Add to Cart button */}
         <div className="mt-auto flex items-center justify-between pt-3.5">
