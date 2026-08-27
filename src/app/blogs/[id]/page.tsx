@@ -6,14 +6,9 @@ import {
   Clock,
   ChevronRight,
   Home,
-  Tag,
-  ArrowLeft,
   ArrowRight,
-  Quote,
-  CheckCircle2,
 } from "lucide-react";
 import { blogs } from "@/data/blogs";
-import BlogComments from "@/components/blog/BlogComments";
 
 interface BlogPageProps {
   params: Promise<{ id: string }>;

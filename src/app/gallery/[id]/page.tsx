@@ -11,7 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { galleries } from "@/data/galleries";
-import GalleryLightbox from "@/components/gallary/GalleryLightbox";
+import GalleryLightbox from "@/components/gallery/GalleryLightbox";
 
 interface GalleryDetailPageProps {
   params: Promise<{ id: string }>;
