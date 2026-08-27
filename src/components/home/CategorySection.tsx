@@ -9,130 +9,122 @@ import {
   GraduationCap,
   Users,
   BookMarked,
-  Gift,
+  Sparkles,
   ArrowRight,
+  Bookmark,
+  TrendingUp,
+  Compass,
 } from "lucide-react";
+import { categories } from "@/data/categories";
+import { products } from "@/data/products";
 
-const categories = [
-  {
-    id: 1,
-    title: "Holy Bibles",
-    icon: BookOpen,
-    href: "/categories/holy-bibles",
-  },
-  {
-    id: 2,
-    title: "Christian Living",
-    icon: Cross,
-    href: "/categories/christian-living",
-  },
-  {
-    id: 3,
-    title: "Devotionals",
-    icon: Heart,
-    href: "/categories/devotionals",
-  },
-  {
-    id: 4,
-    title: "Children's Books",
-    icon: Baby,
-    href: "/categories/childrens-books",
-  },
-  {
-    id: 5,
-    title: "Study Guides",
-    icon: GraduationCap,
-    href: "/categories/study-guides",
-  },
-  {
-    id: 6,
-    title: "Inspirational",
-    icon: Users,
-    href: "/categories/inspirational",
-  },
-  {
-    id: 7,
-    title: "Christian Literature",
-    icon: BookMarked,
-    href: "/categories/christian-literature",
-  },
-  {
-    id: 8,
-    title: "Faith Gifts",
-    icon: Gift,
-    href: "/categories/faith-gifts",
-  },
-];
+// Icon mapping per category slug
+const categoryIconMap: Record<string, any> = {
+  "bible-books": BookOpen,
+  "christian-living": Cross,
+  devotionals: Heart,
+  "self-help": TrendingUp,
+  business: Compass,
+  kids: Baby,
+  biography: Users,
+  novels: BookMarked,
+};
 
 const CategorySection = () => {
   return (
-    <section className="bg-orange-50 py-12">
-      <div className="container px-3 lg:px-6">
+    <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
+      <div className="container px-3 lg:px-6 mx-auto">
+        {/* Section Header */}
+        <div className="mb-12 text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-xs sm:text-sm font-semibold description tracking-wide text-orange-700 mb-3">
+            <Sparkles size={14} />
+            <span>Curated Bookstore Departments</span>
+          </div>
 
-        {/* Header */}
-        <div className="mb-10 text-center">
-
-          <h2 className="title mt-2 text-3xl font-semibold text-gray-900 sm:text-4xl">
+          <h2 className="title text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
             Explore Categories
           </h2>
 
-          <p className="description mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-500 sm:text-[15px]">
-            Find the right books, resources, and faith-inspired
-            products from our carefully organized collections.
+          <p className="description mt-3 text-sm sm:text-base leading-relaxed text-gray-600">
+            Find the right books, study resources, and faith-inspired titles from our carefully organized collections.
           </p>
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category) => {
-            const Icon = category.icon;
+            const Icon = categoryIconMap[category.slug] || Bookmark;
+            const bookCount = products.filter(
+              (p) => p.category.toLowerCase() === category.slug.toLowerCase()
+            ).length;
 
             return (
               <Link
                 key={category.id}
-                href={category.href}
-                className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-600/10"
+                href={`/allbooks?category=${category.slug}`}
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 active:scale-[0.99]"
               >
-                {/* Orange background decoration */}
-                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-600/5 transition-all duration-500 group-hover:scale-[2.5] group-hover:bg-orange-600/10" />
+                {/* Subtle background glow on hover */}
+                <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-orange-500/5 transition-all duration-500 group-hover:scale-[2.5] group-hover:bg-orange-500/10" />
 
-                {/* Icon */}
-                <div className="relative mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-600/10 text-orange-600 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-orange-600/20">
-                  <Icon
-                    size={22}
-                    strokeWidth={1.8}
-                    className="transition-transform duration-300 group-hover:scale-110"
-                  />
+                <div>
+                  {/* Top Row: Icon + Count Badge */}
+                  <div className="relative mb-5 flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-600 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-orange-600/30">
+                      <Icon
+                        size={22}
+                        strokeWidth={2}
+                        className="transition-transform duration-300 group-hover:scale-110"
+                      />
+                    </div>
+
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600 description tracking-wide transition-colors group-hover:bg-orange-100 group-hover:text-orange-700">
+                      {bookCount > 0 ? `${bookCount}+ Books` : "Available"}
+                    </span>
+                  </div>
+
+                  {/* Category Title */}
+                  <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
+                    {category.name}
+                  </h3>
+
+                  {/* Category Short Description */}
+                  {category.description && (
+                    <p className="description mt-1.5 text-xs sm:text-[14px] leading-relaxed text-gray-500 line-clamp-2">
+                      {category.description}
+                    </p>
+                  )}
                 </div>
 
-                <div className="relative mt-5 flex items-center justify-between">
-                  {/* Category Name */}
-                  <h3 className="title relative text-xl font-semibold text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
-                    {category.title}
-                  </h3>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all duration-300 group-hover:border-orange-600 group-hover:bg-orange-600 group-hover:text-white">
-                    <ArrowRight
-                      size={15}
-                      className="transition-transform duration-300 group-hover:translate-x-0.5"
-                    />
+                {/* Bottom Action Row */}
+                <div className="relative mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                  <span className="text-sm font-semibold description tracking-wide text-gray-500 transition-colors group-hover:text-orange-600">
+                    Browse Collection
+                  </span>
+
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white group-hover:translate-x-1">
+                    <ArrowRight size={13} />
                   </span>
                 </div>
 
-                {/* Bottom Orange Line */}
-                <span className="absolute bottom-0 left-0 h-[3px] w-0 bg-orange-600 transition-all duration-500 group-hover:w-full" />
+                {/* Animated Bottom Border */}
+                <span className="absolute bottom-0 left-0 h-[2.5px] w-0 bg-orange-600 transition-all duration-300 group-hover:w-full" />
               </Link>
             );
           })}
         </div>
 
-        {/* View All */}
-        <div className="mt-9 flex justify-center">
+        {/* View All Categories CTA Button */}
+        <div className="mt-12 flex justify-center">
           <Link
-            href="/categories"
-            className="description flex items-center gap-2 rounded-lg border border-orange-600 px-6 py-2.5 text-sm font-medium text-orange-600 transition-all duration-300 hover:bg-orange-600 hover:text-white"
+            href="/allbooks"
+            className="group inline-flex items-center gap-2.5 rounded-full border border-orange-600 bg-white px-7 py-3 text-sm font-semibold description tracking-wide text-orange-600 shadow-sm transition-all duration-300 hover:bg-orange-600 hover:text-white hover:shadow-lg hover:shadow-orange-600/20 active:scale-95"
           >
-            View All Categories
-            <ArrowRight size={16} />
+            <span>View All Categories & Full Library</span>
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
           </Link>
         </div>
       </div>
