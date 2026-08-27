@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ChevronRight, Home } from "lucide-react";
 import { products } from "@/data/products";
+import Breadcrumb from "@/components/common/Breadcrumb";
 import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductTabs from "@/components/product/ProductTabs";
@@ -25,30 +24,17 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    { label: product.category, href: `/shop?category=${product.category}` },
+    { label: product.title },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Breadcrumbs */}
-      <nav className="mb-8 flex items-center gap-2 text-xs text-gray-500">
-        <Link href="/" className="flex items-center gap-1 hover:text-orange-600 transition-colors">
-          <Home size={14} />
-          <span>Home</span>
-        </Link>
-        <ChevronRight size={12} />
-        <Link href="/shop" className="hover:text-orange-600 transition-colors">
-          Books
-        </Link>
-        <ChevronRight size={12} />
-        <Link
-          href={`/shop?category=${product.category}`}
-          className="capitalize hover:text-orange-600 transition-colors"
-        >
-          {product.category}
-        </Link>
-        <ChevronRight size={12} />
-        <span className="truncate max-w-[200px] sm:max-w-md font-medium text-gray-900">
-          {product.title}
-        </span>
-      </nav>
+      <Breadcrumb items={breadcrumbItems} />
 
       {/* Main Product Hero Grid */}
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">

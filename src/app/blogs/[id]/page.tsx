@@ -4,11 +4,13 @@ import Link from "next/link";
 import {
   CalendarDays,
   Clock,
-  ChevronRight,
-  Home,
   ArrowRight,
+  BookOpen,
+  ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import { blogs } from "@/data/blogs";
+import Breadcrumb from "@/components/common/Breadcrumb";
 
 interface BlogPageProps {
   params: Promise<{ id: string }>;
@@ -30,23 +32,16 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
   const relatedBlogs = blogs.filter((b) => String(b.id) !== String(blog.id)).slice(0, 3);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Blogs", href: "/blogs" },
+    { label: blog.title },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
       {/* Breadcrumbs */}
-      <nav className="mb-8 flex items-center gap-2 text-sm description tracking-wide text-gray-500">
-        <Link href="/" className="flex items-center gap-1 hover:text-orange-600 transition-colors">
-          <Home size={14} />
-          <span>Home</span>
-        </Link>
-        <ChevronRight size={12} />
-        <Link href="/blogs" className="hover:text-orange-600 transition-colors">
-          Blog
-        </Link>
-        <ChevronRight size={12} />
-        <span className="truncate max-w-[240px] sm:max-w-md font-medium text-gray-900">
-          {blog.title}
-        </span>
-      </nav>
+      <Breadcrumb items={breadcrumbItems} />
 
       {/* Article Header */}
       <header className="mb-8">
@@ -108,6 +103,33 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* Note / Buy Books Callout Card */}
+      <div className="mt-10 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-amber-50/40 to-white p-6 md:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-xl">
+            <div className="flex items-center gap-2 text-orange-600 font-semibold text-sm description tracking-wide">
+              <Sparkles size={16} />
+              <span>Recommended Next Step</span>
+            </div>
+            <h3 className="title text-xl sm:text-2xl font-bold text-gray-900">
+              Want to read more? Grab the complete book!
+            </h3>
+            <p className="description text-sm leading-relaxed text-gray-600">
+              Discover the full edition, author insights, and transformative chapters in our bookstore collection. Get your copy with fast delivery.
+            </p>
+          </div>
+
+          <Link
+            href="/shop"
+            className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
+          >
+            <ShoppingBag size={18} />
+            <span>Browse Bookstore</span>
+            <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
 
 

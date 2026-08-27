@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import WhatsAppButton from "@/components/common/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: "ProBooks | Your Online Bookstore",
@@ -26,6 +27,7 @@ export default function RootLayout({
         </main>
 
         <Footer />
+        <WhatsAppButton />
       </body>
     </html>
   );

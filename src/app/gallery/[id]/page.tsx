@@ -5,12 +5,11 @@ import {
   CalendarDays,
   MapPin,
   Camera,
-  ChevronRight,
-  Home,
   User,
   ArrowRight,
 } from "lucide-react";
 import { galleries } from "@/data/galleries";
+import Breadcrumb from "@/components/common/Breadcrumb";
 import GalleryLightbox from "@/components/gallery/GalleryLightbox";
 
 interface GalleryDetailPageProps {
@@ -39,26 +38,16 @@ export default async function GalleryDetailPage({
     .filter((g) => String(g.id) !== String(album.id))
     .slice(0, 2);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Gallery", href: "/gallery" },
+    { label: album.title },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-10">
       {/* Breadcrumbs */}
-      <nav className="mb-8 flex items-center gap-2 text-sm text-gray-500 description tracking-wide font-medium">
-        <Link
-          href="/"
-          className="flex items-center gap-1 hover:text-orange-600 transition-colors"
-        >
-          <Home size={14} />
-          <span>Home</span>
-        </Link>
-        <ChevronRight size={12} />
-        <Link href="/gallery" className="hover:text-orange-600 transition-colors">
-          Gallery
-        </Link>
-        <ChevronRight size={12} />
-        <span className="truncate max-w-[240px] sm:max-w-md font-semibold text-gray-600 description tracking-wide">
-          {album.title}
-        </span>
-      </nav>
+      <Breadcrumb items={breadcrumbItems} />
 
       <div className="md:p-6 p-3 rounded-xl bg-white shadow-sm border border-gray-400">
         {/* Hero Title & Event Details Header */}
