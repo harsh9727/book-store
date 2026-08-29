@@ -59,7 +59,7 @@ export default function ProductCard({
   const productHref =
     typeof product.id === "string" && isNaN(Number(product.id))
       ? `/product/${product.id}`
-      : "/allbooks";
+      : "/allproducts";
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 p-1 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">

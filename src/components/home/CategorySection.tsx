@@ -61,7 +61,7 @@ const CategorySection = () => {
             return (
               <Link
                 key={category.id}
-                href={`/allbooks?category=${category.slug}`}
+                href={`/allproducts?category=${category.slug}`}
                 className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-5 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 active:scale-[0.99]"
               >
                 {/* Subtle background glow on hover */}
@@ -117,7 +117,7 @@ const CategorySection = () => {
         {/* View All Categories CTA Button */}
         <div className="mt-12 flex justify-center">
           <Link
-            href="/allbooks"
+            href="/allproducts"
             className="group inline-flex items-center gap-2.5 rounded-full border border-orange-600 bg-white px-7 py-3 text-sm font-semibold description tracking-wide text-orange-600 shadow-sm transition-all duration-300 hover:bg-orange-600 hover:text-white hover:shadow-lg hover:shadow-orange-600/20 active:scale-95"
           >
             <span>View All Categories & Full Library</span>

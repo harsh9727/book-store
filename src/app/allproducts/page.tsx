@@ -21,7 +21,7 @@ import Breadcrumb from "@/components/common/Breadcrumb";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
-function AllBooksContent() {
+function AllProductsContent() {
   const searchParams = useSearchParams();
   const urlCollection = searchParams.get("collection") || "all";
   const urlCategory = searchParams.get("category") || "all";
@@ -163,7 +163,7 @@ function AllBooksContent() {
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
-    { label: "All Books" },
+    { label: "All Products" },
   ];
 
   return (
@@ -342,6 +342,7 @@ function AllBooksContent() {
                   { id: "bestseller", label: "Best Sellers" },
                   { id: "new", label: "New Releases" },
                   { id: "trending", label: "Trending Books" },
+                  { id: "accessories", label: "Accessories"}
                 ].map((item) => (
                   <label
                     key={item.id}
@@ -396,7 +397,6 @@ function AllBooksContent() {
                   className="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description tracking-wide cursor-pointer"
                 >
                   <option value="featured">Featured</option>
-                  <option value="rating">Top Rated</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
                 </select>
@@ -705,7 +705,7 @@ function AllBooksContent() {
   );
 }
 
-export default function AllBooksPage() {
+export default function AllProductsPage() {
   return (
     <Suspense
       fallback={
@@ -716,7 +716,7 @@ export default function AllBooksPage() {
         </div>
       }
     >
-      <AllBooksContent />
+      <AllProductsContent />
     </Suspense>
   );
 }

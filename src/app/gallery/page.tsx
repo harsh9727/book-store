@@ -19,11 +19,11 @@ import SearchBar from "@/components/common/SearchBar";
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   // Reset pagination when filter or search changes
   useEffect(() => {
-    setVisibleCount(4);
+    setVisibleCount(6);
   }, [selectedCategory, searchQuery]);
 
   const categories = ["All", "Events", "Exhibitions", "Community", "Book Launches"];
@@ -100,7 +100,7 @@ export default function GalleryPage() {
         </div>
       ) : (
         <div className="space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {filteredGalleries.slice(0, visibleCount).map((album) => (
               <article
                 key={album.id}
@@ -194,17 +194,17 @@ export default function GalleryPage() {
 
               <button
                 type="button"
-                onClick={() => setVisibleCount((prev) => prev + 4)}
+                onClick={() => setVisibleCount((prev) => prev + 6)}
                 className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
               >
-                <span>View More Albums (+4)</span>
+                <span>View More Albums (+6)</span>
                 <ChevronDown
                   size={16}
                   className="transition-transform duration-200 group-hover:translate-y-0.5"
                 />
               </button>
             </div>
-          ) : filteredGalleries.length > 4 ? (
+          ) : filteredGalleries.length > 6 ? (
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 description tracking-wide">
                 You have viewed all {filteredGalleries.length} photo albums in this collection.

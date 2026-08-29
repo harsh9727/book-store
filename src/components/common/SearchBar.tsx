@@ -10,7 +10,7 @@ interface SearchBarProps {
   onChange?: (value: string) => void;
   onSearch?: (value: string) => void;
   debounceMs?: number;
-  redirectToAllBooks?: boolean;
+  redirectToallproducts?: boolean;
   className?: string;
   inputClassName?: string;
   size?: "sm" | "md" | "lg";
@@ -22,7 +22,7 @@ export default function SearchBar({
   onChange,
   onSearch,
   debounceMs = 300,
-  redirectToAllBooks = false,
+  redirectToallproducts = false,
   className = "",
   inputClassName = "",
   size = "md",
@@ -59,11 +59,11 @@ export default function SearchBar({
     if (onSearch) {
       onSearch(trimmed);
     }
-    if (redirectToAllBooks) {
+    if (redirectToallproducts) {
       if (trimmed) {
-        router.push(`/allbooks?search=${encodeURIComponent(trimmed)}`);
+        router.push(`/allproducts?search=${encodeURIComponent(trimmed)}`);
       } else {
-        router.push("/allbooks");
+        router.push("/allproducts");
       }
     }
   };
@@ -77,7 +77,7 @@ export default function SearchBar({
     setQuery("");
     if (onChange) onChange("");
     if (onSearch) onSearch("");
-    if (redirectToAllBooks) router.push("/allbooks");
+    if (redirectToallproducts) router.push("/allproducts");
   };
 
   const heightClasses =

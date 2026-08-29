@@ -56,76 +56,68 @@ const Magazines = () => {
         </div>
 
         {/* Magazine Cards */}
-{/* Magazine Cards */}
-<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-  {magazines.map((magazine, index) => (
-    <Link
-      href={magazine.href}
-      key={magazine.id}
-      className="group relative block overflow-hidden rounded-2xl"
-      style={{
-        animationDelay: `${index * 120}ms`,
-      }}
-    >
-      {/* Image */}
-      <div className="relative aspect-[16/8] w-full overflow-hidden rounded-2xl bg-gray-100">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {magazines.map((magazine, index) => (
+            <Link
+              href={magazine.href}
+              key={magazine.id}
+              className="group relative flex flex-row items-stretch overflow-hidden rounded-2xl border border-gray-300 bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:border-orange-200 hover:shadow-[0_12px_28px_-6px_rgba(234,88,12,0.12)]"
+              style={{
+                animationDelay: `${index * 120}ms`,
+              }}
+            >
+              {/* Left Side: White BG & Content */}
+              <div className="flex flex-1 flex-col justify-between bg-white p-5 sm:p-6">
+                <div>
+                  {/* Top Badge & Number */}
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-600">
+                      <BookOpen size={13} className="text-orange-600" />
+                      Magazine 0{magazine.id}
+                    </span>
+                  </div>
 
-        <Image
-          src={magazine.image}
-          alt={magazine.title}
-          fill
-          priority={index === 0}
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, 33vw"
-        />
+                  {/* Title */}
+                  <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600 sm:text-xl">
+                    {magazine.title}
+                  </h3>
 
-        {/* Strong Dark Gradient */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/35 to-black/5" />
+                  {/* Description */}
+                  <p className="description mt-2 line-clamp-3 text-xs leading-relaxed text-gray-500 sm:text-[13px]">
+                    {magazine.description}
+                  </p>
+                </div>
 
-        {/* Hover Orange Overlay */}
-        <div className="absolute inset-0 z-10 bg-orange-600/0 transition-all duration-500 group-hover:bg-orange-600/10" />
+                {/* Bottom CTA */}
+                <div className="mt-4 flex items-center text-xs font-semibold text-orange-600 transition-all duration-300 group-hover:text-orange-700 sm:text-sm">
+                  <span>Explore Magazine</span>
+                  <ArrowRight
+                    size={15}
+                    className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1.5"
+                  />
+                </div>
+              </div>
 
-        {/* Content */}
-        <div className="absolute inset-x-0 bottom-0 z-20 p-5 sm:p-6">
+              {/* Right Side: Magazine Image */}
+              <div className="relative w-[38%] min-w-[120px] shrink-0 overflow-hidden bg-gray-100 sm:w-[42%] sm:min-w-[150px]">
+                <Image
+                  src={magazine.image}
+                  alt={magazine.title}
+                  fill
+                  priority={index === 0}
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                  sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 18vw"
+                />
 
-          <div className="transition-all duration-500 ease-out group-hover:-translate-y-1">
+                {/* Soft gradient overlay on image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-            {/* Icon */}
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-orange-600 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white">
-              <BookOpen size={17} />
-            </div>
-
-            {/* Title */}
-            <h3 className="title text-xl font-semibold text-white drop-shadow-md sm:text-2xl">
-              {magazine.title}
-            </h3>
-
-            {/* Description */}
-            <p className="description mt-2 max-w-md text-xs leading-5 text-white/90 opacity-0 translate-y-3 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 sm:text-sm">
-              {magazine.description}
-            </p>
-
-            {/* Read More */}
-            <div className="description mt-3 flex translate-y-3 items-center gap-2 text-sm font-semibold text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-              Explore Magazine
-
-              <ArrowRight
-                size={15}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </div>
-
-          </div>
+                {/* Hover tint */}
+                <div className="absolute inset-0 bg-orange-600/0 transition-colors duration-300 group-hover:bg-orange-600/10" />
+              </div>
+            </Link>
+          ))}
         </div>
-
-        {/* Number */}
-        <span className="absolute right-4 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-800 shadow-md transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white">
-          0{magazine.id}
-        </span>
-      </div>
-    </Link>
-  ))}
-</div>
 
         {/* Mobile View All */}
         <div className="mt-8 flex justify-center sm:hidden">

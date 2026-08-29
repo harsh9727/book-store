@@ -1,2 +1,2 @@
-export * from "../allbooks/page";
-export { default } from "../allbooks/page";
+export * from "../allproducts/page";
+export { default } from "../allproducts/page";

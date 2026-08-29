@@ -30,6 +30,7 @@ function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] =
     useState(false);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
 
   // Mobile/tablet dropdowns must work with tap/click, not only hover.
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
@@ -67,31 +68,6 @@ function Header() {
     {
       name: "Home",
       href: "/",
-      sectionId: null,
-    },
-    {
-      name: "New Releases",
-      href: "/new-releases",
-      sectionId: "new-releases",
-    },
-    {
-      name: "Best Sellers",
-      href: "/best-sellers",
-      sectionId: "best-sellers",
-    },
-    {
-      name: "Magazines",
-      href: "/magazines",
-      sectionId: "magazines",
-    },
-    {
-      name: "Trending Books",
-      href: "/trending-books",
-      sectionId: "trending-books",
-    },
-    {
-      name: "All Books",
-      href: "/allbooks",
       sectionId: null,
     },
     {
@@ -287,7 +263,7 @@ function Header() {
 
             <div className="relative hidden flex-1 lg:block max-w-3xl xl:max-w-4xl mx-2 sm:mx-6">
               <SearchBar
-                redirectToAllBooks
+                redirectToallproducts
                 size="md"
                 placeholder="Search books by title, author, genre..."
               />
@@ -333,8 +309,8 @@ function Header() {
 
                 <div
                   className={`absolute left-1/2 top-full z-[120] mt-2 w-[calc(100vw-24px)] max-w-[240px] -translate-x-1/2 origin-top overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 sm:left-auto sm:right-0 sm:translate-x-0 sm:origin-top-right ${isLanguageOpen
-                      ? "visible translate-y-0 scale-100 opacity-100"
-                      : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
+                    ? "visible translate-y-0 scale-100 opacity-100"
+                    : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
                     }`}
                 >
                   <div className="border-b border-gray-100 px-4 py-3.5">
@@ -347,8 +323,9 @@ function Header() {
                     <button
                       type="button"
                       onClick={() => setIsLanguageOpen(false)}
-                      className="flex w-full items-center justify-between rounded-xl bg-orange-50 px-3 py-3 text-orange-600 transition-all duration-200"
+                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
                     >
+
                       <div className="text-left">
                         <p className="text-sm font-medium">
                           English
@@ -365,9 +342,6 @@ function Header() {
                       onClick={() => setIsLanguageOpen(false)}
                       className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
                     >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-lg">
-                        🇮🇳
-                      </span>
 
                       <div className="text-left">
                         <p className="text-sm font-medium">
@@ -376,26 +350,6 @@ function Header() {
 
                         <p className="text-[11px] text-gray-400">
                           Gujarati
-                        </p>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsLanguageOpen(false)}
-                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
-                    >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-lg">
-                        🇮🇳
-                      </span>
-
-                      <div className="text-left">
-                        <p className="text-sm font-medium">
-                          हिन्दी
-                        </p>
-
-                        <p className="text-[11px] text-gray-400">
-                          Hindi
                         </p>
                       </div>
                     </button>
@@ -412,142 +366,17 @@ function Header() {
                   Click/tap dropdown — works on desktop + mobile
               ================================================= */}
 
-              <div ref={accountRef} className="relative">
-                {/* Account Button */}
+              <Link
+                href="/cart"
+                className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                aria-label="Open cart"
+              >
+                <ShoppingBag className="h-5 w-5" />
 
-                <button
-                  type="button"
-                  aria-label="Account menu"
-                  aria-expanded={isAccountOpen}
-                  aria-haspopup="menu"
-                  onClick={() => {
-                    setIsAccountOpen((open) => !open);
-                    setIsLanguageOpen(false);
-                  }}
-                  className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
-                >
-                  <User className="h-5 w-5" />
-
-                  <span className="hidden sm:inline">
-                    Account
-                  </span>
-
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${isAccountOpen ? "rotate-180" : ""
-                      }`}
-                  />
-                </button>
-
-                {/* =================================================
-                    ACCOUNT DROPDOWN
-                    Fixed mobile positioning
-                ================================================= */}
-
-                <div
-                  className={`absolute right-0 top-full z-[120] mt-2 w-[min(250px,calc(100vw-24px))] origin-top-right overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 ${isAccountOpen
-                      ? "visible translate-y-0 scale-100 opacity-100"
-                      : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
-                    }`}
-                >
-                  {/* Account Header */}
-
-                  <div className="border-b border-gray-100 bg-gray-50 px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
-                        <User className="h-5 w-5" />
-                      </div>
-
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900">
-                          My Account
-                        </p>
-
-                        <p className="text-xs text-gray-500">
-                          Manage your account
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Account Menu */}
-
-                  <div className="p-2">
-                    {/* My Account */}
-
-                    <Link
-                      href="/account"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
-                    >
-                      <User className="h-4 w-4 shrink-0" />
-
-                      <span>
-                        My Account
-                      </span>
-                    </Link>
-
-                    {/* My Orders */}
-
-                    <Link
-                      href="/orders"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
-                    >
-                      <ShoppingBag className="h-4 w-4 shrink-0" />
-
-                      <span>
-                        My Orders
-                      </span>
-                    </Link>
-
-                    {/* Wishlist */}
-
-                    <Link
-                      href="/wishlist"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
-                    >
-                      <Heart className="h-4 w-4 shrink-0" />
-
-                      <span>
-                        Wishlist
-                      </span>
-                    </Link>
-
-                    {/* Settings */}
-
-                    <Link
-                      href="/settings"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-600"
-                    >
-                      <Settings className="h-4 w-4 shrink-0" />
-
-                      <span>
-                        Settings
-                      </span>
-                    </Link>
-
-                    {/* Divider */}
-
-                    <div className="my-2.5 border-t border-gray-100" />
-
-                    {/* Logout */}
-
-                    <button
-                      type="button"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-red-500 transition-colors duration-200 hover:bg-red-50"
-                    >
-                      <LogOut className="h-4 w-4 shrink-0" />
-
-                      <span>
-                        Logout
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                <span className="hidden sm:inline">
+                  Cart
+                </span>
+              </Link>
 
               {/* =================================================
                   HAMBURGER
@@ -576,7 +405,7 @@ function Header() {
         <div className="container px-3 lg:px-6 mx-auto">
           <div className="relative lg:hidden">
             <SearchBar
-              redirectToAllBooks
+              redirectToallproducts
               size="lg"
               placeholder="Search books by title, author, genre..."
             />
@@ -590,25 +419,38 @@ function Header() {
       ===================================================== */}
 
       <nav className="hidden border-b border-gray-100 bg-white lg:block">
-        <div className="container px-3 lg:px-6 mx-auto flex items-center justify-between gap-6 overflow-hidden">
+        <div className="container px-3 lg:px-6 mx-auto flex items-center justify-between gap-6 overflow-visible">
           {/* ================= CATEGORIES ================= */}
 
-          <div className="relative group">
+          <div
+            className="relative group"
+            onMouseEnter={() => setIsCategoryMenuOpen(true)}
+            onMouseLeave={() => setIsCategoryMenuOpen(false)}
+          >
             <button
               type="button"
+              onClick={() => setIsCategoryMenuOpen((open) => !open)}
               className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all duration-200 ${isCategoryActive
-                  ? "border-orange-500 bg-orange-500 text-white"
-                  : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
+                ? "border-orange-500 bg-orange-500 text-white"
+                : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
                 }`}
             >
               Categories
 
-              <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform duration-200 ${isCategoryMenuOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {/* Categories Dropdown */}
 
-            <div className="invisible absolute left-0 top-full z-50 mt-3 w-64 translate-y-2 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+            <div
+              className={`absolute left-0 top-full z-50 mt-3 w-64 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl transition-all duration-200 ${
+                isCategoryMenuOpen
+                  ? "visible translate-y-0 opacity-100"
+                  : "invisible translate-y-2 opacity-0"
+              }`}
+            >
               {/* Dropdown Header */}
 
               <div className="mb-2 px-2 py-1">
@@ -627,9 +469,10 @@ function Header() {
                     <Link
                       key={category.href}
                       href={category.href}
+                      onClick={() => setIsCategoryMenuOpen(false)}
                       className={`flex items-center justify-between rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200 ${active
-                          ? "border-orange-200 bg-orange-50 text-orange-600"
-                          : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                        ? "border-orange-200 bg-orange-50 text-orange-600"
+                        : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
                         }`}
                     >
                       <span>
@@ -652,6 +495,7 @@ function Header() {
 
               <Link
                 href="/books"
+                onClick={() => setIsCategoryMenuOpen(false)}
                 className="flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
               >
                 View All Books
@@ -671,8 +515,8 @@ function Header() {
                   href={item.href}
                   onClick={(e) => handleSmoothScroll(e, item.sectionId)}
                   className={`py-2 text-sm font-medium transition-colors duration-200 ${active
-                      ? "text-orange-500"
-                      : "text-gray-700 hover:text-orange-500"
+                    ? "text-orange-500"
+                    : "text-gray-700 hover:text-orange-500"
                     }`}
                 >
                   {item.name}
@@ -689,8 +533,8 @@ function Header() {
 
       <div
         className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${isSidebarOpen
-            ? "visible opacity-100"
-            : "invisible opacity-0"
+          ? "visible opacity-100"
+          : "invisible opacity-0"
           }`}
         onClick={closeSidebar}
       />
@@ -701,8 +545,8 @@ function Header() {
 
       <aside
         className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${isSidebarOpen
-            ? "translate-x-0"
-            : "translate-x-full"
+          ? "translate-x-0"
+          : "translate-x-full"
           }`}
       >
         {/* ================= SIDEBAR HEADER ================= */}
@@ -750,8 +594,8 @@ function Header() {
                 )
               }
               className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${isCategoryActive
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
+                ? "bg-orange-500 text-white"
+                : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
                 }`}
             >
               <span>
@@ -760,8 +604,8 @@ function Header() {
 
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-300 ${isMobileCategoriesOpen
-                    ? "rotate-180"
-                    : ""
+                  ? "rotate-180"
+                  : ""
                   }`}
               />
             </button>
@@ -770,8 +614,8 @@ function Header() {
 
             <div
               className={`grid overflow-hidden transition-all duration-300 ease-in-out ${isMobileCategoriesOpen
-                  ? "mt-2 grid-rows-[1fr] opacity-100"
-                  : "grid-rows-[0fr] opacity-0"
+                ? "mt-2 grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0"
                 }`}
             >
               <div className="min-h-0 overflow-hidden">
@@ -785,8 +629,8 @@ function Header() {
                         href={category.href}
                         onClick={closeSidebar}
                         className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active
-                            ? "bg-orange-50 text-orange-600"
-                            : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                          ? "bg-orange-50 text-orange-600"
+                          : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                           }`}
                       >
                         <span>
@@ -829,8 +673,8 @@ function Header() {
                     closeSidebar();
                   }}
                   className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${active
-                      ? "bg-orange-50 text-orange-500"
-                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
+                    ? "bg-orange-50 text-orange-500"
+                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
                     }`}
                 >
                   <span>

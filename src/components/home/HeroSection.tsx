@@ -48,7 +48,7 @@ function HeroSection() {
                                 </a>
 
                                 <a
-                                    href="/allbooks"
+                                    href="/allproducts"
                                     className="inline-flex min-w-[160px] items-center justify-center rounded-lg border-2 border-white bg-transparent px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-white hover:text-gray-900"
                                 >
                                     Browse Products
