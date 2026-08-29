@@ -10,9 +10,6 @@ import {
   User,
   Search,
   ShoppingBag,
-  Heart,
-  Settings,
-  LogOut,
   ChevronDown,
   Headset,
   Languages,
@@ -68,6 +65,11 @@ function Header() {
     {
       name: "Home",
       href: "/",
+      sectionId: null,
+    },
+    {
+      name: "All Products",
+      href: "/allproducts",
       sectionId: null,
     },
     {

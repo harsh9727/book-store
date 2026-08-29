@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -114,15 +114,8 @@ const accessories: ProductItem[] = [
 ];
 
 const OurAccessories = () => {
-  const [likedIds, setLikedIds] = useState<number[]>([]);
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
-
-  const toggleLike = (id: number) => {
-    setLikedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
 
   return (
     <section className="bg-[#fffaf5] py-10">
@@ -174,11 +167,7 @@ const OurAccessories = () => {
           >
             {accessories.map((product) => (
               <SwiperSlide key={product.id}>
-                <ProductCard
-                  product={product}
-                  isLiked={likedIds.includes(product.id)}
-                  onToggleLike={toggleLike}
-                />
+                <ProductCard product={product} />
               </SwiperSlide>
             ))}
           </Swiper>

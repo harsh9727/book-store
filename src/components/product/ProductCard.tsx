@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { Heart, ShoppingBag, Eye } from "lucide-react";
+import type { ImageProps } from "next/image";
+import { ShoppingBag, Eye } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa6";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
+import { products } from "@/data/products";
 
 export interface ProductCardProps {
   product: Product | {
@@ -14,41 +16,14 @@ export interface ProductCardProps {
     author: string;
     price: number;
     originalPrice?: number;
-    image?: any;
-    cover?: any;
+    image?: ImageProps["src"];
+    cover?: ImageProps["src"];
     category?: string;
     badge?: string | null;
   };
-  isLiked?: boolean;
-  onToggleLike?: (id: any) => void;
 }
 
-export default function ProductCard({
-  product,
-  isLiked: controlledIsLiked,
-  onToggleLike,
-}: ProductCardProps) {
-  const [internalIsLiked, setInternalIsLiked] = useState(false);
-
-  const isLiked =
-    controlledIsLiked !== undefined ? controlledIsLiked : internalIsLiked;
-
-  const handleToggleLike = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (onToggleLike) {
-      onToggleLike(product.id);
-    } else {
-      setInternalIsLiked(!internalIsLiked);
-      toast(
-        internalIsLiked
-          ? "Removed from wishlist"
-          : "Added to your wishlist!"
-      );
-    }
-  };
-
+export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -56,10 +31,29 @@ export default function ProductCard({
   };
 
   const coverSrc = "image" in product && product.image ? product.image : "cover" in product ? product.cover : null;
-  const productHref =
+  const catalogProduct = products.find(
+    (item) => item.title === product.title && item.author === product.author
+  );
+  const productId =
     typeof product.id === "string" && isNaN(Number(product.id))
-      ? `/product/${product.id}`
-      : "/allproducts";
+      ? product.id
+      : catalogProduct?.id;
+  const productHref = productId ? `/product/${productId}` : "/allproducts";
+
+  const handleWhatsApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productUrl = new URL(productHref, window.location.origin).toString();
+    const message = encodeURIComponent(
+      `Hello GTBS Book Store, I am interested in "${product.title}". Product link: ${productUrl}`
+    );
+    window.open(
+      `https://wa.me/917490028867?text=${message}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 p-1 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">
@@ -71,18 +65,6 @@ export default function ProductCard({
             {product.badge}
           </span>
         )}
-
-        {/* Wishlist Button */}
-        <button
-          type="button"
-          onClick={handleToggleLike}
-          className={`absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 border border-gray-200 shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-            isLiked ? "text-red-500" : "text-gray-500 hover:text-red-500"
-          }`}
-          aria-label="Add to wishlist"
-        >
-          <Heart size={16} className={isLiked ? "fill-red-500 text-red-500" : ""} />
-        </button>
 
         {/* Link / Image */}
         <Link href={productHref} className="relative block h-full w-full">
@@ -97,16 +79,6 @@ export default function ProductCard({
           )}
         </Link>
 
-        {/* Quick View Hover Action */}
-        <div className="absolute inset-x-2 bottom-2 z-10 translate-y-12 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <Link
-            href={productHref}
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg description tracking-wide bg-white/95 py-2 text-xs font-semibold text-gray-900 shadow-md backdrop-blur-sm transition-colors hover:bg-orange-600 hover:text-white"
-          >
-            <Eye size={14} />
-            <span>View Details</span>
-          </Link>
-        </div>
       </div>
 
       {/* Book Metadata */}
@@ -123,31 +95,42 @@ export default function ProductCard({
 
         <p className="mt-1 text-sm text-gray-600">by {product.author}</p>
 
-        {/* Price & Add to Cart button */}
+        {/* Price & Product Actions */}
         <div className="mt-auto flex items-center justify-between pt-3.5">
           <div className="flex items-baseline gap-1.5">
             <span className="text-base font-bold text-gray-900">
               ₹{product.price.toFixed(2)}
             </span>
-            {product.originalPrice ? (
-              <span className="text-xs text-gray-400 line-through">
-                ₹{product.originalPrice.toFixed(2)}
-              </span>
-            ) : product.badge === "Sale" ? (
-              <span className="text-xs text-gray-400 line-through">
-                ₹{(product.price + 50).toFixed(2)}
-              </span>
-            ) : null}
           </div>
 
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-all duration-200 hover:bg-orange-600 hover:text-white"
-            aria-label="Add to cart"
-          >
-            <ShoppingBag size={15} />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <Link
+              href={productHref}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-900 hover:text-white"
+              aria-label={`View details for ${product.title}`}
+              title="View details"
+            >
+              <Eye size={15} />
+            </Link>
+            <button
+              type="button"
+              onClick={handleWhatsApp}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors hover:bg-emerald-600 hover:text-white"
+              aria-label={`Ask about ${product.title} on WhatsApp`}
+              title="Ask on WhatsApp"
+            >
+              <FaWhatsapp size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-colors hover:bg-orange-600 hover:text-white"
+              aria-label={`Add ${product.title} to cart`}
+              title="Add to cart"
+            >
+              <ShoppingBag size={15} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

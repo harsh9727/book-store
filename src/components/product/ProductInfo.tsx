@@ -3,20 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Heart,
   ShoppingCart,
-  Zap,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
   Minus,
   Plus,
   Share2,
-  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
-import ProductRating from "./ProductRating";
 
 interface ProductInfoProps {
   product: Product;
@@ -27,25 +20,55 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     product.format && product.format.length > 0 ? product.format[0] : "Paperback"
   );
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleAddToCart = () => {
     toast.success(`Added ${quantity}x "${product.title}" (${selectedFormat}) to your cart!`);
   };
 
-  const handleBuyNow = () => {
-    toast.success(`Redirecting to checkout for "${product.title}"...`);
+  const copyProductLink = async (url: string) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      return;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = url;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const copied = document.execCommand("copy");
+    textArea.remove();
+
+    if (!copied) {
+      throw new Error("Unable to copy product link");
+    }
   };
 
-  const handleToggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    toast(isWishlisted ? "Removed from wishlist" : "Added to your wishlist!");
-  };
+  const handleShare = async () => {
+    const url = window.location.href;
 
-  const handleShare = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard?.writeText(window.location.href);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.title,
+          text: `View ${product.title} at GTBS Book Store`,
+          url,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+      }
+    }
+
+    try {
+      await copyProductLink(url);
       toast.success("Product link copied to clipboard!");
+    } catch {
+      toast.error("Unable to share this product. Please copy the page URL.");
     }
   };
 
@@ -63,6 +86,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           onClick={handleShare}
           type="button"
           className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-orange-600"
+          aria-label={`Share ${product.title}`}
         >
           <Share2 size={14} />
           <span>Share</span>
@@ -82,36 +106,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </span>
       </p>
 
-      {/* Rating & Stock Status */}
-      <div className="mt-4 flex flex-wrap items-center gap-4 border-b border-gray-100 pb-4">
-        {product.rating && (
-          <ProductRating
-            rating={product.rating}
-            reviewsCount={product.reviewsCount}
-            size={18}
-          />
-        )}
-        <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
-          <CheckCircle2 size={15} />
-          <span>In Stock ({product.stockCount ?? 25} available)</span>
-        </div>
-      </div>
-
       {/* Pricing */}
-      <div className="mt-5 flex items-baseline gap-3">
+      <div className="mt-5">
         <span className="title text-3xl font-bold text-gray-900 md:text-4xl">
-          ${product.price.toFixed(2)}
+          &#8377;{product.price.toFixed(2)}
         </span>
-        {product.originalPrice && (
-          <span className="text-lg text-gray-400 line-through">
-            ${product.originalPrice.toFixed(2)}
-          </span>
-        )}
-        {product.discount && (
-          <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-bold text-red-600">
-            Save {product.discount}%
-          </span>
-        )}
       </div>
 
       {/* Format Selector */}
@@ -177,55 +176,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span>Add to Cart</span>
         </button>
 
-        {/* Wishlist Button */}
-        <button
-          type="button"
-          onClick={handleToggleWishlist}
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 ${
-            isWishlisted
-              ? "border-red-200 bg-red-50 text-red-600"
-              : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-red-500"
-          }`}
-          aria-label="Add to wishlist"
-        >
-          <Heart size={20} className={isWishlisted ? "fill-red-500" : ""} />
-        </button>
       </div>
 
-      {/* Buy Now Button */}
-      <button
-        type="button"
-        onClick={handleBuyNow}
-        className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-gray-900 bg-gray-900 font-semibold text-white transition-all duration-200 hover:bg-gray-800 active:scale-[0.98]"
-      >
-        <Zap size={18} className="fill-white" />
-        <span>Buy Now with 1-Click</span>
-      </button>
-
-      {/* Trust Badges */}
-      <div className="mt-8 grid grid-cols-1 gap-3 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 sm:grid-cols-3">
-        <div className="flex items-center gap-3">
-          <Truck size={20} className="shrink-0 text-orange-600" />
-          <div className="text-xs">
-            <p className="font-semibold text-gray-900">Free Express Delivery</p>
-            <p className="text-gray-500">Orders over $35</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <ShieldCheck size={20} className="shrink-0 text-orange-600" />
-          <div className="text-xs">
-            <p className="font-semibold text-gray-900">100% Genuine Books</p>
-            <p className="text-gray-500">Direct from publishers</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <RotateCcw size={20} className="shrink-0 text-orange-600" />
-          <div className="text-xs">
-            <p className="font-semibold text-gray-900">30-Day Easy Returns</p>
-            <p className="text-gray-500">Guaranteed refund</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
