@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,12 +6,19 @@ import {
   CalendarDays,
   Clock,
   ArrowRight,
-  BookOpen,
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
 import { blogs } from "@/data/blogs";
 import Breadcrumb from "@/components/common/Breadcrumb";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  absoluteUrl,
+  createPageMetadata,
+  siteConfig,
+  siteUrl,
+  truncateDescription,
+} from "@/lib/seo";
 
 interface BlogPageProps {
   params: Promise<{ id: string }>;
@@ -22,9 +30,44 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: BlogPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const blog = blogs.find((item) => String(item.id) === id || item.slug === id);
+
+  if (!blog) {
+    return {
+      title: "Article Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const description = truncateDescription(blog.summary);
+  const baseMetadata = createPageMetadata({
+    title: blog.title,
+    description,
+    path: `/blogs/${blog.id}`,
+    image: blog.image,
+  });
+
+  return {
+    ...baseMetadata,
+    authors: [{ name: blog.author.name }],
+    keywords: blog.tags,
+    openGraph: {
+      ...baseMetadata.openGraph,
+      type: "article",
+      publishedTime: new Date(blog.date).toISOString(),
+      authors: [blog.author.name],
+      tags: blog.tags,
+    },
+  };
+}
+
 export default async function BlogDetailPage({ params }: BlogPageProps) {
   const { id } = await params;
-  const blog = blogs.find((b) => String(b.id) === id) || blogs[0];
+  const blog = blogs.find((b) => String(b.id) === id || b.slug === id);
 
   if (!blog) {
     notFound();
@@ -38,8 +81,35 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
     { label: blog.title },
   ];
 
+  const articleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${absoluteUrl(`/blogs/${blog.id}`)}#article`,
+    headline: blog.title,
+    description: blog.summary,
+    image: absoluteUrl(blog.image),
+    datePublished: new Date(blog.date).toISOString(),
+    author: {
+      "@type": "Person",
+      name: blog.author.name,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#store`,
+      name: siteConfig.legalName,
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/images/logo/logo.webp"),
+      },
+    },
+    mainEntityOfPage: absoluteUrl(`/blogs/${blog.id}`),
+    keywords: blog.tags.join(", "),
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
+    <>
+      <JsonLd data={articleStructuredData} />
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
       {/* Breadcrumbs */}
       <Breadcrumb items={breadcrumbItems} />
 
@@ -65,9 +135,11 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
         {/* Author info pill */}
         <div className="mt-6 flex items-center gap-3.5 border-y border-gray-100 py-4">
-          <img
+          <Image
             src={blog.author.avatar}
             alt={blog.author.name}
+            width={48}
+            height={48}
             className="h-12 w-12 rounded-full object-cover ring-2 ring-orange-200"
           />
           <div>
@@ -175,6 +247,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   );
 }

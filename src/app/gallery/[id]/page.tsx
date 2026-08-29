@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,14 @@ import {
 import { galleries } from "@/data/galleries";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import GalleryLightbox from "@/components/gallery/GalleryLightbox";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  absoluteUrl,
+  createPageMetadata,
+  siteConfig,
+  siteUrl,
+  truncateDescription,
+} from "@/lib/seo";
 
 interface GalleryDetailPageProps {
   params: Promise<{ id: string }>;
@@ -22,13 +31,38 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: GalleryDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const album = galleries.find(
+    (item) => String(item.id) === id || item.slug === id
+  );
+
+  if (!album) {
+    return {
+      title: "Gallery Album Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    ...createPageMetadata({
+      title: album.title,
+      description: truncateDescription(album.description),
+      path: `/gallery/${album.id}`,
+      image: album.coverImage,
+    }),
+    keywords: [...album.tags, album.category, "GTBS events"],
+  };
+}
+
 export default async function GalleryDetailPage({
   params,
 }: GalleryDetailPageProps) {
   const { id } = await params;
   const album =
-    galleries.find((g) => String(g.id) === id || g.slug === id) ||
-    galleries[0];
+    galleries.find((g) => String(g.id) === id || g.slug === id);
 
   if (!album) {
     notFound();
@@ -44,8 +78,31 @@ export default async function GalleryDetailPage({
     { label: album.title },
   ];
 
+  const galleryStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "@id": `${absoluteUrl(`/gallery/${album.id}`)}#gallery`,
+    name: album.title,
+    description: album.description,
+    url: absoluteUrl(`/gallery/${album.id}`),
+    image: absoluteUrl(album.coverImage),
+    creator: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#store`,
+      name: siteConfig.legalName,
+    },
+    associatedMedia: album.photos.map((photo) => ({
+      "@type": "ImageObject",
+      name: photo.title,
+      caption: photo.caption,
+      contentUrl: absoluteUrl(photo.url),
+    })),
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 md:py-10">
+    <>
+      <JsonLd data={galleryStructuredData} />
+      <div className="container mx-auto px-4 py-8 md:py-10">
       {/* Breadcrumbs */}
       <Breadcrumb items={breadcrumbItems} />
 
@@ -153,6 +210,7 @@ export default async function GalleryDetailPage({
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   );
 }

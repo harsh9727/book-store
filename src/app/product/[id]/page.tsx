@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
 import Breadcrumb from "@/components/common/Breadcrumb";
@@ -5,6 +6,14 @@ import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductTabs from "@/components/product/ProductTabs";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  absoluteUrl,
+  createPageMetadata,
+  siteConfig,
+  siteUrl,
+  truncateDescription,
+} from "@/lib/seo";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -16,9 +25,38 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const product = products.find((item) => item.id === id);
+
+  if (!product) {
+    return {
+      title: "Product Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const description = truncateDescription(
+    product.description ||
+      `Buy ${product.title} by ${product.author} from Gujarat Tract Book Store.`
+  );
+
+  return {
+    ...createPageMetadata({
+      title: `${product.title} by ${product.author}`,
+      description,
+      path: `/product/${product.id}`,
+      image: product.image,
+    }),
+    keywords: [product.title, product.author, product.category, "Christian books"],
+  };
+}
+
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id) || products[0];
+  const product = products.find((p) => p.id === id);
 
   if (!product) {
     notFound();
@@ -31,8 +69,48 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     { label: product.title },
   ];
 
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": ["Book", "Product"],
+    "@id": `${absoluteUrl(`/product/${product.id}`)}#product`,
+    name: product.title,
+    description: product.description,
+    image: [product.image, ...(product.images || [])].map(absoluteUrl),
+    author: {
+      "@type": "Person",
+      name: product.author,
+    },
+    isbn: product.isbn,
+    bookFormat: product.format,
+    numberOfPages: product.pages,
+    inLanguage: product.language || "English",
+    category: product.category,
+    brand: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#store`,
+      name: siteConfig.legalName,
+    },
+    offers: {
+      "@type": "Offer",
+      url: absoluteUrl(`/product/${product.id}`),
+      priceCurrency: "INR",
+      price: product.price,
+      availability:
+        product.inStock === false
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#store`,
+        name: siteConfig.legalName,
+      },
+    },
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
+    <>
+      <JsonLd data={productStructuredData} />
+      <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Breadcrumbs */}
       <Breadcrumb items={breadcrumbItems} />
 
@@ -63,6 +141,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         category={product.category}
         allProducts={products}
       />
-    </div>
+      </div>
+    </>
   );
 }

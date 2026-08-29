@@ -67,8 +67,12 @@ export function createPageMetadata({
   image = siteConfig.socialImage,
   noIndex = false,
 }: PageMetadataOptions): Metadata {
+  const brandedTitle = title.includes(siteConfig.name)
+    ? title
+    : `${title} | ${siteConfig.name}`;
+
   return {
-    title,
+    title: { absolute: brandedTitle },
     description,
     alternates: {
       canonical: path,
