@@ -12,10 +12,9 @@ const quickLinks = [
 ];
 
 const policyLinks = [
-  { label: "Privacy Policy", href: "/privacypolicy" },
-  { label: "Terms and Conditions", href: "/termsandconditions" },
-  { label: "Shipping and Delivery Policy", href: "/shippingpolicy" },
-  { label: "Return Policy", href: "/returnpolicy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms and Conditions", href: "/terms-and-conditions" },
+  { label: "Shipping and Delivery Policy", href: "/shipping-and-delivery-policy" },
 ];
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
