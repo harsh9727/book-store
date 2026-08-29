@@ -1,3 +1,4 @@
+import { createPageMetadata } from "@/lib/seo";
 import OurStory from "@/components/about/OurStory";
 import VisionMission from "@/components/about/VisionMission";
 import WhyChooseUs from "@/components/about/WhyChooseUs";
@@ -5,6 +6,14 @@ import Team from "@/components/about/Team";
 import Newsletter from "@/components/home/Newsletter";
 import Faq from "@/components/common/Faq";
 import { aboutFaqs } from "@/data/faqs";
+
+export const metadata = createPageMetadata({
+  title: "About Us",
+  description:
+    "Learn about Gujarat Tract Book Store, our Christian publishing mission, values, team, and commitment to serving readers and faith communities.",
+  path: "/about",
+  image: "/images/about/story.webp",
+});
 
 export default function About() {
   return (

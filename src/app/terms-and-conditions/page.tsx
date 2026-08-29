@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { FileCheck2, Mail, Phone } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Terms & Conditions | GTBS Book Store",
+export const metadata = createPageMetadata({
+  title: "Terms & Conditions",
   description:
     "Read the terms that govern use of the Gujarat Tract Book Store website and online purchases.",
-};
+  path: "/terms-and-conditions",
+});
 
 const eligibility = [
   "Be at least 18 years of age or have permission from a parent or legal guardian.",

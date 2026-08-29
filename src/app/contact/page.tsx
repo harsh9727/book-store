@@ -1,7 +1,16 @@
+import { createPageMetadata } from "@/lib/seo";
 import ContactSection from "@/components/contact/ContactSection";
 import ContactForm from "@/components/contact/ContactForm";
 import Faq from "@/components/common/Faq";
 import { contactFaqs } from "@/data/faqs";
+
+export const metadata = createPageMetadata({
+  title: "Contact Us",
+  description:
+    "Contact Gujarat Tract Book Store in Ahmedabad for help with books, orders, shipping, events, and customer support.",
+  path: "/contact",
+  image: "/images/contact/contact.webp",
+});
 
 function Contact() {
   return (

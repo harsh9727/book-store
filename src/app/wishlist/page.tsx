@@ -1,3 +1,12 @@
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Wishlist",
+  description: "View products saved to your GTBS Book Store wishlist.",
+  path: "/wishlist",
+  noIndex: true,
+});
+
 export default function Wishlist() {
   return (
     <div className="py-12">

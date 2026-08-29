@@ -1,3 +1,12 @@
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Shopping Cart",
+  description: "Review the books and products in your GTBS Book Store cart.",
+  path: "/cart",
+  noIndex: true,
+});
+
 export default function Cart() {
   return (
     <div className="py-12">

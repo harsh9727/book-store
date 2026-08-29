@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Clock, Mail, Phone, ShieldCheck } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | GTBS Book Store",
+export const metadata = createPageMetadata({
+  title: "Privacy Policy",
   description:
     "Learn how Gujarat Tract Book Store collects, uses, stores, and protects your personal information.",
-};
+  path: "/privacy-policy",
+});
 
 const informationGroups = [
   {

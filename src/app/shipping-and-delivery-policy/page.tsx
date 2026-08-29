@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Clock, Mail, PackageCheck, Phone, Truck } from "lucide-react";
 import Breadcrumb from "@/components/common/Breadcrumb";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Shipping & Delivery Policy | GTBS Book Store",
+export const metadata = createPageMetadata({
+  title: "Shipping & Delivery Policy",
   description:
     "Learn how Gujarat Tract Book Store processes, ships, tracks, and delivers orders across India.",
-};
+  path: "/shipping-and-delivery-policy",
+});
 
 const processingDetails = [
   "Orders are typically processed within 1-2 business days.",

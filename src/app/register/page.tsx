@@ -1,3 +1,12 @@
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Create Account",
+  description: "Create your GTBS Book Store customer account.",
+  path: "/register",
+  noIndex: true,
+});
+
 export default function Register() {
   return (
     <div className="py-12">

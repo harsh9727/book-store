@@ -1,3 +1,4 @@
+import { createPageMetadata, siteConfig } from "@/lib/seo";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import NewArrivals from "@/components/home/NewArrivals";
@@ -10,6 +11,12 @@ import OurAccessories from "@/components/home/OurAccessories";
 // import Newsletter from "@/components/home/Newsletter";
 import Reviews from "@/components/home/Reviews";
 import FaqAndBlog from "@/components/home/FaqAndBlog";
+
+export const metadata = createPageMetadata({
+  title: "Christian Books, Bibles & Faith Resources",
+  description: siteConfig.description,
+  path: "/",
+});
 
 export default function Home() {
   return (
