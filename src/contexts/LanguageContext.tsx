@@ -9,6 +9,11 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
+import {
+  getCookieConsentSnapshot,
+  saveCookieConsent,
+  subscribeToCookieConsent,
+} from "@/lib/cookieConsent";
 
 export type AppLanguage = "en" | "gu";
 
@@ -90,6 +95,11 @@ function clearGujaratiCookie() {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const cookieConsent = useSyncExternalStore(
+    subscribeToCookieConsent,
+    getCookieConsentSnapshot,
+    () => null
+  );
   const language = useSyncExternalStore(
     subscribeToLanguageChange,
     getLanguageSnapshot,
@@ -101,6 +111,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = nextLanguage;
 
     if (nextLanguage === "gu") {
+      saveCookieConsent("functional");
       setGujaratiCookie();
       applyGujaratiTranslation();
       window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
@@ -113,6 +124,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (cookieConsent !== "functional") {
+      return;
+    }
+
     const translateWindow = window as GoogleTranslateWindow;
 
     const initializeTranslateElement = () => {
@@ -150,19 +165,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       script.async = true;
       document.body.appendChild(script);
     }
-  }, []);
+  }, [cookieConsent]);
 
   useEffect(() => {
     document.documentElement.lang = language;
 
-    if (language !== "gu") {
+    if (language !== "gu" || cookieConsent !== "functional") {
       return;
     }
 
     setGujaratiCookie();
     const timer = window.setTimeout(applyGujaratiTranslation, 350);
     return () => window.clearTimeout(timer);
-  }, [language, pathname]);
+  }, [cookieConsent, language, pathname]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>

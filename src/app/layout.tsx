@@ -6,6 +6,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
+import CookieConsent from "@/components/common/CookieConsent";
 import JsonLd from "@/components/seo/JsonLd";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
@@ -112,6 +113,7 @@ export default function RootLayout({
 
           <Footer />
           <WhatsAppButton />
+          <CookieConsent />
         </LanguageProvider>
       </body>
     </html>
