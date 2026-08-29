@@ -7,8 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Mail,
   Phone,
-  User,
-  Search,
   ShoppingBag,
   ChevronDown,
   Headset,
@@ -16,13 +14,16 @@ import {
   Menu,
   X,
   ChevronRight,
+  Check,
 } from "lucide-react";
 
 import Logo from "../../../public/images/logo/logo.webp";
 import SearchBar from "@/components/common/SearchBar";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function Header() {
   const pathname = usePathname();
+  const { language, setLanguage } = useLanguage();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] =
@@ -31,10 +32,8 @@ function Header() {
 
   // Mobile/tablet dropdowns must work with tap/click, not only hover.
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   const languageRef = useRef<HTMLDivElement>(null);
-  const accountRef = useRef<HTMLDivElement>(null);
 
   // Close header dropdowns when clicking outside.
   useEffect(() => {
@@ -45,9 +44,6 @@ function Header() {
         setIsLanguageOpen(false);
       }
 
-      if (accountRef.current && !accountRef.current.contains(target)) {
-        setIsAccountOpen(false);
-      }
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
@@ -281,7 +277,7 @@ function Header() {
                   Click/tap dropdown — works on desktop + mobile
               ================================================= */}
 
-              <div ref={languageRef} className="relative">
+              <div ref={languageRef} className="notranslate relative" translate="no">
                 <button
                   type="button"
                   aria-label="Select language"
@@ -289,7 +285,6 @@ function Header() {
                   aria-haspopup="menu"
                   onClick={() => {
                     setIsLanguageOpen((open) => !open);
-                    setIsAccountOpen(false);
                   }}
                   className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600 sm:gap-2 sm:px-2.5"
                 >
@@ -298,7 +293,7 @@ function Header() {
                   <Languages className="h-5 w-5 sm:hidden" />
 
                   <span className="hidden sm:inline">
-                    English
+                    {language === "gu" ? "ગુજરાતી" : "English"}
                   </span>
 
                   <ChevronDown
@@ -324,8 +319,15 @@ function Header() {
                   <div className="p-2.5">
                     <button
                       type="button"
-                      onClick={() => setIsLanguageOpen(false)}
-                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                      onClick={() => {
+                        setLanguage("en");
+                        setIsLanguageOpen(false);
+                      }}
+                      className={`mt-1 flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600 ${
+                        language === "en"
+                          ? "bg-orange-50 text-orange-600"
+                          : "text-gray-700"
+                      }`}
                     >
 
                       <div className="text-left">
@@ -337,12 +339,20 @@ function Header() {
                           English
                         </p>
                       </div>
+                      {language === "en" && <Check className="h-4 w-4" />}
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => setIsLanguageOpen(false)}
-                      className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                      onClick={() => {
+                        setLanguage("gu");
+                        setIsLanguageOpen(false);
+                      }}
+                      className={`mt-1 flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600 ${
+                        language === "gu"
+                          ? "bg-orange-50 text-orange-600"
+                          : "text-gray-700"
+                      }`}
                     >
 
                       <div className="text-left">
@@ -354,6 +364,7 @@ function Header() {
                           Gujarati
                         </p>
                       </div>
+                      {language === "gu" && <Check className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>

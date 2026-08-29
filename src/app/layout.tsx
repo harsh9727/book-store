@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
 import JsonLd from "@/components/seo/JsonLd";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
 
 const fraunces = Fraunces({
@@ -101,15 +102,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased">
-        <JsonLd data={storeStructuredData} />
-        <Header />
+        <LanguageProvider>
+          <JsonLd data={storeStructuredData} />
+          <Header />
 
-        <main className="min-h-screen">
-          {children}
-        </main>
+          <main className="min-h-screen">
+            {children}
+          </main>
 
-        <Footer />
-        <WhatsAppButton />
+          <Footer />
+          <WhatsAppButton />
+        </LanguageProvider>
       </body>
     </html>
   );

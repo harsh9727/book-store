@@ -15,6 +15,22 @@ html {
 
 body {
   font-family: var(--font-inter), sans-serif;
+  top: 0 !important;
+}
+
+/* Keep the translation service UI hidden; language is controlled in the header. */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+.goog-te-gadget,
+.goog-logo-link,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+body > .skiptranslate {
+  display: none !important;
 }
 
 .title {
