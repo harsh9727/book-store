@@ -3,12 +3,9 @@ import { Fraunces, Inter } from "next/font/google";
 
 import "./globals.css";
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/common/WhatsAppButton";
-import CookieConsent from "@/components/common/CookieConsent";
 import JsonLd from "@/components/seo/JsonLd";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import SiteChrome from "@/components/layout/SiteChrome";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
 
 const fraunces = Fraunces({
@@ -105,15 +102,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <LanguageProvider>
           <JsonLd data={storeStructuredData} />
-          <Header />
-
-          <main className="min-h-screen">
+          <SiteChrome>
             {children}
-          </main>
-
-          <Footer />
-          <WhatsAppButton />
-          <CookieConsent />
+          </SiteChrome>
         </LanguageProvider>
       </body>
     </html>
