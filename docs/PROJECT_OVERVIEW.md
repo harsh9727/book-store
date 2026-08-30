@@ -29,6 +29,8 @@ The repository currently implements a frontend-led storefront using local TypeSc
 | Admin API | `/api/admin/login`, `/api/admin/logout` | Signed-cookie login/logout |
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 
+The public storefront has no cookie-consent banner or consent cookie. Selecting Gujarati opts into the Google Translate integration and its language cookie. Admin authentication continues to use a signed HttpOnly session cookie.
+
 ## Data
 
 Catalog and content live in `src/data/`: products, categories, blogs, galleries, FAQs, and banners. Cart and wishlist behavior lives in `src/hooks/` and should be treated as browser-local until a backend is introduced.

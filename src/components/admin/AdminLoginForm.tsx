@@ -14,32 +14,14 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const REMEMBERED_EMAIL_KEY = "gtbs-admin-email";
-const REMEMBERED_EMAIL_EVENT = "gtbs-admin-email-change";
-
-function getRememberedEmail() {
-  return window.localStorage.getItem(REMEMBERED_EMAIL_KEY) || "";
-}
-
-function subscribeToRememberedEmail(callback: () => void) {
-  window.addEventListener(REMEMBERED_EMAIL_EVENT, callback);
-  window.addEventListener("storage", callback);
-
-  return () => {
-    window.removeEventListener(REMEMBERED_EMAIL_EVENT, callback);
-    window.removeEventListener("storage", callback);
-  };
-}
 
 export default function AdminLoginForm() {
   const router = useRouter();
-  const rememberedEmail = useSyncExternalStore(
-    subscribeToRememberedEmail,
-    getRememberedEmail,
-    () => ""
-  );
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const rememberMeInputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -48,6 +30,19 @@ export default function AdminLoginForm() {
     password?: string;
   }>({});
   const [isForgotOpen, setIsForgotOpen] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+
+  useEffect(() => {
+    const savedEmail = window.localStorage.getItem(REMEMBERED_EMAIL_KEY) || "";
+
+    if (emailInputRef.current) {
+      emailInputRef.current.value = savedEmail;
+    }
+
+    if (rememberMeInputRef.current) {
+      rememberMeInputRef.current.checked = Boolean(savedEmail);
+    }
+  }, []);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -93,7 +88,6 @@ export default function AdminLoginForm() {
       } else {
         window.localStorage.removeItem(REMEMBERED_EMAIL_KEY);
       }
-      window.dispatchEvent(new Event(REMEMBERED_EMAIL_EVENT));
       router.replace("/admin/dashboard");
       router.refresh();
     } catch {
@@ -185,12 +179,11 @@ export default function AdminLoginForm() {
                     className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                   />
                   <input
-                    key={rememberedEmail}
+                    ref={emailInputRef}
                     id="admin-email"
                     name="email"
                     type="email"
                     autoComplete="username"
-                    defaultValue={rememberedEmail}
                     aria-invalid={Boolean(fieldErrors.email)}
                     aria-describedby={fieldErrors.email ? "admin-email-error" : undefined}
                     className="h-12 w-full rounded-lg border border-gray-300 bg-white pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
@@ -211,7 +204,10 @@ export default function AdminLoginForm() {
                   </label>
                   <button
                     type="button"
-                    onClick={() => setIsForgotOpen(true)}
+                    onClick={() => {
+                      setRecoveryEmail(emailInputRef.current?.value || "");
+                      setIsForgotOpen(true);
+                    }}
                     className="text-xs font-semibold text-orange-600 hover:text-orange-700 hover:underline"
                   >
                     Forgot password?
@@ -251,9 +247,9 @@ export default function AdminLoginForm() {
 
               <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm text-gray-700">
                 <input
+                  ref={rememberMeInputRef}
                   type="checkbox"
                   name="rememberMe"
-                  defaultChecked={Boolean(rememberedEmail)}
                   className="h-4 w-4 rounded border-gray-300 accent-orange-600"
                 />
                 Remember me
@@ -321,7 +317,8 @@ export default function AdminLoginForm() {
                 name="recoveryEmail"
                 type="email"
                 required
-                defaultValue={rememberedEmail}
+                value={recoveryEmail}
+                onChange={(event) => setRecoveryEmail(event.target.value)}
                 className="mt-2 h-11 w-full rounded-lg border border-gray-300 px-3.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                 placeholder="admin@example.com"
               />

@@ -26,6 +26,22 @@
 
 ## Change log
 
+### 2026-08-30 - Admin login hydration fixed
+
+- Outcome: made the admin email and remember-me inputs deterministic during server rendering and hydration, then restored the saved email after hydration.
+- Main files/areas: `src/components/admin/AdminLoginForm.tsx` and hydration troubleshooting guidance.
+- Data/API/security impact: no API or session changes; remembered admin email remains browser-local and passwords are not persisted.
+- Verification and exact result: `npx eslint src/components/admin/AdminLoginForm.tsx` passed; `npx tsc --noEmit` passed.
+- Known limitations or next step: browser extensions can independently mutate form markup and may need to be disabled when diagnosing unrelated hydration warnings.
+
+### 2026-08-30 - Storefront cookie consent removed
+
+- Outcome: removed the cookie-preference banner, consent persistence module, and `gtbs_cookie_consent` creation; returning visitors have the legacy consent cookie and local-storage value cleared.
+- Main files/areas: shared storefront chrome, language provider, privacy policy, and cookie/security documentation.
+- Data/API/security impact: admin authentication still uses its required signed HttpOnly cookie; Google Translate loads only after Gujarati is selected and may use `googtrans`.
+- Verification and exact result: `npx eslint src/components/layout/SiteChrome.tsx src/contexts/LanguageContext.tsx src/app/privacy-policy/page.tsx` passed; `npx next typegen` refreshed stale route types; `npx tsc --noEmit` then passed.
+- Known limitations or next step: browser privacy settings can still block Gujarati translation or admin sessions.
+
 ### 2026-08-30 — Documentation foundation
 
 - Added `AGENTS.md` requiring documentation updates with every development task.

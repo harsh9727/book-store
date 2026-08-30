@@ -57,14 +57,6 @@ const uses = [
   "Send promotional emails and newsletters only when you choose to receive them.",
 ];
 
-const cookieUses = [
-  "Remember your preferences.",
-  "Keep you logged into your account.",
-  "Analyze website traffic.",
-  "Improve website performance.",
-  "Provide personalized recommendations.",
-];
-
 const sharingPartners = [
   "Delivery and courier partners",
   "Payment gateway providers",
@@ -162,7 +154,7 @@ export default function PrivacyPolicyPage() {
             your information.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
-            Effective date: August 29, 2026
+            Effective date: August 30, 2026
           </p>
         </div>
       </header>
@@ -209,13 +201,20 @@ export default function PrivacyPolicyPage() {
 
         <PolicySection number={4} title="Cookies">
           <p>
-            Our website uses cookies and similar technologies to improve your
-            browsing experience. Cookies help us:
+            The public storefront does not show a cookie-preference banner or
+            store a cookie-consent choice. Cookies are limited to features that
+            require them:
           </p>
-          <BulletList items={cookieUses} />
+          <BulletList
+            items={[
+              "A signed, secure session cookie protects the administration area after an administrator logs in.",
+              "Google Translate may use a language cookie after you explicitly select Gujarati.",
+            ]}
+          />
           <p className="mt-4">
-            You may disable cookies through your browser settings, although some
-            features of the website may not function properly.
+            The storefront does not currently use analytics, advertising, or
+            personalization cookies. Disabling cookies may prevent admin login or
+            Gujarati translation from working correctly.
           </p>
         </PolicySection>
 

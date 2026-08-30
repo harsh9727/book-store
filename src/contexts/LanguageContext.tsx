@@ -9,11 +9,6 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
-import {
-  getCookieConsentSnapshot,
-  saveCookieConsent,
-  subscribeToCookieConsent,
-} from "@/lib/cookieConsent";
 
 export type AppLanguage = "en" | "gu";
 
@@ -41,6 +36,7 @@ interface GoogleTranslateWindow extends Window {
 const LANGUAGE_STORAGE_KEY = "gtbs-language";
 const LANGUAGE_CHANGE_EVENT = "gtbs-language-change";
 const GOOGLE_TRANSLATE_SCRIPT_ID = "google-translate-script";
+const LEGACY_CONSENT_STORAGE_KEY = "gtbs-cookie-consent";
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
@@ -95,11 +91,6 @@ function clearGujaratiCookie() {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const cookieConsent = useSyncExternalStore(
-    subscribeToCookieConsent,
-    getCookieConsentSnapshot,
-    () => null
-  );
   const language = useSyncExternalStore(
     subscribeToLanguageChange,
     getLanguageSnapshot,
@@ -111,7 +102,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = nextLanguage;
 
     if (nextLanguage === "gu") {
-      saveCookieConsent("functional");
       setGujaratiCookie();
       applyGujaratiTranslation();
       window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
@@ -124,7 +114,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (cookieConsent !== "functional") {
+    window.localStorage.removeItem(LEGACY_CONSENT_STORAGE_KEY);
+    document.cookie =
+      "gtbs_cookie_consent=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax";
+  }, []);
+
+  useEffect(() => {
+    if (language !== "gu") {
       return;
     }
 
@@ -165,19 +161,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       script.async = true;
       document.body.appendChild(script);
     }
-  }, [cookieConsent]);
+  }, [language]);
 
   useEffect(() => {
     document.documentElement.lang = language;
 
-    if (language !== "gu" || cookieConsent !== "functional") {
+    if (language !== "gu") {
       return;
     }
 
     setGujaratiCookie();
     const timer = window.setTimeout(applyGujaratiTranslation, 350);
     return () => window.clearTimeout(timer);
-  }, [cookieConsent, language, pathname]);
+  }, [language, pathname]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>

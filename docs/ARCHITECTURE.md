@@ -35,6 +35,7 @@ Browser
 - Use `"use client"` only for state, effects, events, storage, or client navigation.
 - The root layout loads fonts, metadata, structured data, language context, and `SiteChrome`.
 - `SiteChrome` removes public header/footer controls for `/admin` routes.
+- The language provider loads Google Translate only after Gujarati is selected; English storefront browsing does not initialize the translation integration.
 
 ## Storefront data flow
 

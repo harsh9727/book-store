@@ -19,6 +19,13 @@ This records implemented controls and known risks; it is not a formal security c
 - Logout expires the session cookie.
 - Admin pages are no-index and excluded from public chrome.
 
+## Storefront cookies
+
+- The former storefront cookie-consent banner and `gtbs_cookie_consent` cookie have been removed.
+- The language provider clears the legacy consent cookie and local-storage choice for returning visitors.
+- Google Translate is loaded only after Gujarati is selected and may then use its `googtrans` language cookie.
+- No analytics, advertising, or personalization cookies are implemented in the storefront.
+
 ## Known gaps before mature production use
 
 - Replace the single environment account with database identities and one-way password hashing.

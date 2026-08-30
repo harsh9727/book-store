@@ -30,6 +30,16 @@
 
 **Solution:** Check browser storage for `gtbs_admin_session`, verify hostname/HTTPS, then log in again. Changing the session secret invalidates every session by design.
 
+## Admin login reports a hydration mismatch
+
+**Symptom:** React reports that server-rendered attributes do not match client properties and points to the admin email input.
+
+**Cause:** The remembered email previously participated in the input's rendered attributes through a browser-storage snapshot. Server rendering cannot read `localStorage`, so persisted browser state could diverge from the server HTML during hydration.
+
+**Solution:** Render the email and remember-me inputs with stable empty/unchecked HTML, then copy any remembered email into their uncontrolled DOM refs after hydration. Keep browser-only storage out of server-visible initial attributes.
+
+**Prevention:** Values from `localStorage`, locale APIs, extensions, time, or randomness must not alter the first client render unless the server receives and renders the same snapshot.
+
 ## Full ESLint fails
 
 **Symptom:** `npm run lint` exits non-zero while newly changed admin files pass.
