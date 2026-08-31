@@ -31,10 +31,10 @@ function HeroSection() {
                             {/* Description */}
                             <p className="mt-5 max-w-6xl text-base leading-6 description text-white sm:text-md">
                                 Explore a carefully curated collection of Bibles, Christian
-                                books, devotionals, children's literature, magazines, gifts,
-                                and faith-based resources. Whether you're strengthening your
+                                books, devotionals, children&apos;s literature, magazines, gifts,
+                                and faith-based resources. Whether you&apos;re strengthening your
                                 spiritual journey, preparing for ministry, or looking for
-                                meaningful gifts, you'll find inspiring books for every age
+                                meaningful gifts, you&apos;ll find inspiring books for every age
                                 and season of life.
                             </p>
 

@@ -4,12 +4,11 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperInstance } from "swiper";
 import ProductImg from "../../../public/images/products/atomic-habits.jpg";
 import ProductCard from "@/components/product/ProductCard";
 
 import "swiper/css";
-import "swiper/css/navigation";
 
 type ProductItem = {
   id: number;
@@ -158,8 +157,7 @@ const products: ProductItem[] = [
 ];
 
 const Trendings = () => {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
+  const swiperRef = useRef<SwiperInstance | null>(null);
 
   return (
     <section className="bg-white py-10">
@@ -193,25 +191,11 @@ const Trendings = () => {
         {/* Carousel */}
         <div className="relative">
           <Swiper
-            modules={[Navigation]}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
             spaceBetween={18}
             slidesPerView={1.15}
-            navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
-            }}
-            onBeforeInit={(swiper) => {
-              if (
-                swiper.params.navigation &&
-                typeof swiper.params.navigation !== "boolean"
-              ) {
-                swiper.params.navigation.prevEl =
-                  prevRef.current;
-
-                swiper.params.navigation.nextEl =
-                  nextRef.current;
-              }
-            }}
             breakpoints={{
               480: {
                 slidesPerView: 1.7,
@@ -244,8 +228,8 @@ const Trendings = () => {
 
           {/* Previous */}
           <button
-            ref={prevRef}
             type="button"
+            onClick={() => swiperRef.current?.slidePrev()}
             aria-label="Previous products"
             className="absolute -left-5 top-[38%] z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-lg transition-all duration-300 hover:border-orange-600 hover:text-orange-600 lg:grid"
           >
@@ -254,8 +238,8 @@ const Trendings = () => {
 
           {/* Next */}
           <button
-            ref={nextRef}
             type="button"
+            onClick={() => swiperRef.current?.slideNext()}
             aria-label="Next products"
             className="absolute -right-5 top-[38%] z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-lg transition-all duration-300 hover:border-orange-600 hover:text-orange-600 lg:grid"
           >

@@ -2,9 +2,7 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import {
-  Search,
   Sparkles,
   SlidersHorizontal,
   BookOpen,
@@ -21,35 +19,28 @@ import Breadcrumb from "@/components/common/Breadcrumb";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
-function AllProductsContent() {
-  const searchParams = useSearchParams();
-  const urlCollection = searchParams.get("collection") || "all";
-  const urlCategory = searchParams.get("category") || "all";
-  const urlSearch = searchParams.get("search") || "";
+type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
 
+interface AllProductsContentProps {
+  initialCategory: string;
+  initialCollection: string;
+  initialSearch: string;
+}
+
+function AllProductsContent({
+  initialCategory,
+  initialCollection,
+  initialSearch,
+}: AllProductsContentProps) {
   // Filters: Category, Price Range, Collections
-  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [priceRange, setPriceRange] = useState("all");
-  const [selectedCollection, setSelectedCollection] = useState(urlCollection);
-  const [searchQuery, setSearchQuery] = useState(urlSearch);
-  const [sortBy, setSortBy] = useState<
-    "featured" | "price-asc" | "price-desc" | "rating"
-  >("featured");
+  const [selectedCollection, setSelectedCollection] = useState(initialCollection);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
-
-  // Sync state when URL parameters change (e.g. user clicked View All on home page)
-  useEffect(() => {
-    const col = searchParams.get("collection");
-    if (col) setSelectedCollection(col);
-
-    const cat = searchParams.get("category");
-    if (cat) setSelectedCategory(cat);
-
-    const search = searchParams.get("search");
-    if (search !== null) setSearchQuery(search);
-  }, [searchParams]);
 
   // Prevent background scroll when mobile filter modal is open
   useEffect(() => {
@@ -63,10 +54,26 @@ function AllProductsContent() {
     };
   }, [isMobileFilterOpen]);
 
-  // Reset pagination to 8 whenever any filter or search changes
-  useEffect(() => {
+  const selectCategory = (value: string) => {
+    setSelectedCategory(value);
     setVisibleCount(8);
-  }, [selectedCategory, priceRange, selectedCollection, searchQuery, sortBy]);
+  };
+  const selectPriceRange = (value: string) => {
+    setPriceRange(value);
+    setVisibleCount(8);
+  };
+  const selectCollection = (value: string) => {
+    setSelectedCollection(value);
+    setVisibleCount(8);
+  };
+  const updateSearchQuery = (value: string) => {
+    setSearchQuery(value);
+    setVisibleCount(8);
+  };
+  const selectSort = (value: SortOption) => {
+    setSortBy(value);
+    setVisibleCount(8);
+  };
 
   // Category list with accurate item counts
   const categoryList = useMemo(() => {
@@ -159,6 +166,7 @@ function AllProductsContent() {
     setSelectedCollection("all");
     setSearchQuery("");
     setSortBy("featured");
+    setVisibleCount(8);
   };
 
   const breadcrumbItems = [
@@ -207,8 +215,8 @@ function AllProductsContent() {
           <div className="relative flex-1">
             <SearchBar
               value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={setSearchQuery}
+              onChange={updateSearchQuery}
+              onSearch={updateSearchQuery}
               debounceMs={300}
               size="sm"
               placeholder="Search books..."
@@ -225,7 +233,7 @@ function AllProductsContent() {
             <span className="description text-gray-400">Sort:</span>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => selectSort(e.target.value as SortOption)}
               className="rounded-lg border border-gray-200 bg-white py-1 px-2 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description"
             >
               <option value="featured">Featured</option>
@@ -276,7 +284,7 @@ function AllProductsContent() {
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => setSelectedCategory(cat.slug)}
+                      onClick={() => selectCategory(cat.slug)}
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium description tracking-wide transition-all ${
                         isSelected
                           ? "bg-orange-600 text-white font-semibold shadow-sm"
@@ -321,7 +329,7 @@ function AllProductsContent() {
                       type="radio"
                       name="priceRange"
                       checked={priceRange === item.id}
-                      onChange={() => setPriceRange(item.id)}
+                      onChange={() => selectPriceRange(item.id)}
                       className="accent-orange-600 h-4 w-4 cursor-pointer"
                     />
                     <span>{item.label}</span>
@@ -352,7 +360,7 @@ function AllProductsContent() {
                       type="radio"
                       name="collectionFilter"
                       checked={selectedCollection === item.id}
-                      onChange={() => setSelectedCollection(item.id)}
+                      onChange={() => selectCollection(item.id)}
                       className="accent-orange-600 h-4 w-4 cursor-pointer"
                     />
                     <span>{item.label}</span>
@@ -371,8 +379,8 @@ function AllProductsContent() {
             <div className="relative flex-1 max-w-md">
               <SearchBar
                 value={searchQuery}
-                onChange={setSearchQuery}
-                onSearch={setSearchQuery}
+                onChange={updateSearchQuery}
+                onSearch={updateSearchQuery}
                 debounceMs={300}
                 size="sm"
                 placeholder="Search by title, author, genre..."
@@ -393,7 +401,7 @@ function AllProductsContent() {
                 <span className="text-xs text-gray-500 description">Sort:</span>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={(e) => selectSort(e.target.value as SortOption)}
                   className="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description tracking-wide cursor-pointer"
                 >
                   <option value="featured">Featured</option>
@@ -416,7 +424,7 @@ function AllProductsContent() {
                   Genre: {selectedCategory}
                   <button
                     type="button"
-                    onClick={() => setSelectedCategory("all")}
+                    onClick={() => selectCategory("all")}
                     className="hover:text-orange-900"
                   >
                     <X size={12} />
@@ -429,7 +437,7 @@ function AllProductsContent() {
                   Price: {priceRange}
                   <button
                     type="button"
-                    onClick={() => setPriceRange("all")}
+                    onClick={() => selectPriceRange("all")}
                     className="hover:text-orange-900"
                   >
                     <X size={12} />
@@ -442,7 +450,7 @@ function AllProductsContent() {
                   Collection: {selectedCollection === "new" ? "New Releases" : selectedCollection === "bestseller" ? "Best Sellers" : "Trending Books"}
                   <button
                     type="button"
-                    onClick={() => setSelectedCollection("all")}
+                    onClick={() => selectCollection("all")}
                     className="hover:text-orange-900"
                   >
                     <X size={12} />
@@ -455,7 +463,7 @@ function AllProductsContent() {
                   Query: {searchQuery}
                   <button
                     type="button"
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => updateSearchQuery("")}
                     className="hover:text-orange-900"
                   >
                     <X size={12} />
@@ -525,7 +533,7 @@ function AllProductsContent() {
 
                   <button
                     type="button"
-                    onClick={() => setVisibleCount((prev) => prev + 8)}
+                    onClick={() => setVisibleCount((count) => count + 8)}
                     className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
                   >
                     <span>View More Books (+8)</span>
@@ -587,7 +595,7 @@ function AllProductsContent() {
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => setSelectedCategory(cat.slug)}
+                      onClick={() => selectCategory(cat.slug)}
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium description transition-colors ${
                         selectedCategory === cat.slug
                           ? "bg-orange-600 text-white font-semibold shadow-sm"
@@ -630,7 +638,7 @@ function AllProductsContent() {
                         type="radio"
                         name="mPriceRange"
                         checked={priceRange === item.id}
-                        onChange={() => setPriceRange(item.id)}
+                        onChange={() => selectPriceRange(item.id)}
                         className="accent-orange-600 h-4 w-4"
                       />
                       <span className="description">{item.label}</span>
@@ -659,7 +667,7 @@ function AllProductsContent() {
                         type="radio"
                         name="mCollectionFilter"
                         checked={selectedCollection === item.id}
-                        onChange={() => setSelectedCollection(item.id)}
+                        onChange={() => selectCollection(item.id)}
                         className="accent-orange-600 h-4 w-4"
                       />
                       <span className="description">{item.label}</span>
@@ -705,6 +713,20 @@ function AllProductsContent() {
   );
 }
 
+function AllProductsFromSearchParams() {
+  const searchParams = useSearchParams();
+  const paramsKey = searchParams.toString();
+
+  return (
+    <AllProductsContent
+      key={paramsKey}
+      initialCollection={searchParams.get("collection") || "all"}
+      initialCategory={searchParams.get("category") || "all"}
+      initialSearch={searchParams.get("search") || ""}
+    />
+  );
+}
+
 export default function AllProductsPage() {
   return (
     <Suspense
@@ -716,7 +738,7 @@ export default function AllProductsPage() {
         </div>
       }
     >
-      <AllProductsContent />
+      <AllProductsFromSearchParams />
     </Suspense>
   );
 }

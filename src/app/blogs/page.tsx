@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -20,10 +20,14 @@ export default function BlogsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
 
-  // Reset pagination when filter or search changes
-  useEffect(() => {
+  const selectCategory = (value: string) => {
+    setSelectedCategory(value);
     setVisibleCount(6);
-  }, [selectedCategory, searchQuery]);
+  };
+  const updateSearchQuery = (value: string) => {
+    setSearchQuery(value);
+    setVisibleCount(6);
+  };
 
   const categories = [
     "All",
@@ -71,7 +75,7 @@ export default function BlogsPage() {
             <button
               key={cat}
               type="button"
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => selectCategory(cat)}
               className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium description tracking-wide transition-all ${
                 selectedCategory === cat
                   ? "bg-orange-600 text-white shadow-sm font-semibold"
@@ -87,8 +91,8 @@ export default function BlogsPage() {
         <div className="relative w-full md:w-80">
           <SearchBar
             value={searchQuery}
-            onChange={setSearchQuery}
-            onSearch={setSearchQuery}
+            onChange={updateSearchQuery}
+            onSearch={updateSearchQuery}
             debounceMs={300}
             size="sm"
             placeholder="Search articles or topics..."
@@ -153,9 +157,11 @@ export default function BlogsPage() {
                   {/* Author footer */}
                   <div className="flex items-center justify-between border-t border-gray-100 pt-3.5 mt-auto">
                     <div className="flex items-center gap-2.5">
-                      <img
+                      <Image
                         src={blog.author.avatar}
                         alt={blog.author.name}
+                        width={32}
+                        height={32}
                         className="h-8 w-8 rounded-full object-cover"
                       />
                       <span className="text-xs font-semibold description tracking-wide text-gray-800">
@@ -200,7 +206,7 @@ export default function BlogsPage() {
 
               <button
                 type="button"
-                onClick={() => setVisibleCount((prev) => prev + 6)}
+                onClick={() => setVisibleCount((count) => count + 6)}
                 className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
               >
                 <span>View More Articles (+6)</span>

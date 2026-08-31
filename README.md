@@ -22,7 +22,7 @@ npm run lint
 npm run build
 ```
 
-The repository currently has known lint debt; see troubleshooting for details.
+All repository lint checks currently pass. Windows sandbox environments may still block build/test child processes with `spawn EPERM`; see troubleshooting for the verified fallback checks.
 
 ## Documentation
 

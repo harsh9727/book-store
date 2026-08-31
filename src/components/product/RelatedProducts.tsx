@@ -14,7 +14,10 @@ export default function RelatedProducts({
 }: RelatedProductsProps) {
   const related = allProducts
     .filter((p) => p.id !== currentProductId)
-    .sort((a, b) => (a.category === category ? -1 : 1))
+    .sort(
+      (a, b) =>
+        Number(b.category === category) - Number(a.category === category)
+    )
     .slice(0, 4);
 
   if (related.length === 0) return null;

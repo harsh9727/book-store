@@ -22,7 +22,6 @@ Browser
 | `src/components/` | Reusable UI organized by feature |
 | `src/components/ui/` | Low-level shared UI primitives |
 | `src/contexts/` | Cross-tree client providers |
-| `src/hooks/` | Reusable client behavior |
 | `src/data/` | Static typed catalog/content |
 | `src/lib/` | Utilities, SEO, constants, and auth |
 | `src/types/` | Shared domain types |
@@ -39,7 +38,9 @@ Browser
 
 ## Storefront data flow
 
-Typed objects in `src/data/` feed pages and components. Product IDs form dynamic routes. Cart and wishlist hooks provide browser-side state. No production database/repository layer exists yet. When one is added, introduce a typed service/repository boundary rather than importing database clients throughout UI code.
+Typed objects in `src/data/` feed pages and components. Product IDs form dynamic routes. Cart and wishlist routes currently render static empty states and have no state or persistence layer. No production database/repository layer exists yet. When one is added, introduce a typed service/repository boundary rather than importing database clients throughout UI code.
+
+Catalog, blog, and gallery filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
 
 ## Admin authentication
 

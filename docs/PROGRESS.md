@@ -6,25 +6,40 @@
 | --- | --- | --- |
 | Public storefront | In progress | Main pages exist; data is local/static |
 | Product catalog | Prototype | Typed data and product detail UI |
-| Cart/wishlist | Prototype | Client-side; no documented backend |
+| Cart/wishlist | Placeholder | Static empty-state routes; no state or persistence layer |
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
 | Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
 | Admin dashboard | First layout complete | Responsive; figures/actions are presentation data |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
-| Automated quality | Needs work | TypeScript passes; full lint has existing failures |
+| Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
 
 ## Current priorities
 
 1. Add persistent product/inventory storage.
 2. Build functional admin Orders and Products modules.
 3. Replace dashboard presentation figures with server data.
-4. Resolve repository-wide lint failures.
-5. Add shared deployment/WAF login throttling and database-backed admin lifecycle when hosting requirements are chosen.
-6. Define persistent customer, cart, checkout, and payment architecture.
+4. Add shared deployment/WAF login throttling and database-backed admin lifecycle when hosting requirements are chosen.
+5. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-08-31 - Repository lint baseline restored
+
+- Outcome: resolved all 28 ESLint errors and 14 warnings without changing routes or product scope. Filter actions now reset pagination in the same user event, URL-backed catalog filters remount from current search parameters, controlled search synchronization is deferred, Swiper controls call slider instances only from event handlers, blog avatars use `next/image`, and isolated typing, comparator, JSX, and unused-code issues are corrected.
+- Main files/areas: all-products/blog/gallery filtering, shared search, five home-page carousels, product/about/contact/gallery components, README, and quality/troubleshooting documentation.
+- Data/API/security impact: none; no persistence, route-handler, authentication, cookie, or environment behavior changed.
+- Verification and exact result: `npm run lint` passed with 0 errors and 0 warnings; `npx next typegen` passed; `npx tsc --noEmit` passed; direct execution of `tests/admin-auth.test.ts` passed 7/7 tests; the latest `npm run build` compiled successfully in 1.9 seconds, then the known Windows sandbox `spawn EPERM` blocked the TypeScript worker, so a complete production-build pass is not claimed.
+- Known limitations or next step: the commerce/backend and admin-module limitations remain. Rerun `npm run build` in a Windows environment that permits Node child processes before release.
+
+### 2026-08-31 - Remove unreferenced scaffolding
+
+- Outcome: removed 17 empty placeholder modules plus two unreferenced dropdown-menu copies and the unreferenced `ProductRating` component; no imported or routed implementation was removed.
+- Main files/areas: unused cart/checkout/common/hook/type/data/lib scaffolding, unused product/UI components, architecture, project overview, and troubleshooting documentation.
+- Data/API/security impact: none; cart and wishlist remain static empty-state routes, checkout remains presentation UI, and no API or security boundary changed.
+- Verification and exact result: exact import/reference scans found no consumers for any removed module; `npx next typegen` and `npx tsc --noEmit` passed; direct execution of `tests/admin-auth.test.ts` passed 7/7 tests; `npm run lint` reported only the documented pre-existing 28 errors and 14 warnings; `npm run build` compiled the production bundle successfully in 5.6 seconds, then the known Windows sandbox `spawn EPERM` blocked its TypeScript worker, so a full build pass is not claimed.
+- Known limitations or next step: repository-wide lint debt and the missing commerce state/backend remain; implement those as scoped features instead of retaining empty placeholder files.
 
 ### 2026-08-31 - Admin authentication production hardening
 

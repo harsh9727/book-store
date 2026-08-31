@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Maximize2 } from "lucide-react";
 
 interface ProductImagesProps {
   images?: string[];
@@ -19,7 +18,6 @@ export default function ProductImages({
 }: ProductImagesProps) {
   const allImages = images && images.length > 0 ? images : [mainImage];
   const [selectedImage, setSelectedImage] = useState(allImages[0]);
-  const [isZoomed, setIsZoomed] = useState(false);
 
   return (
     <div className="flex flex-col-reverse gap-4 md:flex-row">

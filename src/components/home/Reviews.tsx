@@ -3,10 +3,10 @@
 import { useRef } from "react";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
+import type { Swiper as SwiperInstance } from "swiper";
 
 import "swiper/css";
-import "swiper/css/navigation";
 
 const reviews = [
   {
@@ -54,8 +54,7 @@ const reviews = [
 ];
 
 const Reviews = () => {
-  const prevRef = useRef<HTMLButtonElement | null>(null);
-  const nextRef = useRef<HTMLButtonElement | null>(null);
+  const swiperRef = useRef<SwiperInstance | null>(null);
 
   return (
     <section className="bg-white py-14 md:py-16">
@@ -82,7 +81,10 @@ const Reviews = () => {
 
           <Swiper
             
-            modules={[Navigation, Autoplay]}
+            modules={[Autoplay]}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
             spaceBetween={20}
             slidesPerView={1}
             loop={true}
@@ -91,19 +93,6 @@ const Reviews = () => {
               delay: 4000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
-            }}
-            navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
-            }}
-            onBeforeInit={(swiper) => {
-              if (
-                typeof swiper.params.navigation !== "boolean" &&
-                swiper.params.navigation
-              ) {
-                swiper.params.navigation.prevEl = prevRef.current;
-                swiper.params.navigation.nextEl = nextRef.current;
-              }
             }}
             breakpoints={{
               640: {
@@ -169,8 +158,8 @@ const Reviews = () => {
 
           {/* Previous Button */}
           <button
-            ref={prevRef}
             type="button"
+            onClick={() => swiperRef.current?.slidePrev()}
             aria-label="Previous reviews"
             className="absolute -left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-md transition-all duration-300 hover:border-orange-600 hover:bg-orange-600 hover:text-white lg:flex"
           >
@@ -179,8 +168,8 @@ const Reviews = () => {
 
           {/* Next Button */}
           <button
-            ref={nextRef}
             type="button"
+            onClick={() => swiperRef.current?.slideNext()}
             aria-label="Next reviews"
             className="absolute -right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-md transition-all duration-300 hover:border-orange-600 hover:bg-orange-600 hover:text-white lg:flex"
           >
@@ -192,7 +181,7 @@ const Reviews = () => {
         <div className="mt-6 flex justify-center gap-3 lg:hidden">
           <button
             type="button"
-            onClick={() => prevRef.current?.click()}
+            onClick={() => swiperRef.current?.slidePrev()}
             aria-label="Previous reviews"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 transition-all duration-300 hover:border-orange-600 hover:bg-orange-600 hover:text-white"
           >
@@ -201,7 +190,7 @@ const Reviews = () => {
 
           <button
             type="button"
-            onClick={() => nextRef.current?.click()}
+            onClick={() => swiperRef.current?.slideNext()}
             aria-label="Next reviews"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 transition-all duration-300 hover:border-orange-600 hover:bg-orange-600 hover:text-white"
           >

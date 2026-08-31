@@ -33,9 +33,10 @@ export default function SearchBar({
 
   // Sync when controlled value changes from outside
   useEffect(() => {
-    if (controlledValue !== undefined && controlledValue !== query) {
-      setQuery(controlledValue);
-    }
+    if (controlledValue === undefined) return;
+
+    const timer = window.setTimeout(() => setQuery(controlledValue), 0);
+    return () => window.clearTimeout(timer);
   }, [controlledValue]);
 
   // Debounced search on input change

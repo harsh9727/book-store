@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Maximize2, Camera } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { GalleryPhoto } from "@/types/gallery";
 
 interface GalleryLightboxProps {

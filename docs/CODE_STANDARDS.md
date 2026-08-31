@@ -17,6 +17,8 @@
 - Use route handlers for server HTTP behavior.
 - Do not synchronously mirror state in effects; derive or initialize it when possible.
 - Never access `ref.current` during render.
+- Reset filtered pagination in the filter/search event handler instead of calling a state setter from an effect.
+- Store imperative carousel instances in refs and access them only in callbacks or event handlers.
 - Prefer semantic HTML over generic containers.
 
 ## Components

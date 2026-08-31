@@ -4,7 +4,7 @@
 
 GTBS Book Store is a responsive e-commerce website for Gujarat Tract Book Store. It presents Christian books, Bibles, devotionals, magazines, gifts, store information, editorial content, and a protected administration area.
 
-The repository currently implements a frontend-led storefront using local TypeScript data. Cart, wishlist, checkout, customer accounts, and most admin business actions are not connected to a production database or commerce backend.
+The repository currently implements a frontend-led storefront using local TypeScript data. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These areas and most admin business actions are not connected to a production database or commerce backend.
 
 ## Technology stack
 
@@ -22,7 +22,7 @@ The repository currently implements a frontend-led storefront using local TypeSc
 | --- | --- | --- |
 | Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | UI and local product catalog |
 | Content | `/about`, `/blogs`, `/gallery`, `/contact` | Frontend pages implemented |
-| Shopping | `/cart`, `/wishlist`, `/checkout` | Client experience; no production order backend |
+| Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
 | Admin | `/admin/login`, `/admin/dashboard` | Server-protected login, production-required MFA, responsive shell |
@@ -33,7 +33,7 @@ The public storefront has no cookie-consent banner or consent cookie. Selecting 
 
 ## Data
 
-Catalog and content live in `src/data/`: products, categories, blogs, galleries, FAQs, and banners. Cart and wishlist behavior lives in `src/hooks/` and should be treated as browser-local until a backend is introduced.
+Catalog and content live in `src/data/`: products, categories, blogs, galleries, and FAQs. Cart and wishlist currently have no state layer or persistence implementation.
 
 ## Local setup
 
@@ -77,4 +77,4 @@ npm run build
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
 - Password recovery prepares a support email; it does not issue an automated reset token.
 - There is no documented payment gateway or persistent order workflow.
-- Full repository lint has existing failures listed in `TROUBLESHOOTING.md`.
+- Windows sandbox child-process restrictions can block the final build worker even after compilation; lint and standalone TypeScript checks pass.

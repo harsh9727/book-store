@@ -26,7 +26,7 @@ const ContactSection = () => {
                         {/* Description */}
                         <p className="mt-5 description leading-7 text-gray-700 sm:text-lg">
                             Have a question, suggestion, or need help? Our team is here for
-                            you. Reach out and we'll get back to you as soon as possible.
+                            you. Reach out and we&apos;ll get back to you as soon as possible.
                         </p>
 
                         {/* Contact Details */}

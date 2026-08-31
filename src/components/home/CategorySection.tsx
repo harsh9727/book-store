@@ -6,7 +6,6 @@ import {
   Cross,
   Heart,
   Baby,
-  GraduationCap,
   Users,
   BookMarked,
   Sparkles,
@@ -15,11 +14,12 @@ import {
   TrendingUp,
   Compass,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { categories } from "@/data/categories";
 import { products } from "@/data/products";
 
 // Icon mapping per category slug
-const categoryIconMap: Record<string, any> = {
+const categoryIconMap: Record<string, LucideIcon> = {
   "bible-books": BookOpen,
   "christian-living": Cross,
   devotionals: Heart,

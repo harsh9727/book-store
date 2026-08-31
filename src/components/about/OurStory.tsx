@@ -3,10 +3,6 @@
 import Image from "next/image";
 import {
   BookOpen,
-  ShieldCheck,
-  Truck,
-  ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 
 import OurStoryImage from "../../../public/images/about/story.webp";
