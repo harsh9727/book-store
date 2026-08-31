@@ -90,6 +90,8 @@
 
 **Observed 2026-08-31:** Node's built-in test runner hit the same sandbox child-process denial. Running the focused suite in a permitted terminal passed; the production build also completed in the permitted environment. Treat an external pass as environment-specific evidence, not permission to bypass normal workstation controls.
 
+**Observed 2026-09-01:** after unused-file/dependency cleanup, production compilation succeeded in 4.1 seconds before the same TypeScript-worker denial. Full lint, generated route types, standalone TypeScript, and the direct 7/7 admin-auth suite passed.
+
 ## TypeScript references deleted App Router routes
 
 **Symptom:** `npx tsc --noEmit` reports missing page or route modules under `.next/types/validator.ts`, even though those routes are absent from `src/app/`.
@@ -117,3 +119,13 @@
 ## Stale UI after changes
 
 Restart for environment changes. For stale generated output, stop the process and remove only the workspace `.next` directory, then restart. Never recursively delete a broad directory or workspace root.
+
+## pnpm reports an unexpected store location
+
+**Symptom:** a dependency command reports `ERR_PNPM_UNEXPECTED_STORE` because `node_modules` is linked to a different pnpm store.
+
+**Cause:** the active pnpm configuration selects a workspace-local store while the existing installation was linked from another known store location.
+
+**Resolved 2026-09-01:** the cleanup reused the existing `D:\.pnpm-store\v11` location explicitly to update the manifest, lockfile, and installed graph. The failed first attempt's generated workspace `.pnpm-store/` cache was removed afterward.
+
+**Prevention:** keep pnpm version/store configuration consistent for the workspace. If dependencies were intentionally moved to a different store, run a normal `pnpm install` instead of manually editing files inside `node_modules` or the store.

@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-01 - Remove unused UI scaffolding and empty directories
+
+- Outcome: removed 11 unreferenced generated UI primitives, their unused `cn` utility, the unused shadcn generator configuration, 10 orphaned runtime dependencies, and 33 empty placeholder directories. Active routes, components, images, admin authentication, and static blog/gallery data were preserved.
+- Main files/areas: `src/components/ui/`, `src/lib/utils.ts`, `components.json`, package manifest/lockfile, empty CMS/API/content/image scaffolding, project overview, architecture, progress, and troubleshooting documentation.
+- Data/API/security impact: none; no database, stored data, route handler, authentication, cookie, or public behavior changed. The deleted directories contained no files. The generated `.pnpm-store/` cache created during lockfile maintenance was also removed and is recoverable through dependency installation.
+- Verification and exact result: exact repository reference scans found no consumers for the removed files or packages; `pnpm remove` updated `package.json`, `pnpm-lock.yaml`, and the installed dependency graph; no non-generated empty directories remained after cleanup. `npm run lint` passed with 0 errors/warnings; `npx next typegen` and `npx tsc --noEmit` passed; direct execution of `tests/admin-auth.test.ts` passed 7/7. `npm run build` compiled successfully in 4.1 seconds, then the known Windows sandbox `spawn EPERM` blocked the TypeScript worker, so a complete build pass is not claimed.
+- Known limitations or next step: reinstalling a shadcn/Base UI component in the future must intentionally restore its required utility/configuration and dependencies; do not retain unused generated primitives preemptively.
+
 ### 2026-08-31 - Repository lint baseline restored
 
 - Outcome: resolved all 28 ESLint errors and 14 warnings without changing routes or product scope. Filter actions now reset pagination in the same user event, URL-backed catalog filters remount from current search parameters, controlled search synchronization is deferred, Swiper controls call slider instances only from event handlers, blog avatars use `next/image`, and isolated typing, comparator, JSX, and unused-code issues are corrected.

@@ -20,7 +20,6 @@ Browser
 | --- | --- |
 | `src/app/` | Routes, layouts, metadata, pages, and route handlers |
 | `src/components/` | Reusable UI organized by feature |
-| `src/components/ui/` | Low-level shared UI primitives |
 | `src/contexts/` | Cross-tree client providers |
 | `src/data/` | Static typed catalog/content |
 | `src/lib/` | Utilities, SEO, constants, and auth |

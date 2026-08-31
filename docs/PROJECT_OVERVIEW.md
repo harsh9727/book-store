@@ -10,7 +10,7 @@ The repository currently implements a frontend-led storefront using local TypeSc
 
 - Next.js 16 App Router, React 19, and strict TypeScript
 - Tailwind CSS 4
-- Lucide React, React Icons, shadcn/Base UI
+- Lucide React and React Icons
 - EmailJS for the contact form
 - Swiper for carousels
 - Zod and React Hook Form are available for forms
