@@ -12,23 +12,39 @@
 
 **Symptom:** `POST /api/admin/login` returns HTTP 503.
 
-**Cause:** `ADMIN_EMAIL`, `ADMIN_PASSWORD`, or `ADMIN_SESSION_SECRET` is empty/missing.
+**Cause:** Required authentication configuration is missing or invalid. Production requires `ADMIN_EMAIL`, a generated `ADMIN_PASSWORD_HASH`, a 32+ character `ADMIN_SESSION_SECRET`, `ADMIN_REQUIRE_MFA=true`, and a valid Base32 `ADMIN_TOTP_SECRET`. Plaintext `ADMIN_PASSWORD` works only as a local-development migration fallback.
 
-**Solution:** Configure all three locally/deployed, use a unique password and 32+ character random secret, then restart Next.js. Never print or document the values.
+**Solution:** Run `npm run admin:setup` in an interactive private terminal, copy the generated values into local/deployment secret configuration, enroll the setup URI in an authenticator app, and restart Next.js. Never commit, screenshot, or paste the output into documentation.
 
 ## Correct admin details are rejected
 
 **Symptom:** Login returns HTTP 401.
 
-**Likely causes:** Stale environment values, password case mismatch, or different deployment configuration.
+**Likely causes:** Stale environment values, password case mismatch, an incorrect/expired authenticator code, server clock drift, a legacy plaintext password deployed to production, or different deployment configuration.
 
-**Solution:** Confirm variable presence without displaying values, restart, and retry. Email is normalized to lowercase; password is case-sensitive.
+**Solution:** Confirm variable presence without displaying values, synchronize server/authenticator clocks, restart, and retry. Email is normalized to lowercase; passwords are case-sensitive; TOTP codes rotate every 30 seconds.
+
+## Admin request returns HTTP 403
+
+**Symptom:** Login/logout returns `Request could not be verified.`
+
+**Cause:** The request did not have the same Origin as `NEXT_PUBLIC_SITE_URL`, was marked cross-site, or omitted `X-GTBS-Admin-Request: 1`. This can also happen when browsing the development server through a hostname different from its canonical `localhost` URL.
+
+**Solution:** Use the configured canonical HTTPS URL. Keep admin fetches same-origin and include the marker header. Do not disable the check; fix proxy Host/Origin forwarding instead.
+
+## Admin login returns HTTP 429
+
+**Symptom:** The generic sign-in error repeats and the response has `Retry-After`.
+
+**Cause:** Five failed attempts for a client/account pair or ten client-wide failures triggered a 15-minute process-local lock.
+
+**Solution:** Wait for `Retry-After`, then verify credentials and MFA. Investigate repeated failures in deployment telemetry without logging credentials. For distributed deployments, configure the shared host/WAF limiter consistently.
 
 ## Admin redirects back to login
 
 **Likely causes:** Cookie blocked, session expired, signing secret changed, hostname changed, or inconsistent production HTTPS settings.
 
-**Solution:** Check browser storage for `gtbs_admin_session`, verify hostname/HTTPS, then log in again. Changing the session secret invalidates every session by design.
+**Solution:** Check browser storage for `__Host-gtbs_admin_session` in production (`gtbs_admin_session` in development), verify hostname/HTTPS, then log in again. Changing the session secret, admin email, or `ADMIN_SESSION_VERSION` invalidates sessions by design.
 
 ## Admin login reports a hydration mismatch
 
@@ -50,6 +66,8 @@
 
 **Solution:** Fix by category and rerun full lint. During scoped work run focused ESLint too, but never report a focused pass as a full repository pass.
 
+**Observed 2026-08-31:** The production-auth change's focused ESLint passed, while repository-wide `npm run lint` still reported the pre-existing 28 errors and 14 warnings in the categories above.
+
 ## Build ends with `spawn EPERM`
 
 **Symptom:** `npm run build` compiles, then cannot start the TypeScript worker on Windows.
@@ -65,6 +83,8 @@
 5. Do not claim a successful production build until exit code 0.
 
 **Observed 2026-08-30:** Bundle compilation and direct TypeScript validation succeeded; worker spawn was denied afterward.
+
+**Observed 2026-08-31:** Node's built-in test runner hit the same sandbox child-process denial. Running the focused suite in a permitted terminal passed; the production build also completed in the permitted environment. Treat an external pass as environment-specific evidence, not permission to bypass normal workstation controls.
 
 ## External images fail
 

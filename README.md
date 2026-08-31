@@ -11,10 +11,13 @@ npm run dev
 
 Copy `.env.example` to `.env` and configure required values before using integrations or admin login. Never commit real environment values.
 
+For production admin credentials, run `npm run admin:setup` in a private interactive terminal, save the generated values in the deployment secret manager, and enroll the generated URI in an authenticator app. Production rejects plaintext `ADMIN_PASSWORD`.
+
 ## Quality checks
 
 ```bash
 npx tsc --noEmit
+npm run test:admin-auth
 npm run lint
 npm run build
 ```

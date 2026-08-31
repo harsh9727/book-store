@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 
 const REMEMBERED_EMAIL_KEY = "gtbs-admin-email";
 
-export default function AdminLoginForm() {
+export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }) {
   const router = useRouter();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const rememberMeInputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +51,7 @@ export default function AdminLoginForm() {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
+    const oneTimeCode = String(formData.get("oneTimeCode") || "").replace(/\s+/g, "");
     const rememberMe = formData.get("rememberMe") === "on";
     const nextErrors: { email?: string; password?: string } = {};
 
@@ -62,9 +63,13 @@ export default function AdminLoginForm() {
       nextErrors.password = "Enter your admin password.";
     }
 
+    if (mfaRequired && !/^\d{6}$/.test(oneTimeCode)) {
+      setServerError("Enter the 6-digit code from your authenticator app.");
+    }
+
     setFieldErrors(nextErrors);
 
-    if (Object.keys(nextErrors).length > 0) {
+    if (Object.keys(nextErrors).length > 0 || (mfaRequired && !/^\d{6}$/.test(oneTimeCode))) {
       return;
     }
 
@@ -73,8 +78,11 @@ export default function AdminLoginForm() {
     try {
       const response = await fetch("/api/admin/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, rememberMe }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-GTBS-Admin-Request": "1",
+        },
+        body: JSON.stringify({ email, password, oneTimeCode: oneTimeCode || undefined, rememberMe }),
       });
       const result = (await response.json()) as { message?: string };
 
@@ -244,6 +252,32 @@ export default function AdminLoginForm() {
                   </p>
                 )}
               </div>
+
+              {mfaRequired && (
+                <div>
+                  <label htmlFor="admin-one-time-code" className="text-sm font-semibold text-gray-800">
+                    Authenticator code
+                  </label>
+                  <div className="relative mt-2">
+                    <ShieldCheck
+                      size={17}
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      id="admin-one-time-code"
+                      name="oneTimeCode"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      required
+                      className="h-12 w-full rounded-lg border border-gray-300 bg-white pl-11 pr-4 text-sm tracking-[0.3em] text-gray-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                      placeholder="000000"
+                    />
+                  </div>
+                </div>
+              )}
 
               <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm text-gray-700">
                 <input

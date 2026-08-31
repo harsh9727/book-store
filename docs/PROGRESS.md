@@ -9,7 +9,7 @@
 | Cart/wishlist | Prototype | Client-side; no documented backend |
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
-| Admin auth | First version complete | Single environment-backed admin, signed cookie |
+| Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
 | Admin dashboard | First layout complete | Responsive; figures/actions are presentation data |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
@@ -21,10 +21,18 @@
 2. Build functional admin Orders and Products modules.
 3. Replace dashboard presentation figures with server data.
 4. Resolve repository-wide lint failures.
-5. Harden admin auth for production.
+5. Add shared deployment/WAF login throttling and database-backed admin lifecycle when hosting requirements are chosen.
 6. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-08-31 - Admin authentication production hardening
+
+- Outcome: replaced production plaintext-password authentication with a fail-closed scrypt password verifier and required TOTP MFA; added strict request schemas/body limits, generic failures, bounded login lockout, same-origin mutation checks, stronger versioned session claims, production `__Host-` cookies, security headers, a private setup generator, and focused regression tests.
+- Main files/areas: admin auth/request/rate-limit utilities, login/logout route handlers and UI, `next.config.ts`, environment template, setup/test scripts, and authentication/security documentation.
+- Data/API/security impact: production deployments must migrate from `ADMIN_PASSWORD` by running `npm run admin:setup`; default sessions remain 8 hours and remembered sessions are reduced from 30 to 7 days; incrementing `ADMIN_SESSION_VERSION` revokes all sessions. The rate-limit store is process-local, so multi-instance deployments still require a shared host/WAF control.
+- Verification and exact result: focused ESLint passed; `npx tsc --noEmit` passed; `npm run test:admin-auth` passed 7/7 tests; `npm run build` completed successfully with 53/53 static pages and dynamic admin routes; live HTTP checks returned 403 without the same-origin marker, 401 for invalid credentials, 200 for valid login/dashboard/logout, and redirected the post-logout dashboard request to `/admin/login`. Repository-wide `npm run lint` remains blocked by existing unrelated debt (28 errors, 14 warnings) already cataloged in troubleshooting.
+- Known limitations or next step: authentication still represents one environment-backed admin; add shared persistent throttling, database identities/roles, per-session revocation, audit logging, and real single-use password reset when the production infrastructure is selected.
 
 ### 2026-08-30 - Admin login hydration fixed
 

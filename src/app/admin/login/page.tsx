@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import AdminLoginForm from "@/components/admin/AdminLoginForm";
-import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
+import {
+  ADMIN_SESSION_COOKIE,
+  isAdminMfaRequired,
+  verifyAdminSession,
+} from "@/lib/adminAuth";
 import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -18,5 +22,5 @@ export default async function AdminLoginPage() {
     redirect("/admin/dashboard");
   }
 
-  return <AdminLoginForm />;
+  return <AdminLoginForm mfaRequired={isAdminMfaRequired()} />;
 }

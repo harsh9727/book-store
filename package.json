@@ -2,11 +2,14 @@
   "name": "e-com",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "admin:setup": "node scripts/generate-admin-auth-config.mjs",
+    "test:admin-auth": "node --experimental-strip-types --test tests/admin-auth.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

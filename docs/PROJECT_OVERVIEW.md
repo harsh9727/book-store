@@ -14,7 +14,7 @@ The repository currently implements a frontend-led storefront using local TypeSc
 - EmailJS for the contact form
 - Swiper for carousels
 - Zod and React Hook Form are available for forms
-- Node crypto for admin session signing
+- Node crypto for scrypt password hashing, TOTP MFA, and admin session signing
 
 ## Routes and current state
 
@@ -25,8 +25,8 @@ The repository currently implements a frontend-led storefront using local TypeSc
 | Shopping | `/cart`, `/wishlist`, `/checkout` | Client experience; no production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
-| Admin | `/admin/login`, `/admin/dashboard` | Server-protected login and responsive shell |
-| Admin API | `/api/admin/login`, `/api/admin/logout` | Signed-cookie login/logout |
+| Admin | `/admin/login`, `/admin/dashboard` | Server-protected login, production-required MFA, responsive shell |
+| Admin API | `/api/admin/login`, `/api/admin/logout` | Validated, throttled, same-origin signed-cookie login/logout |
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 
 The public storefront has no cookie-consent banner or consent cookie. Selecting Gujarati opts into the Google Translate integration and its language cookie. Admin authentication continues to use a signed HttpOnly session cookie.
@@ -39,14 +39,16 @@ Catalog and content live in `src/data/`: products, categories, blogs, galleries,
 
 1. Install dependencies with `npm install` or the declared package manager, pnpm.
 2. Copy `.env.example` to `.env` and provide local values. Never commit `.env`.
-3. Run `npm run dev`.
-4. Open `http://localhost:3000`.
+3. Run `npm run admin:setup` to generate the production password hash, session secret, and authenticator secret; store the output in local/deployment secret configuration.
+4. Run `npm run dev`.
+5. Open `http://localhost:3000`.
 
 Useful checks:
 
 ```bash
 npm run lint
 npx tsc --noEmit
+npm run test:admin-auth
 npm run build
 ```
 
@@ -58,13 +60,21 @@ npm run build
 | `GOOGLE_SITE_VERIFICATION` | Search Console verification | Server config |
 | `NEXT_PUBLIC_EMAILJS_*` | Contact-form EmailJS configuration | Public/browser |
 | `ADMIN_EMAIL` | Admin identity | Server only |
-| `ADMIN_PASSWORD` | Admin secret | Server only |
+| `ADMIN_PASSWORD_HASH` | Generated scrypt password verifier; required in production | Server only |
 | `ADMIN_SESSION_SECRET` | HMAC signing secret | Server only |
+| `ADMIN_SESSION_VERSION` | Increment to invalidate every active admin session | Server only |
+| `ADMIN_REQUIRE_MFA` | Must be `true` in production | Server only |
+| `ADMIN_TOTP_SECRET` | Base32 authenticator secret | Server only |
+| `ADMIN_TRUST_PROXY` | Trust deployment-provided client IP headers for rate-limit keys | Server only |
+
+`ADMIN_PASSWORD` remains a local-development migration fallback only and is rejected in production. Do not deploy it.
 
 ## Current limitations
 
 - Dashboard product, order, revenue, and inventory figures are presentation data.
 - Admin items other than Overview are placeholders.
-- Admin auth supports one environment-configured account and no roles.
+- Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
+- Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
+- Password recovery prepares a support email; it does not issue an automated reset token.
 - There is no documented payment gateway or persistent order workflow.
 - Full repository lint has existing failures listed in `TROUBLESHOOTING.md`.

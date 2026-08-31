@@ -43,15 +43,19 @@ Typed objects in `src/data/` feed pages and components. Product IDs form dynamic
 
 ## Admin authentication
 
-1. Login posts email, password, and remember-me to `/api/admin/login`.
-2. The route checks required environment configuration.
-3. Credentials use timing-safe comparison.
-4. Email and expiry are signed using HMAC-SHA256.
-5. The token is stored in an HttpOnly, SameSite Strict cookie.
-6. Protected pages verify it server-side and redirect invalid sessions.
-7. Logout expires the cookie.
+1. Login posts email, password, optional TOTP code, and remember-me to `/api/admin/login` with a same-origin marker header.
+2. Login/logout reject an absent or mismatched Origin, cross-site fetch metadata, or absent marker header.
+3. The login route caps request size, validates a strict Zod schema, checks process-local client/account throttles, and returns generic credential failures.
+4. Production configuration fails closed unless it has a valid scrypt password hash, a 32+ character session secret, and TOTP MFA enabled with a valid Base32 secret.
+5. Password verification uses scrypt; identifiers, HMAC signatures, and TOTP codes use timing-safe comparison where applicable.
+6. The session payload contains audience, normalized identity, issue/expiry times, a random ID, and a rotation version, then receives an HMAC-SHA256 signature.
+7. The token is stored in an HttpOnly, SameSite Strict, high-priority cookie. Production uses a Secure `__Host-` cookie.
+8. Protected pages verify the signature, identity, audience, timestamps, maximum lifetime, and version server-side before rendering.
+9. Logout passes the same-origin check and expires the cookie. Incrementing `ADMIN_SESSION_VERSION` invalidates all existing sessions.
 
-Default sessions last 8 hours; remember-me sessions last 30 days.
+Default sessions last 8 hours; remember-me sessions last 7 days.
+
+The in-memory rate-limit store is bounded and suitable as an application-layer control for a single process. It is not shared across replicas and resets on restart, so production hosting must add a shared WAF/gateway/store limit for distributed deployments. `ADMIN_TRUST_PROXY` must only be enabled when the deployment proxy overwrites forwarded client-IP headers.
 
 ## Decisions
 
@@ -70,10 +74,16 @@ Default sessions last 8 hours; remember-me sessions last 30 days.
 
 - **Status:** Temporary
 - **Reason:** Protects the first admin area without a database.
-- **Consequence:** No roles, reset tokens, revocation list, or audit log.
+- **Consequence:** No roles, reset tokens, per-session revocation list, or audit log. Production credentials are nevertheless hashed and MFA-protected.
 
 ### ADR-004: Documentation in definition of done
 
 - **Status:** Accepted
 - **Reason:** Behavior and decisions must remain discoverable.
 - **Consequence:** Every change updates progress and affected topic documents.
+
+### ADR-005: Fail-closed production admin configuration
+
+- **Status:** Accepted
+- **Reason:** Plaintext deployment passwords, missing MFA, short signing secrets, and insecure cookies are not acceptable for the administration boundary.
+- **Consequence:** Existing deployments must run `npm run admin:setup`, install the TOTP secret in an authenticator, configure HTTPS/canonical URL, and replace the legacy `ADMIN_PASSWORD` before production login becomes available.

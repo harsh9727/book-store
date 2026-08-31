@@ -44,6 +44,9 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Keep server secrets and crypto out of Client Components.
 - Do not mutate imported domain data.
 - Introduce typed service/repository functions when persistence is added.
+- Admin state-changing requests require same-origin verification and the `X-GTBS-Admin-Request` marker.
+- Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
+- Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.
 
 ## Git and files
 

@@ -49,6 +49,15 @@
 - Make user errors actionable.
 - Do not log passwords, session cookies, or private form content.
 - Invalid input returns controlled 4xx; missing server config returns 5xx/503.
+- Authentication failures use generic messages; rate-limit responses include `Retry-After` without revealing whether an account exists.
+
+## Authentication
+
+- Parse admin route bodies with strict schemas and cap body size before expensive credential work.
+- Keep password hashing, MFA verification, session signing, request-origin checks, and throttling in server-only utilities.
+- Admin mutation fetches include `X-GTBS-Admin-Request: 1`; route handlers also validate Origin and fetch-site metadata.
+- Production cookies are Secure, HttpOnly, SameSite Strict, high priority, host-only, and scoped to `/`.
+- Add auth regression coverage to `tests/admin-auth.test.ts` whenever an authentication invariant changes.
 
 ## Verification
 
@@ -57,6 +66,7 @@ For changed files:
 ```bash
 npx eslint path/to/changed-file.tsx
 npx tsc --noEmit
+npm run test:admin-auth
 ```
 
 For releases or routing/config changes:
