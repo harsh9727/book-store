@@ -11,13 +11,13 @@ import {
   Sparkles,
   ChevronDown,
 } from "lucide-react";
-import { galleries } from "@/data/galleries";
+import type { GalleryItem } from "@/types/gallery";
 import { galleryFaqs } from "@/data/faqs";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
 export default function GalleryPage() {
-  const [galleryItems, setGalleryItems] = useState(galleries);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -35,7 +35,7 @@ export default function GalleryPage() {
     let active = true;
     fetch("/api/content/galleries", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : Promise.reject()))
-      .then((result: { items: typeof galleries }) => {
+      .then((result: { items: GalleryItem[] }) => {
         if (active) setGalleryItems(result.items);
       })
       .catch(() => undefined);

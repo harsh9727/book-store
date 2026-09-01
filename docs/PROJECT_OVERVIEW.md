@@ -38,7 +38,7 @@ Gallery cards and canonical detail URLs use each album's stored title-derived sl
 
 ## Data
 
-Products, categories, FAQs, and initial blog/gallery seed content live in `src/data/`. Blog/gallery mutations are written atomically to ignored runtime storage at `storage/content.json`; when that file is absent, the repository reads the committed seeds. This is single-instance filesystem persistence, not a database. Cart and wishlist currently have no state layer or persistence implementation.
+Products, categories, and FAQs live in `src/data/`; blog content still uses the committed seed file, while gallery content is intentionally empty in source and must be created through admin CRUD. Blog/gallery mutations are written atomically to ignored runtime storage at `storage/content.json`; when that file is absent, the repository falls back to the committed blog seed and an empty gallery list. This is single-instance filesystem persistence, not a database. Cart and wishlist currently have no state layer or persistence implementation.
 
 ## Local setup
 

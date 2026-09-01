@@ -46,7 +46,7 @@ Catalog, blog, and gallery filter/search handlers reset pagination within the sa
 
 ## Blog and gallery content flow
 
-1. The committed arrays in `src/data/blogs.ts` and `src/data/galleries.ts` are initial fallback seeds.
+1. `src/data/blogs.ts` remains the only committed content seed; `src/data/galleries.ts` is intentionally empty so gallery data is admin-managed only.
 2. `contentRepository.ts` reads `storage/content.json` when present and validates the complete document with Zod; invalid persisted data fails instead of being silently replaced.
 3. Admin create/update/delete requests require the signed admin session, matching Origin/fetch metadata, and `X-GTBS-Admin-Request: 1`.
 4. Mutations are serialized in-process and written through a uniquely named temporary file followed by an atomic rename.

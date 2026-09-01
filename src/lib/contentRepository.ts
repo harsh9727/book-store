@@ -3,7 +3,6 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { blogs as seededBlogs } from "@/data/blogs";
-import { galleries as seededGalleries } from "@/data/galleries";
 import type { BlogPost } from "@/types/blog";
 import type { GalleryItem } from "@/types/gallery";
 import {
@@ -28,7 +27,7 @@ function seededStore(): ContentStore {
   return {
     version: 1,
     blogs: structuredClone(seededBlogs),
-    galleries: structuredClone(seededGalleries),
+    galleries: [],
   };
 }
 

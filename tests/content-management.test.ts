@@ -32,7 +32,8 @@ const galleryDraft = {
   location: "Ahmedabad",
   coverImage: "https://example.com/cover.webp",
   description: "Event description.",
-  tags: ["Community"],
+  subtitle: "Community story and photo showcase",
+  organizer: "GTBS Community Team",
   photos: [],
 };
 
@@ -41,11 +42,9 @@ test("accepts valid blog and gallery drafts", () => {
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
 });
 
-test("accepts the complete seeded content store", () => {
-  assert.equal(
-    contentStoreSchema.safeParse({ version: 1, blogs, galleries }).success,
-    true
-  );
+test("accepts an empty gallery store without any committed gallery fallback", () => {
+  assert.deepEqual(galleries, []);
+  assert.equal(contentStoreSchema.safeParse({ version: 1, blogs, galleries }).success, true);
 });
 
 test("rejects invalid slugs and dates", () => {
