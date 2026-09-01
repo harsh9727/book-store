@@ -67,6 +67,13 @@ function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogP
     .filter(Boolean);
   const firstParagraph = paragraphs[0]?.replace(/\s+/gu, " ").trim() ?? "";
   const fallbackSummary = firstParagraph.slice(0, 200) || parsed.title;
+  const gujaratiParagraphs = parsed.gujarati.contentText
+    .split(/\n\s*\n/gu)
+    .map((body) => body.trim())
+    .filter(Boolean);
+  const gujaratiSummary =
+    gujaratiParagraphs[0]?.replace(/\s+/gu, " ").trim().slice(0, 200) ||
+    parsed.gujarati.title;
 
   return {
     id,
@@ -86,6 +93,16 @@ function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogP
     richContent:
       parsed.richContent ?? plainTextToBlogRichText(parsed.contentText),
     content: paragraphs.map((body) => ({ body })),
+    gujarati: {
+      title: parsed.gujarati.title,
+      category: parsed.gujarati.category,
+      summary: gujaratiSummary,
+      author: parsed.gujarati.author,
+      richContent:
+        parsed.gujarati.richContent ??
+        plainTextToBlogRichText(parsed.gujarati.contentText),
+      content: gujaratiParagraphs.map((body) => ({ body })),
+    },
     ...(previous?.comments ? { comments: previous.comments } : {}),
   };
 }

@@ -28,6 +28,7 @@ interface AdminRichTextEditorProps {
   initialContent: BlogRichTextDocument;
   onChange: (content: BlogRichTextDocument) => void;
   error?: string;
+  ariaLabel?: string;
 }
 
 interface ToolbarButtonProps {
@@ -68,6 +69,7 @@ export default function AdminRichTextEditor({
   initialContent,
   onChange,
   error,
+  ariaLabel = "Article content",
 }: AdminRichTextEditorProps) {
   const onChangeRef = useRef(onChange);
   const [linkError, setLinkError] = useState("");
@@ -96,7 +98,7 @@ export default function AdminRichTextEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        "aria-label": "Article content",
+        "aria-label": ariaLabel,
         class:
           "min-h-80 px-4 py-3 text-base leading-7 text-slate-800 outline-none sm:min-h-96",
       },

@@ -1,6 +1,9 @@
 export class JsonBodyError extends Error {
-  constructor(message: string, readonly status: 400 | 413) {
+  readonly status: 400 | 413;
+
+  constructor(message: string, status: 400 | 413) {
     super(message);
+    this.status = status;
   }
 }
 

@@ -9,8 +9,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getBlog, getBlogs } from "@/lib/contentRepository";
-import Breadcrumb from "@/components/common/Breadcrumb";
-import BlogRichText from "@/components/blog/BlogRichText";
+import {
+  LocalizedBlogArticle,
+  LocalizedBlogBreadcrumb,
+  LocalizedBlogText,
+} from "@/components/blog/LocalizedBlogContent";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   absoluteUrl,
@@ -77,12 +80,6 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
     .filter((item) => String(item.id) !== String(blog.id))
     .slice(0, 3);
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Blogs", href: "/blogs" },
-    { label: blog.title },
-  ];
-
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -113,13 +110,13 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
       <JsonLd data={articleStructuredData} />
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
       {/* Breadcrumbs */}
-      <Breadcrumb items={breadcrumbItems} />
+      <LocalizedBlogBreadcrumb blog={blog} />
 
       {/* Article Header */}
       <header className="mb-8">
         <div className="flex flex-wrap items-center gap-3 text-sm description tracking-wide mb-3">
           <span className="rounded-full bg-orange-100 px-3 py-1 font-semibold text-orange-700">
-            {blog.category}
+            <LocalizedBlogText blog={blog} field="category" />
           </span>
           <span className="flex items-center gap-1 text-gray-500">
             <CalendarDays size={18} />
@@ -128,7 +125,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         </div>
 
         <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl lg:text-5xl leading-tight">
-          {blog.title}
+          <LocalizedBlogText blog={blog} field="title" />
         </h1>
 
         {/* Author info pill */}
@@ -141,8 +138,8 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             className="h-12 w-12 rounded-full object-cover ring-2 ring-orange-200"
           />
           <div>
-            <p className="text-lg font-semibold description tracking-wide text-orange-600">{blog.author.name}</p>
-            <p className="text-sm description tracking-wide text-gray-600">{blog.author.role}</p>
+            <p className="text-lg font-semibold description tracking-wide text-orange-600"><LocalizedBlogText blog={blog} field="authorName" /></p>
+            <p className="text-sm description tracking-wide text-gray-600"><LocalizedBlogText blog={blog} field="authorRole" /></p>
           </div>
         </div>
       </header>
@@ -159,25 +156,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
       </div>
 
       {/* Formatted Article Content */}
-      {blog.richContent ? (
-        <BlogRichText document={blog.richContent} />
-      ) : (
-        <div className="space-y-8 text-gray-800">
-          {blog.content.map((section, idx) => (
-            <div key={idx} className="space-y-4">
-              {section.heading && (
-                <h2 className="title mt-6 text-2xl font-bold text-gray-900">
-                  {section.heading}
-                </h2>
-              )}
-
-              <p className="description text-base leading-relaxed text-gray-700">
-                {section.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      <LocalizedBlogArticle blog={blog} />
 
       {/* Note / Buy Books Callout Card */}
       <div className="mt-10 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-amber-50/40 to-white p-6 md:p-8 shadow-sm">
@@ -238,10 +217,10 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
                   />
                 </div>
                 <span className="text-sm description tracking-wide font-semibold text-orange-600 mb-1">
-                  {item.category}
+                  <LocalizedBlogText blog={item} field="category" />
                 </span>
                 <h4 className="line-clamp-2 text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors title">
-                  {item.title}
+                  <LocalizedBlogText blog={item} field="title" />
                 </h4>
                 <span className="text-sm description tracking-wide text-gray-400 mt-2">{item.date}</span>
               </Link>

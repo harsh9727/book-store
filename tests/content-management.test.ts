@@ -2,8 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { galleries } from "../src/data/galleries.ts";
-import { blogDraftSchema, contentStoreSchema, galleryDraftSchema } from "../src/lib/contentValidation.ts";
+import {
+  blogDraftSchema,
+  contentStoreSchema,
+  galleryDraftSchema,
+  MAX_BLOG_DRAFT_BODY_BYTES,
+} from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
+import { localizeBlog } from "../src/lib/localizedBlog.ts";
+import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
+import type { BlogPost } from "../src/types/blog.ts";
 
 const blogDraft = {
   title: "A valid article",
@@ -20,6 +28,16 @@ const blogDraft = {
   },
   tags: ["News"],
   contentText: "Article body.",
+  gujarati: {
+    title: "માન્ય લેખ",
+    category: "સમાચાર",
+    author: {
+      name: "જીટીબીએસ સંપાદકીય ટીમ",
+      role: "સંપાદક",
+      bio: "",
+    },
+    contentText: "લેખનું લખાણ.",
+  },
 };
 
 const richContent = {
@@ -61,9 +79,78 @@ test("accepts valid blog and gallery drafts", () => {
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
 });
 
+test("requires complete Gujarati fields on blog drafts", () => {
+  assert.equal(
+    blogDraftSchema.safeParse({ ...blogDraft, gujarati: undefined }).success,
+    false,
+  );
+  assert.equal(
+    blogDraftSchema.safeParse({
+      ...blogDraft,
+      gujarati: { ...blogDraft.gujarati, contentText: "" },
+    }).success,
+    false,
+  );
+});
+
+test("allows the bounded bilingual Blog body above the default JSON limit", async () => {
+  const payload = JSON.stringify({ value: "x".repeat(140 * 1024) });
+  const makeRequest = () =>
+    new Request("https://example.com/api/admin/content/blogs", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: payload,
+    });
+
+  await assert.rejects(
+    () => readBoundedJson(makeRequest()),
+    (error: unknown) =>
+      error instanceof JsonBodyError && error.status === 413,
+  );
+  assert.deepEqual(
+    await readBoundedJson(makeRequest(), MAX_BLOG_DRAFT_BODY_BYTES),
+    JSON.parse(payload),
+  );
+});
+
+test("selects stored Gujarati blog content without changing shared fields", () => {
+  const storedBlog: BlogPost = {
+    id: "blog-1",
+    title: blogDraft.title,
+    slug: blogDraft.slug,
+    category: blogDraft.category,
+    date: blogDraft.date,
+    image: blogDraft.image,
+    summary: blogDraft.summary,
+    author: blogDraft.author,
+    content: [{ body: blogDraft.contentText }],
+    gujarati: {
+      title: blogDraft.gujarati.title,
+      category: blogDraft.gujarati.category,
+      summary: blogDraft.gujarati.contentText,
+      author: blogDraft.gujarati.author,
+      content: [{ body: blogDraft.gujarati.contentText }],
+    },
+  };
+
+  const localized = localizeBlog(storedBlog, "gu");
+  assert.equal(localized.title, "માન્ય લેખ");
+  assert.equal(localized.category, "સમાચાર");
+  assert.equal(localized.content[0]?.body, "લેખનું લખાણ.");
+  assert.equal(localized.slug, storedBlog.slug);
+  assert.equal(localizeBlog(storedBlog, "en"), storedBlog);
+});
+
 test("accepts allow-listed Tiptap JSON and rejects unsafe rich content", () => {
   assert.equal(
     blogDraftSchema.safeParse({ ...blogDraft, richContent }).success,
+    true,
+  );
+  assert.equal(
+    blogDraftSchema.safeParse({
+      ...blogDraft,
+      gujarati: { ...blogDraft.gujarati, richContent },
+    }).success,
     true,
   );
 
@@ -85,6 +172,13 @@ test("accepts allow-listed Tiptap JSON and rejects unsafe rich content", () => {
   assert.equal(
     blogDraftSchema.safeParse({ ...blogDraft, richContent: unsafeLink })
       .success,
+    false,
+  );
+  assert.equal(
+    blogDraftSchema.safeParse({
+      ...blogDraft,
+      gujarati: { ...blogDraft.gujarati, richContent: unsafeLink },
+    }).success,
     false,
   );
   assert.equal(

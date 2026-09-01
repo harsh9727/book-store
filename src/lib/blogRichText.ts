@@ -90,6 +90,15 @@ export function blogToRichText(blog?: BlogPost): BlogRichTextDocument {
   };
 }
 
+export function blogToGujaratiRichText(blog?: BlogPost): BlogRichTextDocument {
+  if (!blog?.gujarati) return emptyBlogRichText();
+  if (blog.gujarati.richContent) return blog.gujarati.richContent;
+
+  return plainTextToBlogRichText(
+    blog.gujarati.content.map((section) => section.body).join("\n\n"),
+  );
+}
+
 export function blogRichTextToPlainText(
   document: BlogRichTextDocument,
 ): string {

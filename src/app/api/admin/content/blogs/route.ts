@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 
 import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { createBlog } from "@/lib/contentRepository";
-import { blogDraftSchema } from "@/lib/contentValidation";
+import {
+  blogDraftSchema,
+  MAX_BLOG_DRAFT_BODY_BYTES,
+} from "@/lib/contentValidation";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
 
 function response(body: object, status = 200) {
@@ -14,7 +17,7 @@ export async function POST(request: NextRequest) {
   if (!verifyAdminApiRequest(request)) return response({ message: "Unauthorized." }, 401);
   let body: unknown;
   try {
-    body = await readBoundedJson(request);
+    body = await readBoundedJson(request, MAX_BLOG_DRAFT_BODY_BYTES);
   } catch (error) {
     return response(
       { message: error instanceof JsonBodyError ? error.message : "Invalid JSON body." },

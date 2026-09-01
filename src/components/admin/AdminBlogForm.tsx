@@ -10,6 +10,7 @@ import AdminRichTextEditor from "@/components/admin/AdminRichTextEditor";
 import type { BlogPost } from "@/types/blog";
 import {
   blogRichTextToPlainText,
+  blogToGujaratiRichText,
   blogToRichText,
   MAX_BLOG_CONTENT_CHARACTERS,
   MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
@@ -35,10 +36,14 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [articleError, setArticleError] = useState("");
+  const [gujaratiArticleError, setGujaratiArticleError] = useState("");
   const [bannerError, setBannerError] = useState("");
   const [avatarError, setAvatarError] = useState("");
   const [richContent, setRichContent] = useState(() =>
     blogToRichText(initialItem),
+  );
+  const [gujaratiRichContent, setGujaratiRichContent] = useState(() =>
+    blogToGujaratiRichText(initialItem),
   );
 
   const chooseBanner = (file: File | undefined, input: HTMLInputElement) => {
@@ -77,8 +82,23 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
     const contentText = blogRichTextToPlainText(richContent).trim();
+    const gujaratiContentText = blogRichTextToPlainText(
+      gujaratiRichContent,
+    ).trim();
     if (!contentText) {
       setArticleError("Add article content before saving.");
+      return;
+    }
+    if (!gujaratiContentText) {
+      setGujaratiArticleError("Add Gujarati article content before saving.");
+      return;
+    }
+    if (
+      gujaratiContentText.length > MAX_BLOG_CONTENT_CHARACTERS ||
+      JSON.stringify(gujaratiRichContent).length >
+        MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
+    ) {
+      setGujaratiArticleError("Gujarati article content is too long.");
       return;
     }
     if (
@@ -93,6 +113,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     setBusy(true);
     setError("");
     setArticleError("");
+    setGujaratiArticleError("");
     try {
       let image = initialItem?.image || "";
       let imageKey = initialItem?.imageKey;
@@ -127,6 +148,17 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
         },
         contentText,
         richContent,
+        gujarati: {
+          title: String(values.get("gujaratiTitle") || "").trim(),
+          category: String(values.get("gujaratiCategory") || "").trim(),
+          author: {
+            name: String(values.get("gujaratiAuthorName") || "").trim(),
+            role: String(values.get("gujaratiAuthorRole") || "").trim(),
+            bio: "",
+          },
+          contentText: gujaratiContentText,
+          richContent: gujaratiRichContent,
+        },
       };
       const url = initialItem
         ? `/api/admin/content/blogs/${encodeURIComponent(String(initialItem.id))}`
@@ -151,46 +183,44 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="mb-5 flex flex-col items-start justify-between gap-4 sm:flex-row">
-        <div>
-          <h2 className="text-lg font-bold">
-            {initialItem ? "Edit blog details" : "Add a new blog"}
-          </h2>
-          <p className="text-xs text-slate-500">
-            Banner: JPG, PNG, or WebP; maximum 500 KB.
-          </p>
+    <section className="space-y-5">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
+          <div>
+            <h2 className="text-lg font-bold">
+              {initialItem ? "Edit blog details" : "Add a new blog"}
+            </h2>
+            <p className="text-xs text-slate-500">
+              Banner: JPG, PNG, or WebP; maximum 500 KB.
+            </p>
+          </div>
+          <Link
+            href="/admin/blogs"
+            className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          >
+            <ArrowLeft size={16} />
+            Back to list
+          </Link>
         </div>
-        <Link
-          href="/admin/blogs"
-          className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-        >
-          <ArrowLeft size={16} />
-          Back to list
-        </Link>
+
+        {error && (
+          <p
+            role="alert"
+            className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            {error}
+          </p>
+        )}
       </div>
 
-      {error && (
-        <p
-          role="alert"
-          className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          {error}
-        </p>
-      )}
-
-      <form onSubmit={saveBlog} className="grid gap-4 sm:grid-cols-2">
-        <label className="sm:col-span-2 text-sm font-semibold">
-          Title
-          <input
-            name="title"
-            required
-            maxLength={220}
-            defaultValue={initialItem?.title}
-            className={inputClass}
-          />
-        </label>
-        <div className="grid min-w-0 gap-4 sm:col-span-2 md:grid-cols-3">
+      <form onSubmit={saveBlog} className="grid gap-5 sm:grid-cols-2">
+        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+          <legend className="px-2 text-base font-bold text-slate-800">
+            Common fields
+          </legend>
+          <p className="sm:col-span-2 text-xs text-slate-500">
+            These values are shared by the English and Gujarati versions.
+          </p>
           <label className="min-w-0 text-sm font-semibold">
             Slug
             <input
@@ -198,16 +228,6 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               maxLength={220}
               defaultValue={initialItem?.slug}
               placeholder="auto-from-title"
-              className={inputClass}
-            />
-          </label>
-          <label className="min-w-0 text-sm font-semibold">
-            Category
-            <input
-              name="category"
-              required
-              maxLength={100}
-              defaultValue={initialItem?.category}
               className={inputClass}
             />
           </label>
@@ -222,95 +242,187 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               className={inputClass}
             />
           </label>
-        </div>
-        <label className="sm:col-span-2 text-sm font-semibold">
-          Banner image
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            required={!initialItem?.image}
-            aria-invalid={Boolean(bannerError)}
-            aria-describedby={bannerError ? "blog-banner-error" : undefined}
-            onChange={(event) =>
-              chooseBanner(event.currentTarget.files?.[0], event.currentTarget)
-            }
-            className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
-          />
-          <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
-            <ImageUp size={13} />
-            {bannerFile?.name ||
-              (initialItem?.image
-                ? "Current banner will be kept."
-                : "Choose an image.")}
-          </span>
-          {bannerError && (
-            <span
-              id="blog-banner-error"
-              role="alert"
-              className="mt-1.5 block text-xs font-medium text-red-600"
-            >
-              {bannerError}
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Banner image
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              required={!initialItem?.image}
+              aria-invalid={Boolean(bannerError)}
+              aria-describedby={bannerError ? "blog-banner-error" : undefined}
+              onChange={(event) =>
+                chooseBanner(event.currentTarget.files?.[0], event.currentTarget)
+              }
+              className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
+            />
+            <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
+              <ImageUp size={13} />
+              {bannerFile?.name ||
+                (initialItem?.image
+                  ? "Current banner will be kept."
+                  : "Choose an image.")}
             </span>
-          )}
-        </label>
-        <label className="text-sm font-semibold">
-          Author name
-          <input
-            name="authorName"
-            required
-            defaultValue={initialItem?.author.name || "GTBS Editorial Team"}
-            className={inputClass}
-          />
-        </label>
-        <label className="text-sm font-semibold">
-          Author role
-          <input
-            name="authorRole"
-            required
-            defaultValue={initialItem?.author.role || "Editor"}
-            className={inputClass}
-          />
-        </label>
-        <label className="sm:col-span-2 text-sm font-semibold">
-          Author avatar image
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            aria-invalid={Boolean(avatarError)}
-            aria-describedby={avatarError ? "blog-avatar-error" : undefined}
-            onChange={(event) =>
-              chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)
-            }
-            className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
-          />
-          <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
-            <ImageUp size={13} />
-            {avatarFile?.name ||
-              (initialItem?.author.avatar
-                ? "Current avatar will be kept."
-                : "No avatar selected — default example image will be used.")}
-          </span>
-          {avatarError && (
-            <span
-              id="blog-avatar-error"
-              role="alert"
-              className="mt-1.5 block text-xs font-medium text-red-600"
-            >
-              {avatarError}
+            {bannerError && (
+              <span
+                id="blog-banner-error"
+                role="alert"
+                className="mt-1.5 block text-xs font-medium text-red-600"
+              >
+                {bannerError}
+              </span>
+            )}
+          </label>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Author avatar image
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              aria-invalid={Boolean(avatarError)}
+              aria-describedby={avatarError ? "blog-avatar-error" : undefined}
+              onChange={(event) =>
+                chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)
+              }
+              className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
+            />
+            <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
+              <ImageUp size={13} />
+              {avatarFile?.name ||
+                (initialItem?.author.avatar
+                  ? "Current avatar will be kept."
+                  : "No avatar selected — default example image will be used.")}
             </span>
-          )}
-        </label>
-        <div className="sm:col-span-2">
-          <p className="mb-1.5 text-sm font-semibold">Article content</p>
-          <AdminRichTextEditor
-            initialContent={richContent}
-            error={articleError}
-            onChange={(content) => {
-              setRichContent(content);
-              if (articleError) setArticleError("");
-            }}
-          />
-        </div>
+            {avatarError && (
+              <span
+                id="blog-avatar-error"
+                role="alert"
+                className="mt-1.5 block text-xs font-medium text-red-600"
+              >
+                {avatarError}
+              </span>
+            )}
+          </label>
+        </fieldset>
+        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+          <legend className="px-2 text-base font-bold text-slate-800">
+            English content
+          </legend>
+          <p className="sm:col-span-2 text-xs text-slate-500">
+            Shown while the storefront language is English.
+          </p>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Title
+            <input
+              name="title"
+              required
+              maxLength={220}
+              defaultValue={initialItem?.title}
+              className={inputClass}
+            />
+          </label>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Category
+            <input
+              name="category"
+              required
+              maxLength={100}
+              defaultValue={initialItem?.category}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Author name
+            <input
+              name="authorName"
+              required
+              defaultValue={initialItem?.author.name || "GTBS Editorial Team"}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Author role
+            <input
+              name="authorRole"
+              required
+              defaultValue={initialItem?.author.role || "Editor"}
+              className={inputClass}
+            />
+          </label>
+          <div className="sm:col-span-2">
+            <p className="mb-1.5 text-sm font-semibold">Article content</p>
+            <AdminRichTextEditor
+              initialContent={richContent}
+              error={articleError}
+              onChange={(content) => {
+                setRichContent(content);
+                if (articleError) setArticleError("");
+              }}
+            />
+          </div>
+        </fieldset>
+        <fieldset className="grid gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+          <legend className="px-2 text-base font-bold text-orange-700">
+            Gujarati content
+          </legend>
+          <p className="sm:col-span-2 text-xs text-slate-600">
+            This saved content is shown when the storefront language is Gujarati.
+          </p>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Gujarati title
+            <input
+              name="gujaratiTitle"
+              lang="gu"
+              required
+              maxLength={220}
+              defaultValue={initialItem?.gujarati?.title}
+              className={inputClass}
+            />
+          </label>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Gujarati category
+            <input
+              name="gujaratiCategory"
+              lang="gu"
+              required
+              maxLength={100}
+              defaultValue={initialItem?.gujarati?.category}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Gujarati author name
+            <input
+              name="gujaratiAuthorName"
+              lang="gu"
+              required
+              maxLength={120}
+              defaultValue={initialItem?.gujarati?.author.name}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Gujarati author role
+            <input
+              name="gujaratiAuthorRole"
+              lang="gu"
+              required
+              maxLength={160}
+              defaultValue={initialItem?.gujarati?.author.role}
+              className={inputClass}
+            />
+          </label>
+          <div className="sm:col-span-2" lang="gu">
+            <p className="mb-1.5 text-sm font-semibold">Gujarati article content</p>
+            <AdminRichTextEditor
+              initialContent={gujaratiRichContent}
+              error={gujaratiArticleError}
+              ariaLabel="Gujarati article content"
+              onChange={(content) => {
+                setGujaratiRichContent(content);
+                if (gujaratiArticleError) setGujaratiArticleError("");
+              }}
+            />
+          </div>
+        </fieldset>
         <div className="sm:col-span-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Link
             href="/admin/blogs"

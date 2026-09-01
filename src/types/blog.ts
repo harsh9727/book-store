@@ -49,6 +49,19 @@ export interface BlogRichTextDocument extends BlogRichTextNode {
   content: BlogRichTextNode[];
 }
 
+export interface BlogLocalizedContent {
+  title: string;
+  category: string;
+  summary: string;
+  author: {
+    name: string;
+    role: string;
+    bio?: string;
+  };
+  richContent?: BlogRichTextDocument;
+  content: BlogContentSection[];
+}
+
 export interface BlogPost {
   id: string | number;
   title: string;
@@ -67,5 +80,6 @@ export interface BlogPost {
   tags?: string[];
   richContent?: BlogRichTextDocument;
   content: BlogContentSection[];
+  gujarati?: BlogLocalizedContent;
   comments?: BlogComment[];
 }

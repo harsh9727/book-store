@@ -10,6 +10,8 @@ import type {
   BlogRichTextNode,
 } from "@/types/blog";
 
+export const MAX_BLOG_DRAFT_BODY_BYTES = 256 * 1024;
+
 const imageReferenceSchema = z
   .string()
   .trim()
@@ -143,6 +145,39 @@ const blogCommentSchema = z
   })
   .strict();
 
+const blogLocalizedAuthorSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    role: z.string().trim().min(1).max(160),
+    bio: z.string().trim().max(1_500).optional(),
+  })
+  .strict();
+
+const blogLocalizedContentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(220),
+    category: z.string().trim().min(1).max(100),
+    summary: z.string().trim().min(1).max(2_000),
+    author: blogLocalizedAuthorSchema,
+    richContent: blogRichTextDocumentSchema.optional(),
+    content: z.array(blogContentSectionSchema).min(1).max(50),
+  })
+  .strict();
+
+const blogLocalizedDraftSchema = z
+  .object({
+    title: z.string().trim().min(1).max(220),
+    category: z.string().trim().min(1).max(100),
+    author: blogLocalizedAuthorSchema,
+    contentText: z
+      .string()
+      .trim()
+      .min(1)
+      .max(MAX_BLOG_CONTENT_CHARACTERS),
+    richContent: blogRichTextDocumentSchema.optional(),
+  })
+  .strict();
+
 export const blogPostSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
@@ -160,6 +195,7 @@ export const blogPostSchema = z
     tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
     richContent: blogRichTextDocumentSchema.optional(),
     content: z.array(blogContentSectionSchema).min(1).max(50),
+    gujarati: blogLocalizedContentSchema.optional(),
     comments: z.array(blogCommentSchema).max(500).optional(),
   })
   .strict();
@@ -184,6 +220,7 @@ export const blogDraftSchema = z
       .min(1)
       .max(MAX_BLOG_CONTENT_CHARACTERS),
     richContent: blogRichTextDocumentSchema.optional(),
+    gujarati: blogLocalizedDraftSchema,
   })
   .strict();
 

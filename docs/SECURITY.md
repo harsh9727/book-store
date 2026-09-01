@@ -28,8 +28,8 @@ This records implemented controls and known risks; it is not a formal security c
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
 - Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
-- Content JSON bodies are capped at 128 KiB and validated with strict Zod schemas.
-- Blog rich-text payloads are additionally bounded and allow-list Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Public rich text is rendered through explicit React elements without `dangerouslySetInnerHTML`.
+- Blog create/update JSON bodies are capped at 256 KiB for the two authored language documents; other content JSON bodies retain the 128 KiB default. Every payload is validated with a strict Zod schema.
+- English and Gujarati Blog rich-text payloads are independently bounded and use the same allow-list of Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Both public language variants render through explicit React elements without `dangerouslySetInnerHTML`.
 - Upload bodies are capped for one cover plus twelve 500 KiB photos and multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
 - Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 

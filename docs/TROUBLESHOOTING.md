@@ -102,6 +102,16 @@
 
 **Observed 2026-09-01:** after unused-file/dependency cleanup, production compilation succeeded in 4.1 seconds before the same TypeScript-worker denial. Full lint, generated route types, standalone TypeScript, and the direct 7/7 admin-auth suite passed.
 
+## Build cannot fetch configured Google Fonts
+
+**Symptom:** `npm run build` reports `next/font` failures for Fraunces and Inter because it cannot connect to `fonts.googleapis.com`.
+
+**Cause:** the build environment has restricted or unavailable outbound network access. The application source and TypeScript compilation may still be valid, but `next/font/google` downloads the configured font assets during production compilation.
+
+**Solution:** run the build in the approved deployment or workstation environment with outbound HTTPS access to Google Fonts, or make a separately reviewed change to self-host the fonts with `next/font/local`. Do not disable TLS verification.
+
+**Observed 2026-09-01:** the restricted build failed only at the existing Google Font fetches; the permitted `npm run build` rerun compiled, type-checked, generated all pages, and exited 0.
+
 ## pnpm registry reports `UNABLE_TO_VERIFY_LEAF_SIGNATURE`
 
 **Symptom:** a dependency install retries registry metadata requests and then fails with `ERR_PNPM_META_FETCH_FAIL` plus `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, even though TLS verification is enabled.
@@ -129,6 +139,16 @@
 **Solution:** Run `npx next typegen`, then rerun `npx tsc --noEmit`. If generation itself remains stale, stop the development server and remove only the workspace `.next` directory before regenerating; never delete a broader directory.
 
 **Observed 2026-08-31:** stale `/admin/cms` generated references caused the failure; `npx next typegen` refreshed the route graph and TypeScript then passed.
+
+## Node strip-only tests reject a TypeScript parameter property
+
+**Symptom:** a `node --experimental-strip-types` test fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` and points to a constructor parameter such as `readonly status`.
+
+**Cause:** Node's strip-only TypeScript loader removes erasable types but does not transform parameter properties because they require emitted JavaScript assignments.
+
+**Resolved 2026-09-01:** declare the class property normally and assign it inside the constructor. This preserves runtime behavior and lets the focused Node test runner import the module without a transpilation step.
+
+**Prevention:** files imported directly by the repository's strip-only test scripts must use erasable TypeScript syntax; avoid enums, namespaces, and constructor parameter properties in that import graph.
 
 ## External images fail
 

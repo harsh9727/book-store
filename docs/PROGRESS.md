@@ -25,6 +25,30 @@
 
 ## Change log
 
+### 2026-09-01 - Standalone Gallery form cards
+
+- Outcome: matched the Blog form's card-based layout on Gallery create/edit pages. Heading/actions, Gallery details, and Gallery images now render as distinct responsive cards; details contain all text metadata while cover upload, extra-photo upload, validation feedback, retained images, and pending previews stay together in the image card.
+- Main files/areas: admin Gallery create/edit form, project overview, product rules, and progress documentation.
+- Data/API/security impact: none; field names, validation, 500 KiB image limits, 12-photo cap, pending preview lifecycle, uploads, request payloads, persistence, and public rendering are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run build` compiled successfully in 1.6 seconds, completed TypeScript and all 36 static pages, and exited 0; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: authenticated browser-level visual review is still recommended at mobile and desktop widths; the cards retain the existing responsive field and preview grids.
+
+### 2026-09-01 - Standalone Blog form cards
+
+- Outcome: replaced the single enclosing Blog form panel with distinct responsive cards for the heading/actions, Common fields, English content, and Gujarati content. The Common fields card groups Slug, Date, Banner image, and Author avatar; each language card keeps its own title, category, author name/role, and article editor.
+- Main files/areas: admin Blog create/edit form, project overview, product rules, and progress documentation.
+- Data/API/security impact: none; input names, required states, file validation, upload behavior, request payloads, persistence, and public localization are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run build` compiled successfully in 3.2 seconds, completed TypeScript and all 36 static pages, and exited 0; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: authenticated browser-level visual review is still recommended at mobile and desktop widths; the standalone cards retain the existing responsive field grids.
+
+### 2026-09-01 - Admin-managed Gujarati Blog content
+
+- Outcome: added a separate required Gujarati section to Blog create/edit forms for title, category, author name/role, and rich article content. The public home Blog cards, Blog listing/search/categories, Blog detail content, breadcrumbs, and related articles now switch reactively to the saved Gujarati variant when Gujarati is selected; English remains unchanged, and legacy posts without saved Gujarati fields retain their existing translation fallback.
+- Main files/areas: Blog domain types and rich-text helpers, strict content schemas and file repository, admin Blog form, public Blog localization components/list/detail views, focused content tests, and affected project/architecture/rules/security documentation.
+- Data/API/security impact: new Blog create/update drafts require a bounded Gujarati content block. Stored records accept an optional Gujarati block for backward compatibility. Both English and Gujarati rich-text documents use the same allow-listed nodes, marks, attributes, link protocols, and explicit React renderer. The Blog-only JSON request cap is 256 KiB to accommodate both bounded documents; other content JSON requests remain at 128 KiB. Request authentication, same-origin protection, upload handling, and shared fields such as slug/date/images are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run test:content` passed 12/12 tests, including required Gujarati fields, locale selection, Gujarati rich-text safety, and the bilingual request-body cap; final permitted `npm run build` compiled successfully in 2.9 seconds, completed TypeScript and all 36 static pages, and exited 0. The first restricted build attempt could not fetch the existing Google Fonts dependency; the documented permitted rerun completed successfully. `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: existing stored posts do not gain authored Gujarati content automatically; edit and save them through the admin form to add it. Until then they remain readable through the existing Google Translate fallback. Browser-level visual verification should be performed with an authenticated admin session and both storefront language choices.
+
 ### 2026-09-01 - Tiptap rich-text Blog editor
 
 - Outcome: replaced the Blog admin Article content textarea with a responsive Tiptap editor. The toolbar supports bold, italic, underline, strikethrough, level-two/three headings, bullet and numbered lists, block quotes, code blocks, horizontal rules, safe links, unlink, undo, and redo. Saved formatting now renders on the public Blog detail page; existing plain/section-based articles still load into the editor and retain their public fallback rendering.
