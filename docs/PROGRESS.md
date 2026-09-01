@@ -25,13 +25,13 @@
 
 ## Change log
 
-### 2026-09-01 - Standalone Gallery form cards
+### 2026-09-01 - Gujarati Gallery CRUD and standalone cards
 
-- Outcome: matched the Blog form's card-based layout on Gallery create/edit pages. Heading/actions, Gallery details, and Gallery images now render as distinct responsive cards; details contain all text metadata while cover upload, extra-photo upload, validation feedback, retained images, and pending previews stay together in the image card.
-- Main files/areas: admin Gallery create/edit form, project overview, product rules, and progress documentation.
-- Data/API/security impact: none; field names, validation, 500 KiB image limits, 12-photo cap, pending preview lifecycle, uploads, request payloads, persistence, and public rendering are unchanged.
-- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run build` compiled successfully in 1.6 seconds, completed TypeScript and all 36 static pages, and exited 0; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
-- Known limitations or next step: authenticated browser-level visual review is still recommended at mobile and desktop widths; the cards retain the existing responsive field and preview grids.
+- Outcome: removed Subtitle from Gallery create/edit and mutation payloads, then added Blog-style Common fields, English content, Gujarati content, and Gallery images cards. Gujarati title, category, location, description, and optional organizer are authored separately. Public Gallery filtering/search, album cards, detail content, breadcrumbs, organizer, and related albums switch reactively to saved Gujarati data.
+- Main files/areas: Gallery domain types and localization helper, strict content schemas, admin Gallery form/list, public Gallery list/detail localization components, focused content tests, and affected project/architecture/rules/security documentation.
+- Data/API/security impact: new Gallery create/update drafts require a strict bounded Gujarati content block and reject the removed Subtitle field. Stored Gallery records keep Subtitle and Gujarati optional for backward compatibility, so existing runtime data continues to load. Authentication, same-origin checks, 500 KiB image limits, 12-photo cap, previews, uploads, shared slug/date/images, and atomic persistence are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run test:content` passed 14/14 tests, including required Gujarati Gallery content, reactive locale selection, and Subtitle rejection; permitted `npm run build` compiled successfully in 4.3 seconds, completed TypeScript and all 36 static pages, and exited 0; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: existing Gallery records do not gain authored Gujarati content automatically; edit and save them to add it. Until then their public text retains the existing Google Translate fallback. Photo filenames/titles and captions are not editable translation fields in the current CRUD scope.
 
 ### 2026-09-01 - Standalone Blog form cards
 

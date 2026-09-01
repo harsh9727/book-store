@@ -31,7 +31,6 @@ export default function AdminGalleryManager({ initialItems }: AdminGalleryManage
     const matchesCategory = category === "all" || gallery.category === category;
     const searchableText = [
       gallery.title,
-      gallery.subtitle,
       gallery.slug,
       gallery.category,
       gallery.location,
@@ -114,7 +113,7 @@ export default function AdminGalleryManager({ initialItems }: AdminGalleryManage
               ) : pageItems.map((gallery) => (
                 <tr key={gallery.id} className="hover:bg-slate-50/70">
                   <td className="px-5 py-3 sm:px-6"><div className="relative h-14 w-20 overflow-hidden rounded-lg bg-slate-100"><Image src={gallery.coverImage} alt="" fill className="object-cover" sizes="80px" /></div></td>
-                  <td className="max-w-[300px] px-4 py-3"><p className="line-clamp-2 font-semibold text-slate-900">{gallery.title}</p><p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{gallery.subtitle || gallery.slug}</p></td>
+                  <td className="max-w-[300px] px-4 py-3"><p className="line-clamp-2 font-semibold text-slate-900">{gallery.title}</p><p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{gallery.slug}</p></td>
                   <td className="px-4 py-3"><span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-700">{gallery.category}</span></td>
                   <td className="px-4 py-3 text-slate-600"><p className="whitespace-nowrap">{gallery.date}</p><p className="mt-0.5 text-xs text-slate-500">{gallery.location}</p></td>
                   <td className="px-4 py-3 text-slate-600">{gallery.photos.length} / {MAX_GALLERY_PHOTOS}</td>

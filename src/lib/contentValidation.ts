@@ -234,6 +234,16 @@ export const galleryPhotoSchema = z
   })
   .strict();
 
+const galleryLocalizedContentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(220),
+    category: z.string().trim().min(1).max(100),
+    location: z.string().trim().min(1).max(240),
+    description: z.string().trim().min(1).max(20_000),
+    organizer: optionalText(240),
+  })
+  .strict();
+
 export const galleryItemSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
@@ -248,10 +258,13 @@ export const galleryItemSchema = z
     description: z.string().trim().min(1).max(20_000),
     organizer: optionalText(240),
     photos: z.array(galleryPhotoSchema).max(12),
+    gujarati: galleryLocalizedContentSchema.optional(),
   })
   .strict();
 
-export const galleryDraftSchema = galleryItemSchema.omit({ id: true });
+export const galleryDraftSchema = galleryItemSchema
+  .omit({ id: true, subtitle: true, gujarati: true })
+  .extend({ gujarati: galleryLocalizedContentSchema });
 
 export const contentStoreSchema = z
   .object({

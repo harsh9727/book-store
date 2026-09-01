@@ -6,12 +6,15 @@ import {
   CalendarDays,
   MapPin,
   Camera,
-  User,
   ArrowRight,
 } from "lucide-react";
 import { getGalleries, getGallery } from "@/lib/contentRepository";
-import Breadcrumb from "@/components/common/Breadcrumb";
 import GalleryLightbox from "@/components/gallery/GalleryLightbox";
+import {
+  LocalizedGalleryBreadcrumb,
+  LocalizedGalleryOrganizer,
+  LocalizedGalleryText,
+} from "@/components/gallery/LocalizedGalleryContent";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   absoluteUrl,
@@ -69,12 +72,6 @@ export default async function GalleryDetailPage({
     .filter((item) => String(item.id) !== String(album.id))
     .slice(0, 2);
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Gallery", href: "/gallery" },
-    { label: album.title },
-  ];
-
   const galleryStructuredData = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
@@ -101,14 +98,14 @@ export default async function GalleryDetailPage({
       <JsonLd data={galleryStructuredData} />
       <div className="container mx-auto px-4 py-8 md:py-10">
       {/* Breadcrumbs */}
-      <Breadcrumb items={breadcrumbItems} />
+      <LocalizedGalleryBreadcrumb gallery={album} />
 
       <div className="md:p-6 p-3 rounded-xl bg-white shadow-sm border border-gray-400">
         {/* Hero Title & Event Details Header */}
         <header className="mb-8 max-w-4xl">
           <div className="flex flex-wrap items-center gap-3 text-xs mb-3">
             <span className="rounded-full bg-orange-100 px-3.5 py-1 text-xs description tracking-wide font-semibold text-orange-700">
-              {album.category}
+              <LocalizedGalleryText gallery={album} field="category" />
             </span>
             <div className="flex items-center gap-1">
               <CalendarDays size={16} className="text-orange-600" />
@@ -116,20 +113,15 @@ export default async function GalleryDetailPage({
             </div>
             <div className="flex items-center gap-1">
               <MapPin size={16} className="text-orange-600" />
-              <p className="text-sm text-gray-500 description tracking-wide">{album.location}</p>
+              <p className="text-sm text-gray-500 description tracking-wide"><LocalizedGalleryText gallery={album} field="location" /></p>
             </div>
           </div>
 
           <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-            {album.title}
+            <LocalizedGalleryText gallery={album} field="title" />
           </h1>
 
-          {album.organizer && (
-            <p className="mt-3 flex items-center gap-1.5 text-sm description tracking-wide text-gray-500">
-              <User size={16} className="text-orange-600" />
-              <span>Organized by <strong className="text-gray-800 ml-1">{album.organizer}</strong></span>
-            </p>
-          )}
+          <LocalizedGalleryOrganizer gallery={album} />
         </header>
 
         {/* Story & Background Info Box */}
@@ -138,7 +130,7 @@ export default async function GalleryDetailPage({
             About This Event
           </h2>
           <p className="description text-sm md:text-base leading-relaxed text-gray-700">
-            {album.description}
+            <LocalizedGalleryText gallery={album} field="description" />
           </p>
         </div>
 
@@ -195,10 +187,10 @@ export default async function GalleryDetailPage({
 
                 <div className="flex flex-col justify-center">
                   <span className="text-sm description tracking-wide font-semibold text-orange-600">
-                    {other.category}
+                    <LocalizedGalleryText gallery={other} field="category" />
                   </span>
                   <h4 className="title text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors mt-1">
-                    {other.title}
+                    <LocalizedGalleryText gallery={other} field="title" />
                   </h4>
                   <p className="text-sm description tracking-wide text-gray-500 mt-1">{other.date}</p>
                 </div>

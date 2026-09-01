@@ -10,8 +10,10 @@ import {
 } from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
+import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
 import type { BlogPost } from "../src/types/blog.ts";
+import type { GalleryItem } from "../src/types/gallery.ts";
 
 const blogDraft = {
   title: "A valid article",
@@ -69,14 +71,58 @@ const galleryDraft = {
   location: "Ahmedabad",
   coverImage: "https://example.com/cover.webp",
   description: "Event description.",
-  subtitle: "Community story and photo showcase",
   organizer: "GTBS Community Team",
   photos: [],
+  gujarati: {
+    title: "સમુદાય કાર્યક્રમ",
+    category: "કાર્યક્રમો",
+    location: "અમદાવાદ",
+    description: "કાર્યક્રમનું વર્ણન.",
+    organizer: "જીટીબીએસ સમુદાય ટીમ",
+  },
 };
 
 test("accepts valid blog and gallery drafts", () => {
   assert.equal(blogDraftSchema.safeParse(blogDraft).success, true);
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
+});
+
+test("requires Gujarati Gallery content and rejects the removed Subtitle field", () => {
+  assert.equal(
+    galleryDraftSchema.safeParse({ ...galleryDraft, gujarati: undefined }).success,
+    false,
+  );
+  assert.equal(
+    galleryDraftSchema.safeParse({
+      ...galleryDraft,
+      subtitle: "Removed field",
+    }).success,
+    false,
+  );
+});
+
+test("selects stored Gujarati Gallery content without changing shared fields", () => {
+  const storedGallery: GalleryItem = {
+    id: "gallery-1",
+    slug: galleryDraft.slug,
+    title: galleryDraft.title,
+    category: galleryDraft.category,
+    date: galleryDraft.date,
+    location: galleryDraft.location,
+    coverImage: galleryDraft.coverImage,
+    description: galleryDraft.description,
+    organizer: galleryDraft.organizer,
+    photos: galleryDraft.photos,
+    gujarati: galleryDraft.gujarati,
+  };
+
+  const localized = localizeGallery(storedGallery, "gu");
+  assert.equal(localized.title, "સમુદાય કાર્યક્રમ");
+  assert.equal(localized.category, "કાર્યક્રમો");
+  assert.equal(localized.location, "અમદાવાદ");
+  assert.equal(localized.description, "કાર્યક્રમનું વર્ણન.");
+  assert.equal(localized.slug, storedGallery.slug);
+  assert.equal(localizeGallery(storedGallery, "en"), storedGallery);
 });
 
 test("requires complete Gujarati fields on blog drafts", () => {

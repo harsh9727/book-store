@@ -15,8 +15,11 @@ import type { GalleryItem } from "@/types/gallery";
 import { galleryFaqs } from "@/data/faqs";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeGallery } from "@/lib/localizedGallery";
 
 export default function GalleryPage() {
+  const { language } = useLanguage();
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,13 +53,14 @@ export default function GalleryPage() {
   );
 
   const filteredGalleries = galleryItems.filter((item) => {
+    const localizedItem = localizeGallery(item, language);
     const matchesCategory =
       selectedCategory === "All" || item.category === selectedCategory;
     const matchesSearch =
       searchQuery.trim() === "" ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchQuery.toLowerCase());
+      localizedItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      localizedItem.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      localizedItem.location.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -80,7 +84,22 @@ export default function GalleryPage() {
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-          {categories.map((cat) => (
+          {categories.map((cat) => {
+            const categorySource = galleryItems.find(
+              (gallery) =>
+                gallery.category === cat &&
+                (language !== "gu" || gallery.gujarati),
+            ) ?? galleryItems.find((gallery) => gallery.category === cat);
+            const categoryLabel =
+              cat === "All"
+                ? language === "gu"
+                  ? "બધા"
+                  : cat
+                : localizeGallery(categorySource!, language).category;
+            const usesStoredGujarati =
+              language === "gu" && (cat === "All" || Boolean(categorySource?.gujarati));
+
+            return (
             <button
               key={cat}
               type="button"
@@ -91,9 +110,15 @@ export default function GalleryPage() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {cat}
+              <span
+                className={usesStoredGujarati ? "notranslate" : undefined}
+                translate={usesStoredGujarati ? "no" : undefined}
+              >
+                {categoryLabel}
+              </span>
             </button>
-          ))}
+            );
+          })}
         </div>
 
         {/* Search Input */}
@@ -119,7 +144,14 @@ export default function GalleryPage() {
       ) : (
         <div className="space-y-10">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {filteredGalleries.slice(0, visibleCount).map((album) => (
+            {filteredGalleries.slice(0, visibleCount).map((sourceAlbum) => {
+              const album = localizeGallery(sourceAlbum, language);
+              const localizedAttributes =
+                language === "gu" && sourceAlbum.gujarati
+                  ? { className: "notranslate", translate: "no" as const }
+                  : {};
+
+              return (
               <article
                 key={album.id}
                 className="group flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
@@ -138,7 +170,7 @@ export default function GalleryPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                   <span className="absolute left-4 top-4 rounded-full bg-orange-600 px-3.5 py-1 pb-1.5 text-xs font-semibold tracking-wide text-white shadow-sm description">
-                    {album.category}
+                    <span {...localizedAttributes}>{album.category}</span>
                   </span>
 
                   <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 pt-1 pb-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-sm shadow-sm description">
@@ -156,17 +188,28 @@ export default function GalleryPage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <MapPin size={14} className="text-orange-600" />
-                      <p className="text-xs description tracking-wide">{album.location}</p>
+                      <p
+                        className={`${localizedAttributes.className ?? ""} text-xs description tracking-wide`}
+                        translate={localizedAttributes.translate}
+                      >
+                        {album.location}
+                      </p>
                     </div>
                   </div>
 
                   <Link href={`/gallery/${album.slug}`}>
-                    <h2 className="title text-xl sm:text-2xl font-bold text-gray-900 transition-colors group-hover:text-orange-600">
+                    <h2
+                      className={`${localizedAttributes.className ?? ""} title text-xl sm:text-2xl font-bold text-gray-900 transition-colors group-hover:text-orange-600`}
+                      translate={localizedAttributes.translate}
+                    >
                       {album.title}
                     </h2>
                   </Link>
 
-                  <p className="description mt-2.5 tracking-wide text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                  <p
+                    className={`${localizedAttributes.className ?? ""} description mt-2.5 tracking-wide text-sm text-gray-600 line-clamp-2 leading-relaxed`}
+                    translate={localizedAttributes.translate}
+                  >
                     {album.description}
                   </p>
 
@@ -185,7 +228,8 @@ export default function GalleryPage() {
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
 
           {/* View More Pagination */}

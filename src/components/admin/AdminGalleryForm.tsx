@@ -122,7 +122,6 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       const payload = {
         slug: slugify(enteredSlug || title),
         title,
-        subtitle: String(values.get("subtitle") || "").trim() || undefined,
         category: String(values.get("category") || "").trim(),
         date: String(values.get("date") || "").trim(),
         location: String(values.get("location") || "").trim(),
@@ -131,6 +130,14 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
         description: String(values.get("description") || "").trim(),
         organizer: String(values.get("organizer") || "").trim() || undefined,
         photos,
+        gujarati: {
+          title: String(values.get("gujaratiTitle") || "").trim(),
+          category: String(values.get("gujaratiCategory") || "").trim(),
+          location: String(values.get("gujaratiLocation") || "").trim(),
+          description: String(values.get("gujaratiDescription") || "").trim(),
+          organizer:
+            String(values.get("gujaratiOrganizer") || "").trim() || undefined,
+        },
       };
       const url = initialItem
         ? `/api/admin/content/galleries/${encodeURIComponent(String(initialItem.id))}`
@@ -181,34 +188,51 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       <form onSubmit={saveGallery} className="grid gap-5 sm:grid-cols-2">
         <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
           <legend className="px-2 text-base font-bold text-slate-800">
-            Gallery details
+            Common fields
           </legend>
           <p className="sm:col-span-2 text-xs text-slate-500">
-            Add the public title, event details, and description.
+            These values are shared by the English and Gujarati versions.
+          </p>
+          <label className="text-sm font-semibold">
+            Slug
+            <input
+              name="slug"
+              defaultValue={initialItem?.slug}
+              placeholder="auto-from-title"
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Date
+            <input
+              name="date"
+              required
+              defaultValue={
+                initialItem?.date || new Date().toISOString().slice(0, 10)
+              }
+              className={inputClass}
+            />
+          </label>
+        </fieldset>
+
+        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+          <legend className="px-2 text-base font-bold text-slate-800">
+            English content
+          </legend>
+          <p className="sm:col-span-2 text-xs text-slate-500">
+            Shown while the storefront language is English.
           </p>
           <label className="sm:col-span-2 text-sm font-semibold">
             Title
             <input name="title" required maxLength={220} defaultValue={initialItem?.title} className={inputClass} />
           </label>
           <label className="text-sm font-semibold">
-            Slug
-            <input name="slug" defaultValue={initialItem?.slug} placeholder="auto-from-title" className={inputClass} />
-          </label>
-          <label className="text-sm font-semibold">
             Category
             <input name="category" required defaultValue={initialItem?.category} className={inputClass} />
           </label>
           <label className="text-sm font-semibold">
-            Date
-            <input name="date" required defaultValue={initialItem?.date || new Date().toISOString().slice(0, 10)} className={inputClass} />
-          </label>
-          <label className="text-sm font-semibold">
             Location
             <input name="location" required defaultValue={initialItem?.location} className={inputClass} />
-          </label>
-          <label className="sm:col-span-2 text-sm font-semibold">
-            Subtitle
-            <input name="subtitle" defaultValue={initialItem?.subtitle} className={inputClass} />
           </label>
           <label className="sm:col-span-2 text-sm font-semibold">
             Description
@@ -222,6 +246,70 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
 
         <fieldset className="grid gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
           <legend className="px-2 text-base font-bold text-orange-700">
+            Gujarati content
+          </legend>
+          <p className="sm:col-span-2 text-xs text-slate-600">
+            This saved content is shown when the storefront language is Gujarati.
+          </p>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Gujarati title
+            <input
+              name="gujaratiTitle"
+              lang="gu"
+              required
+              maxLength={220}
+              defaultValue={initialItem?.gujarati?.title}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Gujarati category
+            <input
+              name="gujaratiCategory"
+              lang="gu"
+              required
+              maxLength={100}
+              defaultValue={initialItem?.gujarati?.category}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            Gujarati location
+            <input
+              name="gujaratiLocation"
+              lang="gu"
+              required
+              maxLength={240}
+              defaultValue={initialItem?.gujarati?.location}
+              className={inputClass}
+            />
+          </label>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Gujarati description
+            <textarea
+              name="gujaratiDescription"
+              lang="gu"
+              required
+              maxLength={20000}
+              rows={5}
+              defaultValue={initialItem?.gujarati?.description}
+              className={textareaClass}
+            />
+          </label>
+          <label className="sm:col-span-2 text-sm font-semibold">
+            Gujarati organizer
+            <input
+              name="gujaratiOrganizer"
+              lang="gu"
+              maxLength={240}
+              defaultValue={initialItem?.gujarati?.organizer}
+              className={inputClass}
+            />
+          </label>
+        </fieldset>
+
+        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+          <legend className="px-2 text-base font-bold text-slate-800">
             Gallery images
           </legend>
           <p className="sm:col-span-2 text-xs text-slate-600">
