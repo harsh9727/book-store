@@ -120,7 +120,7 @@ export default function AdminGalleryManager({ initialItems }: AdminGalleryManage
                   <td className="px-4 py-3 text-slate-600">{gallery.photos.length} / {MAX_GALLERY_PHOTOS}</td>
                   <td className="px-5 py-3 sm:px-6">
                     <div className="flex justify-end gap-1">
-                      <Link href={`/gallery/${gallery.id}`} target="_blank" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label={`View ${gallery.title}`}><Eye size={16} /></Link>
+                      <Link href={`/gallery/${gallery.slug}`} target="_blank" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" aria-label={`View ${gallery.title}`}><Eye size={16} /></Link>
                       <Link href={`/admin/galleries/${gallery.id}/edit`} className="rounded-lg p-2 text-blue-600 hover:bg-blue-50" aria-label={`Edit ${gallery.title}`}><Edit3 size={16} /></Link>
                       <button type="button" disabled={busy} onClick={() => setPendingDelete(gallery)} className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:opacity-50" aria-label={`Delete ${gallery.title}`}><Trash2 size={16} /></button>
                     </div>

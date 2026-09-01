@@ -52,6 +52,10 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Blog and Gallery tables show at most 8 rows per page, support case-insensitive text search and category filtering, and reset to page 1 whenever either filter changes.
 - Blog and Gallery create, update, delete, and mutation failures must display an admin toast. Destructive table actions must use the shared confirmation modal and must not call the API until the admin explicitly confirms.
 - Client image type, size, and gallery-count validation messages must render below the file input that caused them, with accessible invalid-state attributes; do not place these field errors only in a form-level banner.
+- Valid pending Gallery photos must show an immediate removable preview marked `New`. Repeated selections append until the combined retained-plus-pending count reaches 12; temporary preview URLs must be revoked when no longer used.
+- Public Gallery detail pages display at most 8 photos initially in a responsive 1/2/4-column grid. View more reveals the next batch, and the lightbox must navigate only photos currently revealed to the visitor.
+- While the public Gallery lightbox is open, Left Arrow and Right Arrow navigate the revealed photo set and Escape closes it; keyboard listeners must be removed whenever the viewer is closed.
+- Public Gallery detail links and SEO URLs must use the stored title-derived slug. A resolvable non-canonical identifier must redirect to that slug URL; an unknown identifier returns not found.
 - Admin sidebars expose only implemented destinations: Overview, Blogs, and Gallery. Do not show placeholder navigation for unavailable modules.
 - Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.

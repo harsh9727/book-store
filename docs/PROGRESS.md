@@ -25,6 +25,46 @@
 
 ## Change log
 
+### 2026-09-01 - Use Gallery title slugs in public URLs
+
+- Outcome: replaced numeric Gallery detail links with the album's title-derived slug across public cards, related albums, admin View actions, metadata, structured data, and sitemap entries. Legacy numeric/detail aliases resolve the same record and redirect to its canonical slug URL.
+- Main files/areas: public Gallery list/detail routes, admin Gallery list action, sitemap, project overview, architecture, product rules, progress, and troubleshooting documentation.
+- Data/API/security impact: no content or persistence migration. Existing stored slugs are now the canonical public identifier; repository lookup still accepts IDs for backward compatibility, and unknown identifiers still return not found.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx next typegen` passed; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices; direct single-process content-management tests passed 5/5. `npm run build` compiled successfully in 4.3 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: changing a Gallery slug in admin changes its canonical URL; old custom slugs are not retained as aliases, while numeric IDs remain compatible redirects.
+
+### 2026-09-01 - Gallery lightbox keyboard navigation
+
+- Outcome: added keyboard controls to the public Gallery lightbox. Left Arrow opens the previous revealed photo, Right Arrow opens the next revealed photo, and Escape closes the viewer. Existing click controls now also have accessible labels.
+- Main files/areas: public Gallery lightbox, project overview, architecture, product rules, progress, and troubleshooting documentation.
+- Data/API/security impact: none. Keyboard navigation changes client interaction only and remains bounded to photos already revealed by View more.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from the existing Git LF-to-CRLF notice. `npm run build` compiled successfully in 4.1 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: authenticated/admin behavior and photo persistence are unaffected; browser visual testing still requires a runnable local/deployment server.
+
+### 2026-09-01 - Responsive public Gallery grid with View more
+
+- Outcome: changed the public Gallery detail photo collection to a responsive 1-column mobile, 2-column tablet, and 4-column desktop grid. Only the first 8 photos render initially; View more reveals the next batch, and hidden photos are excluded from lightbox navigation until revealed.
+- Main files/areas: public Gallery lightbox/grid component, Gallery detail section header, project overview, architecture, product rules, and progress documentation.
+- Data/API/security impact: none. This is client presentation state over the already loaded album photos; public data reads, admin CRUD, image storage, and upload constraints are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices. `npm run build` compiled successfully in 4.1 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: View more is client-side progressive disclosure, not server/query pagination; the current maximum album size is 12 photos.
+
+### 2026-09-01 - Allow local Gallery preview images through admin CSP
+
+- Outcome: fixed newly selected Gallery thumbnails rendering as broken images. The preview component already produced valid browser `blob:` URLs, but the admin Content Security Policy blocked that scheme; the admin-only image directive now permits local blob previews.
+- Main files/areas: Next.js admin security headers, security documentation, architecture, progress, and troubleshooting guidance.
+- Data/API/security impact: the admin `img-src` CSP now narrowly allows `blob:` alongside the existing same-origin, data, and UploadThing sources. Other resource directives, public headers, UploadThing uploads, accepted file rules, and persistence are unchanged. Preview URLs remain local, short-lived, and revoked by the form.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices. `npm run build` loaded the updated configuration and compiled successfully in 4.0 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: the admin server must be restarted after a CSP configuration change before browser headers update; refresh the form after restart.
+
+### 2026-09-01 - Preview newly selected Gallery photos before save
+
+- Outcome: Gallery extra photos now appear immediately in the thumbnail grid before submission. Pending files use local object-URL previews with an orange outline and `New` badge, can be individually removed, and additional file selections append instead of silently replacing the prior pending selection.
+- Main files/areas: Gallery admin form, project overview, architecture, product rules, progress, and image-upload troubleshooting guidance.
+- Data/API/security impact: no upload endpoint or persistence change. The existing client/server 500 KiB/type checks and combined 12-photo limit remain enforced; temporary browser preview URLs are revoked on removal or form unmount.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from the existing Git LF-to-CRLF notice; direct single-process content-management tests passed 5/5.
+- Known limitations or next step: previews represent local pending files, not completed UploadThing uploads; actual upload still begins only when the admin submits the form.
+
 ### 2026-09-01 - Place image validation beside its input
 
 - Outcome: moved client-side image validation feedback from the form-level error banner to the relevant file input. Blog banner, Gallery cover, and Gallery extra-photo errors now render directly below their own controls, with an error border/background and accessible `aria-invalid`/description linkage.

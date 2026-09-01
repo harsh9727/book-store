@@ -22,7 +22,7 @@ The repository currently implements a frontend-led storefront with a local TypeS
 | Area | Routes | Current state |
 | --- | --- | --- |
 | Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | UI and local product catalog |
-| Content | `/about`, `/blogs`, `/gallery`, `/contact` | Blog/gallery data is dynamic; other content is frontend/static |
+| Content | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact` | Blog/gallery data is dynamic; Gallery detail URLs use title-derived slugs |
 | Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
@@ -31,6 +31,10 @@ The repository currently implements a frontend-led storefront with a local TypeS
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 
 The public storefront has no cookie-consent banner or consent cookie. Selecting Gujarati opts into the Google Translate integration and its language cookie. Admin authentication continues to use a signed HttpOnly session cookie.
+
+Public Gallery detail pages show photos in a responsive 1/2/4-column grid. The first 8 are visible initially; View more reveals the remaining batch and expands the photos available to the lightbox. The viewer supports click controls plus Left Arrow, Right Arrow, and Escape keyboard controls.
+
+Gallery cards and canonical detail URLs use each album's stored title-derived slug. Legacy numeric Gallery URLs redirect to the matching slug route when the record still exists.
 
 ## Data
 
@@ -77,6 +81,7 @@ npm run build
 - Admin Orders, Products, Customers, Analytics, Settings, and Help are not implemented and are therefore not shown in the sidebar; Overview, Blogs, and Gallery are the available admin destinations.
 - Blog and Gallery index routes default to responsive tables with text search, category filtering, and 8-row client-side pagination. Add and Edit navigate to separate protected form routes; Save or Cancel returns to the related list, while View opens the corresponding public detail route. CRUD mutations report success/failure through admin-scoped toasts, and Delete requires confirmation in a custom modal.
 - Image selection errors are displayed directly below the affected banner, cover, or extra-photo input; general API/mutation failures remain form-level and toast notifications.
+- Newly selected Gallery extra photos render local previews before submission, are marked `New`, can be removed individually, and remain subject to the combined 12-photo limit.
 - Blog/gallery metadata persistence requires one writable persistent Node filesystem. Serverless/read-only/multi-replica deployments need a shared database repository before use.
 - Uploading images and then failing a later content mutation can leave an unreferenced UploadThing file that must be cleaned up manually.
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.

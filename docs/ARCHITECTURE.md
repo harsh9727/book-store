@@ -54,9 +54,17 @@ Catalog, blog, and gallery filter/search handlers reset pagination within the sa
 6. Images upload through the server-only UploadThing SDK. The browser never receives `UPLOADTHING_TOKEN`.
 7. Managed UploadThing keys are stored beside URLs. Replaced or deleted managed images are deleted best-effort from UploadThing; legacy/local/external seed images have no managed key and are never deleted remotely.
 
+On the public Gallery detail route, `GalleryLightbox` progressively exposes photos in batches of 8. The responsive grid uses 1 column on mobile, 2 on tablet, and 4 on desktop. Click and Left/Right keyboard navigation are bounded to the currently visible slice so undisclosed photos do not open before View more is selected; Escape closes the viewer. The document keyboard listener exists only while the lightbox is open and is removed on close/unmount.
+
+Gallery detail links, canonical metadata, structured data, and sitemap entries use the stored slug. `getGallery` continues to resolve either an ID or slug, allowing an incoming numeric URL to find the record and redirect to the canonical `/gallery/[slug]` address.
+
 The Blog and Gallery admin pages render through the shared `AdminContentShell`, which keeps dashboard-style navigation visible on desktop and a compact admin route bar on smaller screens. Admin navigation exposes only implemented destinations: Overview, Blogs, and Gallery. Their index routes render list-only tables and perform search, category filtering, and 8-row pagination client-side over the server-loaded collection; search/filter events reset the page directly instead of synchronizing it through an effect. Add links to `/admin/blogs/add` or `/admin/galleries/add`; row Edit links to the matching `/admin/.../[id]/edit` route. Those protected server pages load reusable client form components, edit pages fetch the identified record before rendering, and successful saves return to the related list. The admin layout owns a persistent Sonner toaster; create/update/delete outcomes publish there. Delete buttons first populate a shared client confirmation modal and call the protected endpoint only after explicit confirmation. The protected API remains the source of persistence.
 
 Image controls keep field-specific client validation state: Blog banner, Gallery cover, and Gallery extra photos each render their own validation message adjacent to the input. Cross-field, upload-provider, and API mutation failures remain general form errors and toasts.
+
+Gallery extra-photo selections are stored as pending `File` objects plus browser object URLs. The form appends valid selection rounds, renders pending thumbnails beside retained provider images, and revokes every temporary URL when removed or unmounted. Submission sends only the underlying files to the existing upload client; a local preview does not imply that UploadThing has completed.
+
+Because those pending thumbnails use browser `blob:` URLs, the admin-only CSP permits `blob:` in `img-src`. No other CSP directive accepts blob resources.
 
 The repository is intentionally a typed boundary, so it can later be replaced with a database implementation. The current file store is safe only for a single writable persistent Node instance; it does not coordinate multiple processes or replicas.
 

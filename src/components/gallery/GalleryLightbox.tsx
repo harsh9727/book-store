@@ -1,16 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { X, ChevronDown, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { GalleryPhoto } from "@/types/gallery";
 
 interface GalleryLightboxProps {
   photos: GalleryPhoto[];
 }
 
+const PHOTO_BATCH_SIZE = 8;
+
 export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PHOTO_BATCH_SIZE);
+  const visiblePhotos = photos.slice(0, visibleCount);
+  const hasMorePhotos = visibleCount < photos.length;
+  const isLightboxOpen = selectedPhotoIndex !== null;
+
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setSelectedPhotoIndex(null);
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        setSelectedPhotoIndex((current) => current === null ? null : (current + 1) % visiblePhotos.length);
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        setSelectedPhotoIndex((current) => current === null ? null : (current - 1 + visiblePhotos.length) % visiblePhotos.length);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen, visiblePhotos.length]);
 
   const openLightbox = (index: number) => {
     setSelectedPhotoIndex(index);
@@ -23,22 +54,22 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
   const nextPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (selectedPhotoIndex !== null) {
-      setSelectedPhotoIndex((selectedPhotoIndex + 1) % photos.length);
+      setSelectedPhotoIndex((selectedPhotoIndex + 1) % visiblePhotos.length);
     }
   };
 
   const prevPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (selectedPhotoIndex !== null) {
-      setSelectedPhotoIndex((selectedPhotoIndex - 1 + photos.length) % photos.length);
+      setSelectedPhotoIndex((selectedPhotoIndex - 1 + visiblePhotos.length) % visiblePhotos.length);
     }
   };
 
   return (
     <>
       {/* Photo Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {photos.map((photo, idx) => (
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        {visiblePhotos.map((photo, idx) => (
           <div
             key={photo.id}
             onClick={() => openLightbox(idx)}
@@ -74,6 +105,20 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
         ))}
       </div>
 
+      {hasMorePhotos && (
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((current) => Math.min(current + PHOTO_BATCH_SIZE, photos.length))}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-6 text-sm font-semibold text-orange-700 transition-colors hover:border-orange-300 hover:bg-orange-100"
+          >
+            View more photos
+            <ChevronDown size={17} />
+          </button>
+          <span className="text-xs text-gray-500">Showing {visiblePhotos.length} of {photos.length}</span>
+        </div>
+      )}
+
       {/* Lightbox Modal */}
       {selectedPhotoIndex !== null && (
         <div
@@ -84,6 +129,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           <button
             type="button"
             onClick={closeLightbox}
+            aria-label="Close photo viewer"
             className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <X size={20} />
@@ -93,6 +139,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           <button
             type="button"
             onClick={prevPhoto}
+            aria-label="View previous photo"
             className="absolute left-5 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <ChevronLeft size={24} />
@@ -102,6 +149,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           <button
             type="button"
             onClick={nextPhoto}
+            aria-label="View next photo"
             className="absolute right-5 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <ChevronRight size={24} />
@@ -114,23 +162,23 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           >
             <div className="relative h-[65vh] w-[80vw] max-w-4xl">
               <Image
-                src={photos[selectedPhotoIndex].url}
-                alt={photos[selectedPhotoIndex].title}
+                src={visiblePhotos[selectedPhotoIndex].url}
+                alt={visiblePhotos[selectedPhotoIndex].title}
                 fill
                 className="object-contain"
               />
             </div>
             <div className="mt-4 text-center text-white">
               <h3 className="title text-lg font-semibold">
-                {photos[selectedPhotoIndex].title}
+                {visiblePhotos[selectedPhotoIndex].title}
               </h3>
-              {photos[selectedPhotoIndex].caption && (
+              {visiblePhotos[selectedPhotoIndex].caption && (
                 <p className="description text-sm tracking-wide text-gray-300 mt-1 max-w-xl">
-                  {photos[selectedPhotoIndex].caption}
+                  {visiblePhotos[selectedPhotoIndex].caption}
                 </p>
               )}
               <span className="text-[14px] text-orange-400 mt-2 block">
-                {selectedPhotoIndex + 1} / {photos.length}
+                {selectedPhotoIndex + 1} / {visiblePhotos.length}
               </span>
             </div>
           </div>

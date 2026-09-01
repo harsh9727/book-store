@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -44,7 +44,7 @@ export async function generateMetadata({
     ...createPageMetadata({
       title: album.title,
       description: truncateDescription(album.description),
-      path: `/gallery/${album.id}`,
+      path: `/gallery/${album.slug}`,
       image: album.coverImage,
     }),
     keywords: [...album.tags, album.category, "GTBS events"],
@@ -61,6 +61,10 @@ export default async function GalleryDetailPage({
     notFound();
   }
 
+  if (id !== album.slug) {
+    redirect(`/gallery/${album.slug}`);
+  }
+
   const otherAlbums = (await getGalleries())
     .filter((item) => String(item.id) !== String(album.id))
     .slice(0, 2);
@@ -74,10 +78,10 @@ export default async function GalleryDetailPage({
   const galleryStructuredData = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
-    "@id": `${absoluteUrl(`/gallery/${album.id}`)}#gallery`,
+    "@id": `${absoluteUrl(`/gallery/${album.slug}`)}#gallery`,
     name: album.title,
     description: album.description,
-    url: absoluteUrl(`/gallery/${album.id}`),
+    url: absoluteUrl(`/gallery/${album.slug}`),
     image: absoluteUrl(album.coverImage),
     creator: {
       "@type": "Organization",
@@ -139,14 +143,14 @@ export default async function GalleryDetailPage({
         </div>
 
         {/* Photos Section Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Camera size={20} className="text-orange-600" />
             <h2 className="title text-2xl font-bold text-gray-900">
               Photo Collection ({album.photos.length})
             </h2>
           </div>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 sm:text-right">
             Click any photo to enlarge and browse
           </span>
         </div>
@@ -174,7 +178,7 @@ export default async function GalleryDetailPage({
             {otherAlbums.map((other) => (
               <Link
                 key={other.id}
-                href={`/gallery/${other.id}`}
+                href={`/gallery/${other.slug}`}
                 className="group flex flex-col sm:flex-row gap-5 overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-all"
               >
                 <div className="relative aspect-[4/3] w-full sm:w-48 overflow-hidden rounded-xl bg-gray-100 shrink-0">

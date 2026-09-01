@@ -134,6 +134,32 @@
 
 **UI behavior:** client-side validation identifies the file and displays the message directly below the affected Blog banner, Gallery cover, or Gallery extra-photo input. General provider/API failures may still appear as a form error and toast.
 
+**Gallery preview behavior:** a valid extra photo appears immediately with a `New` badge before submission. This confirms local selection only; UploadThing upload begins after Create/Update is pressed. If no preview appears, first resolve the inline size/type/count error.
+
+## Gallery pending preview shows a broken image
+
+**Symptom:** the pending card and `New` badge appear, but the selected image is replaced by its alt text.
+
+**Cause:** the browser received an admin Content Security Policy whose `img-src` directive did not allow the local `blob:` URL used for the pre-upload preview.
+
+**Resolved 2026-09-01:** the admin-only `img-src` directive now permits `blob:`. Restart the Next.js server after pulling the configuration change, then hard-refresh the admin form so the response contains the updated CSP header.
+
+## Gallery lightbox arrow keys do nothing
+
+**Symptom:** the lightbox arrow buttons work, but pressing the keyboard Left Arrow, Right Arrow, or Escape has no effect.
+
+**Cause:** the viewer implemented pointer handlers but did not register a keyboard listener while open.
+
+**Resolved 2026-09-01:** the lightbox now registers a temporary document keydown listener while open. Left/Right navigate only currently revealed photos, Escape closes the viewer, and cleanup removes the listener on close.
+
+## Gallery detail URL shows a numeric ID
+
+**Symptom:** a detail page opens at an address such as `/gallery/1` instead of a readable title-based URL.
+
+**Cause:** Gallery cards and related links previously interpolated the record ID even though every album already has a validated slug.
+
+**Resolved 2026-09-01:** all generated Gallery links and SEO outputs use the stored slug. Existing numeric URLs redirect to the canonical slug URL; restart/refresh the application if an old client bundle still generates numeric links.
+
 ## Blog/gallery changes disappear after deployment
 
 **Symptom:** content resets to committed seed data after restart/redeploy or differs between instances.

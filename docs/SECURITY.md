@@ -25,7 +25,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Sessions are HMAC-SHA256 signed and verify audience, identity, issue time, expiry, maximum lifetime, random session ID, and rotation version.
 - The production cookie uses the `__Host-` prefix and is Secure, HttpOnly, SameSite Strict, high priority, host-only, and scoped to `/`.
 - Logout expires the browser cookie; global emergency revocation is available by incrementing `ADMIN_SESSION_VERSION`.
-- Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers.
+- Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
 - Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
 - Content JSON bodies are capped at 128 KiB and validated with strict Zod schemas.

@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const galleryPages: MetadataRoute.Sitemap = galleries.map((gallery) => ({
-    url: absoluteUrl(`/gallery/${gallery.id}`),
+    url: absoluteUrl(`/gallery/${gallery.slug}`),
     lastModified: new Date(gallery.date),
     changeFrequency: "monthly",
     priority: 0.6,

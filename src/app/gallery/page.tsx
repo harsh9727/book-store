@@ -129,7 +129,7 @@ export default function GalleryPage() {
               >
                 {/* Cover Image & Badges */}
                 <Link
-                  href={`/gallery/${album.id}`}
+                  href={`/gallery/${album.slug}`}
                   className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100"
                 >
                   <Image
@@ -163,7 +163,7 @@ export default function GalleryPage() {
                     </div>
                   </div>
 
-                  <Link href={`/gallery/${album.id}`}>
+                  <Link href={`/gallery/${album.slug}`}>
                     <h2 className="title text-xl sm:text-2xl font-bold text-gray-900 transition-colors group-hover:text-orange-600">
                       {album.title}
                     </h2>
@@ -176,7 +176,7 @@ export default function GalleryPage() {
                   {/* Action Button */}
                   <div className="mt-auto pt-5 border-t border-gray-100">
                     <Link
-                      href={`/gallery/${album.id}`}
+                      href={`/gallery/${album.slug}`}
                       className="flex items-center justify-between description tracking-wide font-semibold text-xs sm:text-sm text-orange-600 group-hover:text-orange-700"
                     >
                       <span>View Full Photo Collection</span>

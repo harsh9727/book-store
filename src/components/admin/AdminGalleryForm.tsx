@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Save, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,18 +20,30 @@ interface AdminGalleryFormProps {
   initialItem?: GalleryItem;
 }
 
+interface NewPhotoPreview {
+  id: string;
+  file: File;
+  previewUrl: string;
+}
+
 const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 
 export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps) {
   const router = useRouter();
+  const previewUrlsRef = useRef(new Set<string>());
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [newPhotos, setNewPhotos] = useState<File[]>([]);
+  const [newPhotos, setNewPhotos] = useState<NewPhotoPreview[]>([]);
   const [retainedPhotos, setRetainedPhotos] = useState<GalleryPhoto[]>(initialItem?.photos || []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [coverError, setCoverError] = useState("");
   const [photosError, setPhotosError] = useState("");
+
+  useEffect(() => {
+    const previewUrls = previewUrlsRef.current;
+    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
 
   const selectCover = (file: File | undefined, input: HTMLInputElement) => {
     if (!file) {
@@ -56,13 +68,26 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       input.value = "";
       return;
     }
-    if (retainedPhotos.length + files.length > MAX_GALLERY_PHOTOS) {
+    if (retainedPhotos.length + newPhotos.length + files.length > MAX_GALLERY_PHOTOS) {
       setPhotosError(`A gallery can contain at most ${MAX_GALLERY_PHOTOS} extra images.`);
       input.value = "";
       return;
     }
     setPhotosError("");
-    setNewPhotos(files);
+    const previews = files.map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      previewUrlsRef.current.add(previewUrl);
+      return { id: crypto.randomUUID(), file, previewUrl };
+    });
+    setNewPhotos((current) => [...current, ...previews]);
+    input.value = "";
+  };
+
+  const removeNewPhoto = (photo: NewPhotoPreview) => {
+    URL.revokeObjectURL(photo.previewUrl);
+    previewUrlsRef.current.delete(photo.previewUrl);
+    setNewPhotos((current) => current.filter((item) => item.id !== photo.id));
+    setPhotosError("");
   };
 
   const saveGallery = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -81,7 +106,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       if (!coverImage) throw new Error("Choose a gallery cover image before saving.");
 
       const uploadedPhotos = newPhotos.length
-        ? await uploadAdminImages("gallery-photos", newPhotos)
+        ? await uploadAdminImages("gallery-photos", newPhotos.map((photo) => photo.file))
         : [];
       const photos: GalleryPhoto[] = [
         ...retainedPhotos,
@@ -151,12 +176,19 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
         <label className="text-sm font-semibold">Organizer<input name="organizer" defaultValue={initialItem?.organizer} className={inputClass} /></label>
         <label className="text-sm font-semibold">Tags, comma separated<input name="tags" defaultValue={initialItem?.tags.join(", ")} className={inputClass} /></label>
         <label className="sm:col-span-2 text-sm font-semibold">Extra photos<input type="file" multiple accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(photosError)} aria-describedby={photosError ? "gallery-photos-error" : undefined} onChange={(event) => selectPhotos(Array.from(event.currentTarget.files || []), event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${photosError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 block text-xs font-normal text-slate-500">{retainedPhotos.length + newPhotos.length} / {MAX_GALLERY_PHOTOS} selected</span>{photosError && <span id="gallery-photos-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{photosError}</span>}</label>
-        {retainedPhotos.length > 0 && (
+        {(retainedPhotos.length > 0 || newPhotos.length > 0) && (
           <div className="sm:col-span-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
             {retainedPhotos.map((photo) => (
               <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100">
                 <Image src={photo.url} alt={photo.title} fill className="object-cover" sizes="160px" />
-                <button type="button" onClick={() => setRetainedPhotos((current) => current.filter((item) => item.id !== photo.id))} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white" aria-label={`Remove ${photo.title}`}><X size={13} /></button>
+                <button type="button" onClick={() => { setRetainedPhotos((current) => current.filter((item) => item.id !== photo.id)); setPhotosError(""); }} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white" aria-label={`Remove ${photo.title}`}><X size={13} /></button>
+              </div>
+            ))}
+            {newPhotos.map((photo) => (
+              <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100 ring-2 ring-orange-400/70">
+                <Image src={photo.previewUrl} alt={`Selected preview: ${photo.file.name}`} fill unoptimized className="object-cover" sizes="160px" />
+                <span className="absolute bottom-1 left-1 rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">New</span>
+                <button type="button" onClick={() => removeNewPhoto(photo)} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white" aria-label={`Remove selected image ${photo.file.name}`}><X size={13} /></button>
               </div>
             ))}
           </div>
