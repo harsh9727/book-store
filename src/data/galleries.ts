@@ -11,11 +11,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Flagship Grand Hall, NY",
     coverImage: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1200&auto=format&fit=crop",
     description:
-      "Over 400 literature enthusiasts, bestselling authors, and indie publishers gathered for our flagship annual gala celebrating contemporary storytelling, book awards, and live acoustic performances.",
-    story:
       "The 2024 Annual Literary Gala marked our 10th anniversary of fostering community among book lovers. The evening featured keynote speeches by celebrated biographers, open floor panel discussions on the future of independent publishing, and an exclusive signing session where attendees met their favorite authors.",
     organizer: "ProBooks Cultural Events Committee",
-    tags: ["Literary Gala", "Author Signing", "Book Award", "Community"],
     photos: [
       {
         id: "p1",
@@ -65,11 +62,8 @@ export const galleries: GalleryItem[] = [
     location: "The Open Courtyard, ProBooks Midtown",
     coverImage: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1200&auto=format&fit=crop",
     description:
-      "A vibrant outdoor exhibition featuring antique bookbinders, letterpress artisans, and independent presses showcasing limited edition hardcovers.",
-    story:
       "Attendees had the unique chance to observe live leather bookbinding demonstrations and participate in bookmark calligraphy workshops led by master artisans.",
     organizer: "Artisan Guild & ProBooks",
-    tags: ["Book Fair", "Artisan", "Rare Books", "Workshops"],
     photos: [
       {
         id: "p7",
@@ -101,11 +95,8 @@ export const galleries: GalleryItem[] = [
     location: "Children's Wonderland Studio, ProBooks",
     coverImage: "https://images.unsplash.com/photo-1507842229451-7f01be8860ee?q=80&w=1200&auto=format&fit=crop",
     description:
-      "Children and parents joined acclaimed picture book illustrators for interactive puppet storytelling, drawing games, and creative writing exercises.",
-    story:
       "Our monthly Youth Literacy series aims to instill an enduring passion for reading in kids aged 4-12. Over 100 children created their own illustrated mini-books during this workshop.",
     organizer: "ProBooks Youth Foundation",
-    tags: ["Youth", "Story Hour", "Creative Writing", "Children"],
     photos: [
       {
         id: "p10",
@@ -137,11 +128,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Downtown Atrium",
     coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1200&auto=format&fit=crop",
     description:
-      "An unforgettable midnight launch with immersive world-themed mocktails, trivia battles, costume contests, and instant midnight pickups.",
-    story:
       "Fans queued from 8 PM with themed costumes from favorite sci-fi and fantasy series. At the stroke of midnight, the first copies were handed out amidst cheers and festive celebration.",
     organizer: "ProBooks Sci-Fi & Fantasy Guild",
-    tags: ["Midnight Launch", "Fantasy", "Cosplay", "Book Release"],
     photos: [
       {
         id: "p13",
@@ -167,11 +155,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Academic Annex",
     coverImage: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=1200&auto=format&fit=crop",
     description:
-      "Scholars, pastors, and theology students gathered to examine rare historical biblical translations, illuminated manuscripts, and contemporary devotional literature.",
-    story:
       "A peaceful day of learning, manuscript displays, and panel discussions on preserving scriptural integrity across generations.",
     organizer: "Christian Heritage Study Group",
-    tags: ["Theology", "Manuscripts", "Exhibition", "Faith"],
     photos: [
       {
         id: "p15",
@@ -191,11 +176,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Mezzanine Lounge",
     coverImage: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1200&auto=format&fit=crop",
     description:
-      "Local poets, songwriters, and prose writers performed original compositions to a warm audience in our atmospheric bookstore lounge.",
-    story:
       "Over 80 community members enjoyed freshly roasted coffee and soothing acoustic melodies alongside heartfelt spoken word poetry.",
     organizer: "ProBooks Literary Society",
-    tags: ["Poetry", "Acoustic", "Community", "Open Mic"],
     photos: [
       {
         id: "p16",
@@ -215,11 +197,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Conference Suite",
     coverImage: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1200&auto=format&fit=crop",
     description:
-      "A collaborative summit for reading group moderators to exchange discussion prompts, author interview schedules, and reading challenges.",
-    story:
       "Book club leaders networked, shared best practices for engaging quiet readers, and received curated reading kit boxes.",
     organizer: "ProBooks Reader Network",
-    tags: ["Book Club", "Roundtable", "Networking", "Events"],
     photos: [
       {
         id: "p17",
@@ -239,11 +218,8 @@ export const galleries: GalleryItem[] = [
     location: "ProBooks Creative Studio",
     coverImage: "https://images.unsplash.com/photo-1507842229451-7f01be8860ee?q=80&w=1200&auto=format&fit=crop",
     description:
-      "Aspiring novelists aged 14-22 learned world-building, dialogue writing, and character development in an interactive daylong workshop.",
-    story:
       "Students received one-on-one editorial critique on their manuscript outlines and participated in live character sketching exercises.",
     organizer: "ProBooks Youth Literacy Foundation",
-    tags: ["Creative Writing", "Masterclass", "Youth", "Workshop"],
     photos: [
       {
         id: "p18",

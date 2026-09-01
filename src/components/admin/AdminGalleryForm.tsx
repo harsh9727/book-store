@@ -129,9 +129,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
         coverImage,
         ...(coverImageKey ? { coverImageKey } : {}),
         description: String(values.get("description") || "").trim(),
-        story: String(values.get("story") || "").trim() || undefined,
         organizer: String(values.get("organizer") || "").trim() || undefined,
-        tags: String(values.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
         photos,
       };
       const url = initialItem
@@ -171,10 +169,8 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
         <label className="text-sm font-semibold">Location<input name="location" required defaultValue={initialItem?.location} className={inputClass} /></label>
         <label className="sm:col-span-2 text-sm font-semibold">Subtitle<input name="subtitle" defaultValue={initialItem?.subtitle} className={inputClass} /></label>
         <label className="sm:col-span-2 text-sm font-semibold">Cover image<input type="file" accept="image/jpeg,image/png,image/webp" required={!initialItem?.coverImage} aria-invalid={Boolean(coverError)} aria-describedby={coverError ? "gallery-cover-error" : undefined} onChange={(event) => selectCover(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${coverError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 block text-xs font-normal text-slate-500">{coverFile?.name || (initialItem?.coverImage ? "Current cover will be kept." : "Choose a cover.")}</span>{coverError && <span id="gallery-cover-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{coverError}</span>}</label>
-        <label className="sm:col-span-2 text-sm font-semibold">Description<textarea name="description" required maxLength={2000} rows={3} defaultValue={initialItem?.description} className={textareaClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Story<textarea name="story" maxLength={20000} rows={5} defaultValue={initialItem?.story} className={textareaClass} /></label>
-        <label className="text-sm font-semibold">Organizer<input name="organizer" defaultValue={initialItem?.organizer} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Tags, comma separated<input name="tags" defaultValue={initialItem?.tags.join(", ")} className={inputClass} /></label>
+        <label className="sm:col-span-2 text-sm font-semibold">Description<textarea name="description" required maxLength={20000} rows={5} defaultValue={initialItem?.description} className={textareaClass} /></label>
+        <label className="sm:col-span-2 text-sm font-semibold">Organizer<input name="organizer" defaultValue={initialItem?.organizer} className={inputClass} /></label>
         <label className="sm:col-span-2 text-sm font-semibold">Extra photos<input type="file" multiple accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(photosError)} aria-describedby={photosError ? "gallery-photos-error" : undefined} onChange={(event) => selectPhotos(Array.from(event.currentTarget.files || []), event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${photosError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 block text-xs font-normal text-slate-500">{retainedPhotos.length + newPhotos.length} / {MAX_GALLERY_PHOTOS} selected</span>{photosError && <span id="gallery-photos-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{photosError}</span>}</label>
         {(retainedPhotos.length > 0 || newPhotos.length > 0) && (
           <div className="sm:col-span-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">

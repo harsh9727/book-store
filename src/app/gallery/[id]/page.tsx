@@ -47,7 +47,7 @@ export async function generateMetadata({
       path: `/gallery/${album.slug}`,
       image: album.coverImage,
     }),
-    keywords: [...album.tags, album.category, "GTBS events"],
+    keywords: [album.category, "GTBS events"],
   };
 }
 
@@ -138,7 +138,7 @@ export default async function GalleryDetailPage({
             About This Event
           </h2>
           <p className="description text-sm md:text-base leading-relaxed text-gray-700">
-            {album.story || album.description}
+            {album.description}
           </p>
         </div>
 

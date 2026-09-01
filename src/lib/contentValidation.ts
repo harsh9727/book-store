@@ -122,10 +122,8 @@ export const galleryItemSchema = z
     location: z.string().trim().min(1).max(240),
     coverImage: imageReferenceSchema,
     coverImageKey: z.string().trim().min(1).max(500).optional(),
-    description: z.string().trim().min(1).max(2_000),
-    story: optionalText(20_000),
+    description: z.string().trim().min(1).max(20_000),
     organizer: optionalText(240),
-    tags: z.array(z.string().trim().min(1).max(100)).max(20),
     photos: z.array(galleryPhotoSchema).max(12),
   })
   .strict();

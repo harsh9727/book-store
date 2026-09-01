@@ -17,8 +17,6 @@ export interface GalleryItem {
   coverImage: string;
   coverImageKey?: string;
   description: string;
-  story?: string;
   organizer?: string;
-  tags: string[];
   photos: GalleryPhoto[];
 }
