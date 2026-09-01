@@ -12,6 +12,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Production requires `NEXT_PUBLIC_SITE_URL` to be a credential-free HTTPS origin; auth fails closed otherwise.
 - `ADMIN_SESSION_VERSION` can be incremented to invalidate every existing signed session.
 - `NEXT_PUBLIC_` variables are browser-visible and cannot contain secrets.
+- `UPLOADTHING_TOKEN` is server-only and must never be prefixed with `NEXT_PUBLIC_` or returned by an API.
 - Rotate a secret immediately if exposed in Git, logs, screenshots, chat, or docs.
 
 ## Implemented admin controls
@@ -26,6 +27,10 @@ This records implemented controls and known risks; it is not a formal security c
 - Logout expires the browser cookie; global emergency revocation is available by incrementing `ADMIN_SESSION_VERSION`.
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers.
 - Admin pages are no-index and excluded from public chrome.
+- Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
+- Content JSON bodies are capped at 128 KiB and validated with strict Zod schemas.
+- Upload bodies are capped for one cover plus twelve 500 KiB photos and multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
+- Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 
 ## Storefront cookies
 
@@ -42,6 +47,8 @@ This records implemented controls and known risks; it is not a formal security c
 - Add database-backed per-session revocation and audit logs; current rotation invalidates all sessions together.
 - Implement short-lived, single-use password reset tokens; current recovery only prepares an email request and never changes credentials.
 - Extend Content Security Policy coverage beyond admin routes after auditing storefront third-party scripts.
+- Replace local `storage/content.json` with a shared database before serverless, read-only, multi-process, or multi-region deployment. The current in-process write queue cannot coordinate replicas.
+- Add an orphan-file reconciliation job if UploadThing usage grows; a successful upload followed by a rejected content mutation can leave an unreferenced provider file.
 - Review EmailJS quotas, abuse protection, and allowed origins.
 - Add dependency vulnerability scanning to CI.
 

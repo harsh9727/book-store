@@ -4,7 +4,7 @@
 
 GTBS Book Store is a responsive e-commerce website for Gujarat Tract Book Store. It presents Christian books, Bibles, devotionals, magazines, gifts, store information, editorial content, and a protected administration area.
 
-The repository currently implements a frontend-led storefront using local TypeScript data. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These areas and most admin business actions are not connected to a production database or commerce backend.
+The repository currently implements a frontend-led storefront with a local TypeScript product catalog and a dynamic, file-backed blog/gallery content repository. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These commerce areas are not connected to a production database or backend.
 
 ## Technology stack
 
@@ -13,7 +13,8 @@ The repository currently implements a frontend-led storefront using local TypeSc
 - Lucide React and React Icons
 - EmailJS for the contact form
 - Swiper for carousels
-- Zod and React Hook Form are available for forms
+- Zod for request and persisted-content validation
+- UploadThing server SDK for managed blog/gallery images
 - Node crypto for scrypt password hashing, TOTP MFA, and admin session signing
 
 ## Routes and current state
@@ -21,19 +22,19 @@ The repository currently implements a frontend-led storefront using local TypeSc
 | Area | Routes | Current state |
 | --- | --- | --- |
 | Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | UI and local product catalog |
-| Content | `/about`, `/blogs`, `/gallery`, `/contact` | Frontend pages implemented |
+| Content | `/about`, `/blogs`, `/gallery`, `/contact` | Blog/gallery data is dynamic; other content is frontend/static |
 | Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
-| Admin | `/admin/login`, `/admin/dashboard` | Server-protected login, production-required MFA, responsive shell |
-| Admin API | `/api/admin/login`, `/api/admin/logout` | Validated, throttled, same-origin signed-cookie login/logout |
+| Admin | `/admin/login`, `/admin/dashboard`, `/admin/blogs`, `/admin/blogs/add`, `/admin/blogs/[id]/edit`, `/admin/galleries`, `/admin/galleries/add`, `/admin/galleries/[id]/edit` | Protected dashboard, list-first content tables, and separate add/edit pages with persistent navigation |
+| Admin API | `/api/admin/login`, `/api/admin/logout`, `/api/admin/content/*` | Auth plus validated same-origin content CRUD and UploadThing uploads |
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 
 The public storefront has no cookie-consent banner or consent cookie. Selecting Gujarati opts into the Google Translate integration and its language cookie. Admin authentication continues to use a signed HttpOnly session cookie.
 
 ## Data
 
-Catalog and content live in `src/data/`: products, categories, blogs, galleries, and FAQs. Cart and wishlist currently have no state layer or persistence implementation.
+Products, categories, FAQs, and initial blog/gallery seed content live in `src/data/`. Blog/gallery mutations are written atomically to ignored runtime storage at `storage/content.json`; when that file is absent, the repository reads the committed seeds. This is single-instance filesystem persistence, not a database. Cart and wishlist currently have no state layer or persistence implementation.
 
 ## Local setup
 
@@ -59,6 +60,7 @@ npm run build
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL and SEO | Public |
 | `GOOGLE_SITE_VERIFICATION` | Search Console verification | Server config |
 | `NEXT_PUBLIC_EMAILJS_*` | Contact-form EmailJS configuration | Public/browser |
+| `UPLOADTHING_TOKEN` | Authenticates server-side blog/gallery image uploads | Server only |
 | `ADMIN_EMAIL` | Admin identity | Server only |
 | `ADMIN_PASSWORD_HASH` | Generated scrypt password verifier; required in production | Server only |
 | `ADMIN_SESSION_SECRET` | HMAC signing secret | Server only |
@@ -72,7 +74,11 @@ npm run build
 ## Current limitations
 
 - Dashboard product, order, revenue, and inventory figures are presentation data.
-- Admin items other than Overview are placeholders.
+- Admin Orders, Products, Customers, Analytics, Settings, and Help are not implemented and are therefore not shown in the sidebar; Overview, Blogs, and Gallery are the available admin destinations.
+- Blog and Gallery index routes default to responsive tables with text search, category filtering, and 8-row client-side pagination. Add and Edit navigate to separate protected form routes; Save or Cancel returns to the related list, while View opens the corresponding public detail route. CRUD mutations report success/failure through admin-scoped toasts, and Delete requires confirmation in a custom modal.
+- Image selection errors are displayed directly below the affected banner, cover, or extra-photo input; general API/mutation failures remain form-level and toast notifications.
+- Blog/gallery metadata persistence requires one writable persistent Node filesystem. Serverless/read-only/multi-replica deployments need a shared database repository before use.
+- Uploading images and then failing a later content mutation can leave an unreferenced UploadThing file that must be cleaned up manually.
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
 - Password recovery prepares a support email; it does not issue an automated reset token.

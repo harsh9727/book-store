@@ -1,6 +1,7 @@
 export interface GalleryPhoto {
   id: string;
   url: string;
+  key?: string;
   title: string;
   caption?: string;
 }
@@ -14,6 +15,7 @@ export interface GalleryItem {
   date: string;
   location: string;
   coverImage: string;
+  coverImageKey?: string;
   description: string;
   story?: string;
   organizer?: string;

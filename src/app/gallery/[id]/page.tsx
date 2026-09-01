@@ -9,7 +9,7 @@ import {
   User,
   ArrowRight,
 } from "lucide-react";
-import { galleries } from "@/data/galleries";
+import { getGalleries, getGallery } from "@/lib/contentRepository";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import GalleryLightbox from "@/components/gallery/GalleryLightbox";
 import JsonLd from "@/components/seo/JsonLd";
@@ -25,19 +25,13 @@ interface GalleryDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  return galleries.map((g) => ({
-    id: String(g.id),
-  }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
 }: GalleryDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const album = galleries.find(
-    (item) => String(item.id) === id || item.slug === id
-  );
+  const album = await getGallery(id);
 
   if (!album) {
     return {
@@ -61,15 +55,14 @@ export default async function GalleryDetailPage({
   params,
 }: GalleryDetailPageProps) {
   const { id } = await params;
-  const album =
-    galleries.find((g) => String(g.id) === id || g.slug === id);
+  const album = await getGallery(id);
 
   if (!album) {
     notFound();
   }
 
-  const otherAlbums = galleries
-    .filter((g) => String(g.id) !== String(album.id))
+  const otherAlbums = (await getGalleries())
+    .filter((item) => String(item.id) !== String(album.id))
     .slice(0, 2);
 
   const breadcrumbItems = [

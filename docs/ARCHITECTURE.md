@@ -7,11 +7,13 @@ Browser
   ├─ Public App Router pages
   │    ├─ shared site chrome
   │    ├─ feature components
-  │    └─ local catalog/content data
+  │    ├─ local catalog/seed data
+  │    └─ file-backed blog/gallery repository
   └─ Admin pages
        ├─ login → POST /api/admin/login
        ├─ signed HttpOnly session cookie
-       └─ protected server-rendered dashboard
+       ├─ protected dashboard/content workspaces
+       └─ CRUD/upload APIs → filesystem + UploadThing
 ```
 
 ## Directory responsibilities
@@ -25,6 +27,7 @@ Browser
 | `src/lib/` | Utilities, SEO, constants, and auth |
 | `src/types/` | Shared domain types |
 | `public/images/` | Static image assets |
+| `storage/content.json` | Ignored runtime blog/gallery metadata, created on first mutation |
 | `docs/` | Maintained project knowledge |
 
 ## Rendering boundaries
@@ -40,6 +43,22 @@ Browser
 Typed objects in `src/data/` feed pages and components. Product IDs form dynamic routes. Cart and wishlist routes currently render static empty states and have no state or persistence layer. No production database/repository layer exists yet. When one is added, introduce a typed service/repository boundary rather than importing database clients throughout UI code.
 
 Catalog, blog, and gallery filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
+
+## Blog and gallery content flow
+
+1. The committed arrays in `src/data/blogs.ts` and `src/data/galleries.ts` are initial fallback seeds.
+2. `contentRepository.ts` reads `storage/content.json` when present and validates the complete document with Zod; invalid persisted data fails instead of being silently replaced.
+3. Admin create/update/delete requests require the signed admin session, matching Origin/fetch metadata, and `X-GTBS-Admin-Request: 1`.
+4. Mutations are serialized in-process and written through a uniquely named temporary file followed by an atomic rename.
+5. Public list APIs are no-store; detail pages, the home blog section, and sitemap read through the repository.
+6. Images upload through the server-only UploadThing SDK. The browser never receives `UPLOADTHING_TOKEN`.
+7. Managed UploadThing keys are stored beside URLs. Replaced or deleted managed images are deleted best-effort from UploadThing; legacy/local/external seed images have no managed key and are never deleted remotely.
+
+The Blog and Gallery admin pages render through the shared `AdminContentShell`, which keeps dashboard-style navigation visible on desktop and a compact admin route bar on smaller screens. Admin navigation exposes only implemented destinations: Overview, Blogs, and Gallery. Their index routes render list-only tables and perform search, category filtering, and 8-row pagination client-side over the server-loaded collection; search/filter events reset the page directly instead of synchronizing it through an effect. Add links to `/admin/blogs/add` or `/admin/galleries/add`; row Edit links to the matching `/admin/.../[id]/edit` route. Those protected server pages load reusable client form components, edit pages fetch the identified record before rendering, and successful saves return to the related list. The admin layout owns a persistent Sonner toaster; create/update/delete outcomes publish there. Delete buttons first populate a shared client confirmation modal and call the protected endpoint only after explicit confirmation. The protected API remains the source of persistence.
+
+Image controls keep field-specific client validation state: Blog banner, Gallery cover, and Gallery extra photos each render their own validation message adjacent to the input. Cross-field, upload-provider, and API mutation failures remain general form errors and toasts.
+
+The repository is intentionally a typed boundary, so it can later be replaced with a database implementation. The current file store is safe only for a single writable persistent Node instance; it does not coordinate multiple processes or replicas.
 
 ## Admin authentication
 
@@ -87,3 +106,15 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 - **Status:** Accepted
 - **Reason:** Plaintext deployment passwords, missing MFA, short signing secrets, and insecure cookies are not acceptable for the administration boundary.
 - **Consequence:** Existing deployments must run `npm run admin:setup`, install the TOTP secret in an authenticator, configure HTTPS/canonical URL, and replace the legacy `ADMIN_PASSWORD` before production login becomes available.
+
+### ADR-006: File-backed content repository
+
+- **Status:** Temporary
+- **Reason:** Delivers dynamic blog/gallery CRUD without introducing an unselected database platform.
+- **Consequence:** Hosting must provide a writable persistent filesystem and one application instance. A shared database adapter is required before serverless or horizontally scaled deployment.
+
+### ADR-007: Server-mediated UploadThing images
+
+- **Status:** Accepted
+- **Reason:** Keeps the provider token server-only and centralizes authentication, type, signature, count, and size enforcement.
+- **Consequence:** Blog banners, gallery covers, and gallery photos accept only JPG, PNG, or WebP files up to 500 KiB each; gallery extra photos are capped at 12.

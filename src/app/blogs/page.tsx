@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -16,6 +16,7 @@ import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
 export default function BlogsPage() {
+  const [blogItems, setBlogItems] = useState(blogs);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -29,16 +30,25 @@ export default function BlogsPage() {
     setVisibleCount(6);
   };
 
-  const categories = [
-    "All",
-    "Book Recommendations",
-    "Reading Tips",
-    "New Releases",
-    "Christian Books",
-    "Book Guide",
-  ];
+  useEffect(() => {
+    let active = true;
+    fetch("/api/content/blogs", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((result: { items: typeof blogs }) => {
+        if (active) setBlogItems(result.items);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const filteredBlogs = blogs.filter((blog) => {
+  const categories = useMemo(
+    () => ["All", ...new Set(blogItems.map((blog) => blog.category))],
+    [blogItems]
+  );
+
+  const filteredBlogs = blogItems.filter((blog) => {
     const matchesCategory =
       selectedCategory === "All" || blog.category === selectedCategory;
     const matchesSearch =

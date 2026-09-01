@@ -1,60 +1,14 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import BlogImg from "../../../public/images/blog/blog.jpg";
-
-const blogs = [
-    {
-        id: 1,
-        title: "10 Must-Read Books Every Book Lover Should Read",
-        category: "Book Recommendations",
-        date: "June 15, 2024",
-        image: BlogImg,
-    },
-    {
-        id: 2,
-        title: "How Reading Can Transform Your Everyday Life",
-        category: "Reading Tips",
-        date: "June 10, 2024",
-        image: BlogImg,
-    },
-    {
-        id: 3,
-        title: "New Book Releases You Don't Want to Miss",
-        category: "New Releases",
-        date: "June 5, 2024",
-        image: BlogImg,
-    },
-    {
-        id: 4,
-        title: "The Best Christian Books for Inspiration",
-        category: "Christian Books",
-        date: "May 28, 2024",
-        image: BlogImg,
-    },
-    {
-        id: 5,
-        title: "Why Building a Daily Reading Habit Matters",
-        category: "Reading Tips",
-        date: "May 22, 2024",
-        image: BlogImg,
-    },
-    {
-        id: 6,
-        title: "How to Choose the Perfect Book for Yourself",
-        category: "Book Guide",
-        date: "May 16, 2024",
-        image: BlogImg,
-    },
-];
+import { getBlogs } from "@/lib/contentRepository";
 
 interface BlogsProps {
     limit?: number;
 }
 
-const Blogs = ({ limit }: BlogsProps = {}) => {
+const Blogs = async ({ limit }: BlogsProps = {}) => {
+    const blogs = await getBlogs();
     const displayedBlogs = limit ? blogs.slice(0, limit) : blogs;
 
     return (

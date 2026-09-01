@@ -116,6 +116,50 @@
 
 **Solution:** Verify the three variables, template field names, allowed origins, and quota, then restart. These values are browser-visible; do not substitute private secrets.
 
+## Admin image upload says UploadThing is not configured
+
+**Symptom:** the protected upload API returns HTTP 503.
+
+**Cause:** `UPLOADTHING_TOKEN` is absent or empty in the server environment.
+
+**Solution:** Create/copy the token from the UploadThing application into the deployment secret manager as `UPLOADTHING_TOKEN`, restart the server, and retry. Never use a `NEXT_PUBLIC_` prefix or paste the token into source/docs.
+
+## Admin image is rejected before upload
+
+**Symptom:** the form or API reports that an image is invalid or larger than 500 KB.
+
+**Cause:** the file exceeds 500 KiB, is not JPG/PNG/WebP, has a mismatched binary signature, or a gallery selection exceeds 12 extra photos.
+
+**Solution:** resize/compress and export the image as JPG, PNG, or WebP. For gallery albums, keep no more than 12 extra photos; the cover is uploaded separately.
+
+**UI behavior:** client-side validation identifies the file and displays the message directly below the affected Blog banner, Gallery cover, or Gallery extra-photo input. General provider/API failures may still appear as a form error and toast.
+
+## Blog/gallery changes disappear after deployment
+
+**Symptom:** content resets to committed seed data after restart/redeploy or differs between instances.
+
+**Cause:** `storage/content.json` is absent, ephemeral, read-only, or not shared. The current repository is designed for one writable persistent Node instance.
+
+**Solution:** mount persistent writable storage for a single instance. Before using serverless or multiple replicas, replace `contentRepository.ts` with a shared database implementation and migrate the JSON document.
+
+## Admin sidebar disappears on Blog or Gallery
+
+**Symptom:** selecting Blog or Gallery appears to leave the dashboard shell, and the page opens directly on an editor instead of a content list.
+
+**Cause:** the content routes previously used a separate top-navigation shell and rendered the editor beside content cards rather than using the dashboard navigation and a list-first CRUD flow.
+
+**Resolved 2026-09-01:** both content routes now use the shared dashboard-style `AdminContentShell`. Desktop keeps a sticky sidebar, mobile keeps a compact admin route bar, and each index route defaults to a responsive table with Add, View, Edit, and Delete controls. Add and Edit navigate to dedicated protected form routes.
+
+**Prevention:** route new admin content modules through the common admin shell, make the index route a list view, and place create/edit UI on dedicated protected routes reached only from explicit actions.
+
+## pnpm blocks msgpackr-extract during UploadThing installation
+
+**Symptom:** pnpm reports `ERR_PNPM_IGNORED_BUILDS` for `msgpackr-extract`.
+
+**Cause:** an optional native optimization requested a build script under pnpm's supply-chain policy.
+
+**Solution:** keep `msgpackr-extract: false` in `pnpm-workspace.yaml`; the JavaScript fallback is sufficient for this application. Re-run pnpm using the repository's established store.
+
 ## Stale UI after changes
 
 Restart for environment changes. For stale generated output, stop the process and remove only the workspace `.next` directory, then restart. Never recursively delete a broad directory or workspace root.

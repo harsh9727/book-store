@@ -4,9 +4,8 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
-  ArrowDownRight, ArrowUpRight, BarChart3, Bell, BookOpen, ChevronRight,
-  CircleHelp, IndianRupee, LayoutDashboard, Package, Search, Settings,
-  ShoppingBag, Store, Users,
+  ArrowDownRight, ArrowUpRight, Bell, BookOpen, BookOpenText, ChevronRight,
+  IndianRupee, LayoutDashboard, Package, Search, ShoppingBag, Users, Images,
 } from "lucide-react";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
@@ -17,11 +16,9 @@ export const metadata: Metadata = {
 };
 
 const navigation = [
-  { label: "Overview", icon: LayoutDashboard, active: true },
-  { label: "Orders", icon: ShoppingBag, badge: "12" },
-  { label: "Products", icon: BookOpen },
-  { label: "Customers", icon: Users },
-  { label: "Analytics", icon: BarChart3 },
+  { label: "Overview", icon: LayoutDashboard, href: "/admin/dashboard", active: true },
+  { label: "Blogs", icon: BookOpenText, href: "/admin/blogs" },
+  { label: "Gallery", icon: Images, href: "/admin/galleries" },
 ];
 
 const stats = [
@@ -74,18 +71,13 @@ export default async function AdminDashboardPage() {
         </div>
         <nav aria-label="Admin navigation" className="flex-1 space-y-1 px-3 py-6">
           <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">Workspace</p>
-          {navigation.map(({ label, icon: Icon, active, badge }) => (
-            <Link key={label} href={active ? "/admin/dashboard" : "#"} aria-current={active ? "page" : undefined}
+          {navigation.map(({ label, icon: Icon, href, active }) => (
+            <Link key={label} href={href} aria-current={active ? "page" : undefined}
               className={`flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-orange-500 text-white shadow-lg shadow-orange-950/20" : "text-white/65 hover:bg-white/10 hover:text-white"}`}>
-              <Icon size={18} /><span className="flex-1">{label}</span>{badge && <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold">{badge}</span>}
+              <Icon size={18} /><span className="flex-1">{label}</span>
             </Link>
           ))}
         </nav>
-        <div className="space-y-1 border-t border-white/10 p-3">
-          <Link href="#" className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-white/65 hover:bg-white/10 hover:text-white"><Settings size={18} /> Settings</Link>
-          <Link href="#" className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-white/65 hover:bg-white/10 hover:text-white"><CircleHelp size={18} /> Help & support</Link>
-          <Link href="/" className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-white/65 hover:bg-white/10 hover:text-white"><Store size={18} /> View storefront</Link>
-        </div>
       </aside>
 
       <div className="min-w-0">
@@ -102,7 +94,7 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
           <nav aria-label="Mobile admin navigation" className="flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2 lg:hidden">
-            {navigation.map(({ label, icon: Icon, active }) => <Link key={label} href={active ? "/admin/dashboard" : "#"} className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${active ? "bg-orange-50 text-orange-600" : "text-slate-500"}`}><Icon size={15} />{label}</Link>)}
+            {navigation.map(({ label, icon: Icon, href, active }) => <Link key={label} href={href} className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${active ? "bg-orange-50 text-orange-600" : "text-slate-500"}`}><Icon size={15} />{label}</Link>)}
           </nav>
         </header>
 

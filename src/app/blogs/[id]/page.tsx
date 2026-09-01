@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
-import { blogs } from "@/data/blogs";
+import { getBlog, getBlogs } from "@/lib/contentRepository";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import {
@@ -24,17 +24,13 @@ interface BlogPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  return blogs.map((blog) => ({
-    id: String(blog.id),
-  }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
 }: BlogPageProps): Promise<Metadata> {
   const { id } = await params;
-  const blog = blogs.find((item) => String(item.id) === id || item.slug === id);
+  const blog = await getBlog(id);
 
   if (!blog) {
     return {
@@ -67,13 +63,15 @@ export async function generateMetadata({
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
   const { id } = await params;
-  const blog = blogs.find((b) => String(b.id) === id || b.slug === id);
+  const blog = await getBlog(id);
 
   if (!blog) {
     notFound();
   }
 
-  const relatedBlogs = blogs.filter((b) => String(b.id) !== String(blog.id)).slice(0, 3);
+  const relatedBlogs = (await getBlogs())
+    .filter((item) => String(item.id) !== String(blog.id))
+    .slice(0, 3);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },

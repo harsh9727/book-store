@@ -45,6 +45,15 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Do not mutate imported domain data.
 - Introduce typed service/repository functions when persistence is added.
 - Admin state-changing requests require same-origin verification and the `X-GTBS-Admin-Request` marker.
+- Blog/gallery admin APIs also require a verified admin session and bounded, strict Zod payloads.
+- Blog banners, gallery covers, and gallery photos accept JPG, PNG, or WebP only, with a 500 KiB maximum per image.
+- A gallery can contain at most 12 extra photos; the cover image is separate from that limit.
+- Blog and Gallery index routes must open on their list table, keep admin navigation visible, place Add above the table, and expose View, Edit, and Delete actions for each row. Add and Edit must use separate protected `/add` and `/[id]/edit` pages rather than inline forms.
+- Blog and Gallery tables show at most 8 rows per page, support case-insensitive text search and category filtering, and reset to page 1 whenever either filter changes.
+- Blog and Gallery create, update, delete, and mutation failures must display an admin toast. Destructive table actions must use the shared confirmation modal and must not call the API until the admin explicitly confirms.
+- Client image type, size, and gallery-count validation messages must render below the file input that caused them, with accessible invalid-state attributes; do not place these field errors only in a form-level banner.
+- Admin sidebars expose only implemented destinations: Overview, Blogs, and Gallery. Do not show placeholder navigation for unavailable modules.
+- Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
 - Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.
 

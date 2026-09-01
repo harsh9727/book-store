@@ -11,6 +11,8 @@ npm run dev
 
 Copy `.env.example` to `.env` and configure required values before using integrations or admin login. Never commit real environment values.
 
+Blog and gallery image uploads require a server-only `UPLOADTHING_TOKEN`. Admin content metadata is persisted to `storage/content.json` on first mutation; the deployment filesystem must be writable and persistent.
+
 For production admin credentials, run `npm run admin:setup` in a private interactive terminal, save the generated values in the deployment secret manager, and enroll the generated URI in an authenticator app. Production rejects plaintext `ADMIN_PASSWORD`.
 
 ## Quality checks

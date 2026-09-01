@@ -28,6 +28,7 @@ export interface BlogPost {
   date: string;
   readTime: string;
   image: string;
+  imageKey?: string;
   summary: string;
   author: {
     name: string;

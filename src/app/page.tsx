@@ -17,6 +17,8 @@ export const metadata = createPageMetadata({
   path: "/",
 });
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div className="py-3">

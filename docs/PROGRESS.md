@@ -10,7 +10,7 @@
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
 | Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
-| Admin dashboard | First layout complete | Responsive; figures/actions are presentation data |
+| Admin dashboard | Content navigation complete | Dashboard figures remain presentation data; blog/gallery CRUD use persistent admin navigation and list-first tables |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
 | Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
@@ -24,6 +24,62 @@
 5. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-09-01 - Place image validation beside its input
+
+- Outcome: moved client-side image validation feedback from the form-level error banner to the relevant file input. Blog banner, Gallery cover, and Gallery extra-photo errors now render directly below their own controls, with an error border/background and accessible `aria-invalid`/description linkage.
+- Main files/areas: Blog admin form, Gallery admin form, project overview, architecture, product rules, progress, and image-upload troubleshooting guidance.
+- Data/API/security impact: none. Accepted formats, the 500 KiB limit, the 12-photo limit, UploadThing flow, API validation, and general mutation-error toasts are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices; direct single-process content-management tests passed 5/5, including image type/size and gallery-count validation.
+- Known limitations or next step: server/API mutation failures remain form-level and toast errors because they may not belong to a single field.
+
+### 2026-09-01 - Admin CRUD toasts and delete confirmation modal
+
+- Outcome: added admin-scoped Sonner notifications for Blog/Gallery create, update, delete, and mutation failures. Replaced native browser delete confirms with a reusable accessible confirmation modal that identifies the selected record, explains permanent deletion, supports cancellation/backdrop dismissal, and prevents duplicate actions while deletion is running.
+- Main files/areas: admin layout toaster host, shared delete-confirmation modal, Blog/Gallery list managers, Blog/Gallery forms, project overview, architecture, product rules, and progress documentation.
+- Data/API/security impact: none. Confirmation remains a client interaction before the existing protected DELETE request; API authorization, persistence, UploadThing deletion, validation, and payloads are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices; direct single-process content-management tests passed 5/5. `npm run build` compiled successfully in 5.7 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: authenticated visual keyboard/focus smoke testing requires a runtime environment that permits the Next.js process.
+
+### 2026-09-01 - Admin Blog/Gallery table search and pagination
+
+- Outcome: added responsive search, category filtering, result counts, and Previous/Next pagination to both admin content list tables. Each page shows at most 8 rows; changing search or category returns the table to page 1, and empty/filter-no-result states are distinct.
+- Main files/areas: admin Blog list manager, admin Gallery list manager, project overview, architecture, product rules, and progress documentation.
+- Data/API/security impact: none. Filtering and pagination operate only on the content already loaded into the protected list page; CRUD routes, persistence, upload behavior, and request validation are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices; direct single-process content-management tests passed 5/5. `npm run build` compiled successfully in 5.2 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: pagination and filtering are intentionally client-side; move them to query-backed server pagination if content volume becomes large.
+
+### 2026-09-01 - Remove inactive admin sidebar items
+
+- Outcome: simplified every admin sidebar to show only the implemented Overview, Blogs, and Gallery destinations. Removed Orders, Products, Customers, Analytics, Settings, Help, and View storefront from both the dashboard sidebar and the shared content sidebar; the header Storefront shortcut remains available.
+- Main files/areas: admin dashboard sidebar, shared admin content shell, project overview, architecture, product rules, and progress documentation.
+- Data/API/security impact: none. No route, dashboard content, CRUD behavior, authentication, upload rule, or persisted data changed.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices.
+- Known limitations or next step: Orders, Products, Customers, Analytics, Settings, and Help remain unimplemented and are no longer advertised as sidebar destinations.
+
+### 2026-09-01 - Separate Blog/Gallery add and edit pages
+
+- Outcome: moved Blog and Gallery create/update forms out of their list screens and into dedicated admin routes. Add now opens `/admin/blogs/add` or `/admin/galleries/add`; Edit opens `/admin/blogs/[id]/edit` or `/admin/galleries/[id]/edit`. Save and Cancel return to the related list while the shared admin navigation remains visible.
+- Main files/areas: Blog/Gallery list managers, new reusable form components, four protected admin form routes, route documentation, architecture, product rules, and progress records.
+- Data/API/security impact: no payload, persistence, authentication, UploadThing, 500 KiB image, or 12-photo rule changed. Each new route verifies the signed admin session server-side, and unknown edit identifiers return not found.
+- Verification and exact result: `npx next typegen` passed and generated all four new route types; `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from existing Git LF-to-CRLF notices; direct single-process admin-auth tests passed 7/7; direct single-process content-management tests passed 5/5. `npm run build` compiled successfully in 5.4 seconds, then the documented Windows sandbox `spawn EPERM` blocked its TypeScript worker.
+- Known limitations or next step: authenticated browser navigation still requires a runtime environment that permits the Next.js child process; existing non-content admin placeholders remain unchanged.
+
+### 2026-09-01 - Persistent admin content navigation and CRUD tables
+
+- Outcome: fixed the Blog/Gallery navigation experience so both workspaces retain the dashboard-style sidebar on desktop and the admin navigation on mobile. Blog and Gallery now open on list-first table views with an Add button above each table and explicit View, Edit, and Delete actions. Forms were subsequently moved to the dedicated routes documented above.
+- Main files/areas: shared admin content shell, blog manager, gallery manager, project overview, architecture, product rules, progress, and troubleshooting documentation.
+- Data/API/security impact: none. Existing protected CRUD endpoints, UploadThing integration, 500 KiB image validation, gallery 12-photo limit, authentication, persisted content format, and public routes are unchanged.
+- Verification and exact result: `git diff --check` passed apart from existing Git LF-to-CRLF notices; `npm run lint` passed with 0 errors/warnings; `npx next typegen` passed; `npx tsc --noEmit` passed; direct single-process admin-auth tests passed 7/7; direct single-process content-management tests passed 5/5. The npm test scripts were attempted but the Windows sandbox blocked Node test-runner child processes with the documented `spawn EPERM`; direct execution verified the same suites. `npm run build` compiled successfully in 3.4 seconds, then the same sandbox restriction blocked its TypeScript worker with `spawn EPERM`.
+- Known limitations or next step: no authenticated browser smoke test was possible because the sandbox prevents starting the Next.js child process. Non-content admin modules remain unimplemented and were subsequently removed from the sidebar.
+
+### 2026-09-01 - Dynamic admin-managed blogs and galleries
+
+- Outcome: added protected blog and gallery CRUD workspaces, strict content APIs, dynamic public list/detail/sitemap reads, atomic file-backed metadata persistence, and server-mediated UploadThing banner/cover/photo uploads. Every image is limited to JPG/PNG/WebP at 500 KiB, and gallery albums allow at most 12 extra photos in addition to the cover.
+- Main files/areas: admin blogs/galleries pages and managers, public blog/gallery routes, content repository/schemas, admin content/upload APIs, UploadThing integration, sitemap/home blog feed, environment/dependency/configuration files, focused tests, and all affected documentation.
+- Data/API/security impact: blog/gallery mutations now require a valid signed admin session, matching same-origin request metadata, the `X-GTBS-Admin-Request` marker, bounded bodies, and strict Zod validation. `UPLOADTHING_TOKEN` remains server-only. Runtime metadata is stored in ignored `storage/content.json`; committed TypeScript arrays remain fallback seeds. Managed provider keys allow best-effort deletion of replaced/deleted UploadThing files.
+- Verification and exact result: `pnpm install --store-dir D:\.pnpm-store\v11` passed with the lockfile up to date and supply-chain policy verified; `npx next typegen` passed; `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; direct admin-auth tests passed 7/7; direct content-management tests passed 5/5, including complete seed validation, invalid slug/date rejection, the 12-photo cap, and the 500 KiB/type limit. `npm run build` compiled successfully in 3.3 seconds, then the documented Windows sandbox `spawn EPERM` blocked the TypeScript worker. Starting the dev server was blocked by the same child-process restriction, so authenticated browser CRUD and a live UploadThing request were not exercised in this environment.
+- Known limitations or next step: `storage/content.json` supports one writable persistent Node instance only; use a shared database repository before serverless/read-only or multi-replica deployment. Configure a real `UPLOADTHING_TOKEN` privately and complete an authenticated browser smoke test on the deployment target. A successful upload followed by a rejected later content mutation can leave an orphan provider file for manual/reconciliation cleanup.
 
 ### 2026-09-01 - Remove remaining inactive home-page code
 

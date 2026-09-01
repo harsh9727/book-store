@@ -15,6 +15,7 @@
 - Add `"use client"` at the smallest interactive boundary.
 - Keep route metadata in pages/layouts or shared SEO helpers.
 - Use route handlers for server HTTP behavior.
+- Keep persistence behind typed repository functions; do not read or write runtime content files from pages/components.
 - Do not synchronously mirror state in effects; derive or initialize it when possible.
 - Never access `ref.current` during render.
 - Reset filtered pagination in the filter/search event handler instead of calling a state setter from an effect.
@@ -56,6 +57,7 @@
 ## Authentication
 
 - Parse admin route bodies with strict schemas and cap body size before expensive credential work.
+- Validate image MIME type, byte size, and file signature server-side before provider upload; client checks are usability only.
 - Keep password hashing, MFA verification, session signing, request-origin checks, and throttling in server-only utilities.
 - Admin mutation fetches include `X-GTBS-Admin-Request: 1`; route handlers also validate Origin and fetch-site metadata.
 - Production cookies are Secure, HttpOnly, SameSite Strict, high priority, host-only, and scoped to `/`.

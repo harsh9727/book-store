@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "plus.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.ufs.sh",
+      },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      },
     ],
   },
   async headers() {
@@ -40,7 +48,7 @@ const nextConfig: NextConfig = {
           "font-src 'self'",
           "form-action 'self'",
           "frame-ancestors 'none'",
-          "img-src 'self' data:",
+          "img-src 'self' data: https://*.ufs.sh https://utfs.io",
           "object-src 'none'",
           `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
           "style-src 'self' 'unsafe-inline'",

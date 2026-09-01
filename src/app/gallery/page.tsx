@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,6 +17,7 @@ import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
 export default function GalleryPage() {
+  const [galleryItems, setGalleryItems] = useState(galleries);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -30,9 +31,25 @@ export default function GalleryPage() {
     setVisibleCount(6);
   };
 
-  const categories = ["All", "Events", "Exhibitions", "Community", "Book Launches"];
+  useEffect(() => {
+    let active = true;
+    fetch("/api/content/galleries", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((result: { items: typeof galleries }) => {
+        if (active) setGalleryItems(result.items);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const filteredGalleries = galleries.filter((item) => {
+  const categories = useMemo(
+    () => ["All", ...new Set(galleryItems.map((gallery) => gallery.category))],
+    [galleryItems]
+  );
+
+  const filteredGalleries = galleryItems.filter((item) => {
     const matchesCategory =
       selectedCategory === "All" || item.category === selectedCategory;
     const matchesSearch =
