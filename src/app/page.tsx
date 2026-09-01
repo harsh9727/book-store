@@ -8,7 +8,6 @@ import Trendings from "@/components/home/Trendings";
 import CategorySection from "@/components/home/CategorySection";
 import WhyChoose from "@/components/home/WhyChoose";
 import OurAccessories from "@/components/home/OurAccessories";
-// import Newsletter from "@/components/home/Newsletter";
 import Reviews from "@/components/home/Reviews";
 import FaqAndBlog from "@/components/home/FaqAndBlog";
 
@@ -38,10 +37,6 @@ export default function Home() {
       <CategorySection />
       <WhyChoose />
       <OurAccessories />
-      {/* <Newsletter 
-        title="Get Updates on New Releases & Exclusive Deals"
-        description="Subscribe to our newsletter and never miss a great read!"
-      /> */}
       <Reviews />
       <FaqAndBlog />
     </div>

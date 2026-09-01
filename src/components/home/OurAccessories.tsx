@@ -18,7 +18,6 @@ type ProductItem = {
   price: number;
   badge: string | null;
   cover: typeof ProductImg;
-  cta: string;
 };
 
 const accessories: ProductItem[] = [
@@ -31,7 +30,6 @@ const accessories: ProductItem[] = [
     price: 149,
     badge: "New",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 2,
@@ -42,7 +40,6 @@ const accessories: ProductItem[] = [
     price: 89,
     badge: "Best Seller",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 3,
@@ -53,7 +50,6 @@ const accessories: ProductItem[] = [
     price: 219,
     badge: "Popular",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 4,
@@ -64,7 +60,6 @@ const accessories: ProductItem[] = [
     price: 199,
     badge: "Trending",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 5,
@@ -75,7 +70,6 @@ const accessories: ProductItem[] = [
     price: 179,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 6,
@@ -86,7 +80,6 @@ const accessories: ProductItem[] = [
     price: 259,
     badge: "New",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 7,
@@ -97,7 +90,6 @@ const accessories: ProductItem[] = [
     price: 169,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 8,
@@ -108,7 +100,6 @@ const accessories: ProductItem[] = [
     price: 129,
     badge: "Sale",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
 ];
 

@@ -18,7 +18,6 @@ type ProductItem = {
   price: number;
   badge: string | null;
   cover: typeof ProductImg;
-  cta: string;
 };
 
 const products: ProductItem[] = [
@@ -31,7 +30,6 @@ const products: ProductItem[] = [
     price: 120,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 2,
@@ -42,7 +40,6 @@ const products: ProductItem[] = [
     price: 250,
     badge: "New",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 3,
@@ -53,7 +50,6 @@ const products: ProductItem[] = [
     price: 270,
     badge: "Sale",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 4,
@@ -64,7 +60,6 @@ const products: ProductItem[] = [
     price: 320,
     badge: "Best Seller",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 5,
@@ -75,7 +70,6 @@ const products: ProductItem[] = [
     price: 220,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 6,
@@ -86,7 +80,6 @@ const products: ProductItem[] = [
     price: 350,
     badge: "Pre-Order",
     cover: ProductImg,
-    cta: "Pre-Order",
   },
   {
     id: 7,
@@ -97,7 +90,6 @@ const products: ProductItem[] = [
     price: 275,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 8,
@@ -108,7 +100,6 @@ const products: ProductItem[] = [
     price: 299,
     badge: "New",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 9,
@@ -119,7 +110,6 @@ const products: ProductItem[] = [
     price: 240,
     badge: null,
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 10,
@@ -130,7 +120,6 @@ const products: ProductItem[] = [
     price: 280,
     badge: "Best Seller",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 11,
@@ -141,7 +130,6 @@ const products: ProductItem[] = [
     price: 310,
     badge: "Popular",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
   {
     id: 12,
@@ -152,7 +140,6 @@ const products: ProductItem[] = [
     price: 199,
     badge: "New",
     cover: ProductImg,
-    cta: "Add to Cart",
   },
 ];
 

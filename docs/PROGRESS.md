@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-01 - Remove remaining inactive home-page code
+
+- Outcome: removed the commented-out home-page newsletter import/render block and 44 unused `cta` metadata entries from the New Releases, Best Sellers, Trending, and Accessories carousel data. The active newsletter component used by the About page was preserved.
+- Main files/areas: home-page composition and four home carousel data definitions.
+- Data/API/security impact: none; no rendered element, route, product field consumed by the UI, dependency, asset, authentication behavior, or stored data changed. A repository reference audit found no additional unreferenced modules, dependencies, public assets, or empty source directories safe to delete.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; direct execution of `tests/admin-auth.test.ts` passed 7/7. `npm run build` compiled successfully in 2.2 seconds, then the documented Windows sandbox `spawn EPERM` blocked the TypeScript worker, so a complete build pass is not claimed.
+- Known limitations or next step: intentionally routed placeholder pages, active mock catalog data, and referenced components were left unchanged; future deletion work should continue to require exact reference checks.
+
 ### 2026-09-01 - Remove unused UI scaffolding and empty directories
 
 - Outcome: removed 11 unreferenced generated UI primitives, their unused `cn` utility, the unused shadcn generator configuration, 10 orphaned runtime dependencies, and 33 empty placeholder directories. Active routes, components, images, admin authentication, and static blog/gallery data were preserved.
