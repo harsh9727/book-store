@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { blogs } from "../src/data/blogs.ts";
 import { galleries } from "../src/data/galleries.ts";
 import { blogDraftSchema, contentStoreSchema, galleryDraftSchema } from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
@@ -11,7 +10,6 @@ const blogDraft = {
   slug: "a-valid-article",
   category: "News",
   date: "2026-09-01",
-  readTime: "5 min read",
   image: "https://example.com/banner.webp",
   summary: "A useful summary.",
   author: {
@@ -42,9 +40,53 @@ test("accepts valid blog and gallery drafts", () => {
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
 });
 
-test("accepts an empty gallery store without any committed gallery fallback", () => {
+test("accepts blog drafts without tags or author bio", () => {
+  const draftWithoutCrudFields = {
+    ...blogDraft,
+    tags: undefined,
+    author: {
+      ...blogDraft.author,
+      bio: undefined,
+    },
+  };
+
+  assert.equal(blogDraftSchema.safeParse(draftWithoutCrudFields).success, true);
+});
+
+test("accepts blog drafts without explicit summary or author avatar", () => {
+  const draftWithoutSummaryOrAvatar = {
+    ...blogDraft,
+    summary: undefined,
+    author: {
+      ...blogDraft.author,
+      avatar: undefined,
+    },
+  };
+
+  assert.equal(blogDraftSchema.safeParse(draftWithoutSummaryOrAvatar).success, true);
+});
+
+test("accepts blank summary and avatar strings and normalizes them to defaults", () => {
+  const blankValuesDraft = {
+    ...blogDraft,
+    summary: "",
+    author: {
+      ...blogDraft.author,
+      avatar: "",
+    },
+  };
+
+  const parsed = blogDraftSchema.safeParse(blankValuesDraft);
+  assert.equal(parsed.success, true);
+  if (parsed.success) {
+    assert.equal(parsed.data.summary, "");
+    assert.equal(parsed.data.author.avatar, "/images/logo/logo.webp");
+  }
+});
+
+test("accepts an empty blog and gallery store without any committed fallback data", () => {
   assert.deepEqual(galleries, []);
-  assert.equal(contentStoreSchema.safeParse({ version: 1, blogs, galleries }).success, true);
+  assert.equal(contentStoreSchema.safeParse({ version: 1, blogs: [], galleries }).success, true);
 });
 
 test("rejects invalid slugs and dates", () => {

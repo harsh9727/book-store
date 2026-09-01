@@ -30,9 +30,11 @@ function articleText(blog?: BlogPost) {
 export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const router = useRouter();
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [bannerError, setBannerError] = useState("");
+  const [avatarError, setAvatarError] = useState("");
 
   const chooseBanner = (file: File | undefined, input: HTMLInputElement) => {
     if (!file) {
@@ -50,6 +52,22 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     setBannerFile(file);
   };
 
+  const chooseAvatar = (file: File | undefined, input: HTMLInputElement) => {
+    if (!file) {
+      setAvatarFile(null);
+      setAvatarError("");
+      return;
+    }
+    const validationError = validateClientImages([file]);
+    if (validationError) {
+      setAvatarError(validationError);
+      input.value = "";
+      return;
+    }
+    setAvatarError("");
+    setAvatarFile(file);
+  };
+
   const saveBlog = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
@@ -65,6 +83,12 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       }
       if (!image) throw new Error("Choose a banner image before saving.");
 
+      let avatar = initialItem?.author.avatar || "/images/logo/logo.webp";
+      if (avatarFile) {
+        const [uploaded] = await uploadAdminImages("blog-avatar", [avatarFile]);
+        avatar = uploaded.url;
+      }
+
       const title = String(values.get("title") || "").trim();
       const enteredSlug = String(values.get("slug") || "").trim();
       const payload = {
@@ -72,17 +96,15 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
         slug: slugify(enteredSlug || title),
         category: String(values.get("category") || "").trim(),
         date: String(values.get("date") || "").trim(),
-        readTime: String(values.get("readTime") || "").trim(),
         image,
         ...(imageKey ? { imageKey } : {}),
-        summary: String(values.get("summary") || "").trim(),
+        summary: "",
         author: {
           name: String(values.get("authorName") || "").trim(),
           role: String(values.get("authorRole") || "").trim(),
-          avatar: String(values.get("authorAvatar") || "").trim(),
-          bio: String(values.get("authorBio") || "").trim(),
+          avatar,
+          bio: "",
         },
-        tags: String(values.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
         contentText: String(values.get("contentText") || "").trim(),
       };
       const url = initialItem
@@ -119,14 +141,10 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
         <label className="text-sm font-semibold">Slug<input name="slug" maxLength={220} defaultValue={initialItem?.slug} placeholder="auto-from-title" className={inputClass} /></label>
         <label className="text-sm font-semibold">Category<input name="category" required maxLength={100} defaultValue={initialItem?.category} className={inputClass} /></label>
         <label className="text-sm font-semibold">Date<input name="date" required defaultValue={initialItem?.date || new Date().toISOString().slice(0, 10)} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Read time<input name="readTime" required defaultValue={initialItem?.readTime || "5 min read"} className={inputClass} /></label>
         <label className="sm:col-span-2 text-sm font-semibold">Banner image<input type="file" accept="image/jpeg,image/png,image/webp" required={!initialItem?.image} aria-invalid={Boolean(bannerError)} aria-describedby={bannerError ? "blog-banner-error" : undefined} onChange={(event) => chooseBanner(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500"><ImageUp size={13} />{bannerFile?.name || (initialItem?.image ? "Current banner will be kept." : "Choose an image.")}</span>{bannerError && <span id="blog-banner-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{bannerError}</span>}</label>
-        <label className="sm:col-span-2 text-sm font-semibold">Summary<textarea name="summary" required maxLength={2000} rows={3} defaultValue={initialItem?.summary} className={textareaClass} /></label>
         <label className="text-sm font-semibold">Author name<input name="authorName" required defaultValue={initialItem?.author.name || "GTBS Editorial Team"} className={inputClass} /></label>
         <label className="text-sm font-semibold">Author role<input name="authorRole" required defaultValue={initialItem?.author.role || "Editor"} className={inputClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Author avatar URL<input name="authorAvatar" required defaultValue={initialItem?.author.avatar || "/images/logo/logo.webp"} className={inputClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Author bio<textarea name="authorBio" maxLength={1500} rows={2} defaultValue={initialItem?.author.bio} className={textareaClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Tags, comma separated<input name="tags" defaultValue={initialItem?.tags.join(", ")} className={inputClass} /></label>
+        <label className="sm:col-span-2 text-sm font-semibold">Author avatar image<input type="file" accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(avatarError)} aria-describedby={avatarError ? "blog-avatar-error" : undefined} onChange={(event) => chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500"><ImageUp size={13} />{avatarFile?.name || (initialItem?.author.avatar ? "Current avatar will be kept." : "No avatar selected — default example image will be used.")}</span>{avatarError && <span id="blog-avatar-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{avatarError}</span>}</label>
         <label className="sm:col-span-2 text-sm font-semibold">Article content<textarea name="contentText" required maxLength={40000} rows={12} defaultValue={articleText(initialItem)} className={textareaClass} /></label>
         <div className="sm:col-span-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Link href="/admin/blogs" className="flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</Link>

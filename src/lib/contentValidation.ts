@@ -21,13 +21,21 @@ const dateTextSchema = z
   .min(1)
   .max(80)
   .refine((value) => !Number.isNaN(Date.parse(value)), "Date must be valid.");
+const normalizeBlankString = (value: unknown) =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
 
 const blogAuthorSchema = z
   .object({
     name: z.string().trim().min(1).max(120),
     role: z.string().trim().min(1).max(160),
-    avatar: imageReferenceSchema,
-    bio: z.string().trim().max(1_500),
+    avatar: z.preprocess(
+      (value) => {
+        if (typeof value === "string" && value.trim() === "") return "/images/logo/logo.webp";
+        return value;
+      },
+      imageReferenceSchema.optional().default("/images/logo/logo.webp")
+    ),
+    bio: z.string().trim().max(1_500).optional(),
   })
   .strict();
 
@@ -74,12 +82,14 @@ export const blogPostSchema = z
     slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
     category: z.string().trim().min(1).max(100),
     date: dateTextSchema,
-    readTime: z.string().trim().min(1).max(80),
     image: imageReferenceSchema,
     imageKey: z.string().trim().min(1).max(500).optional(),
-    summary: z.string().trim().min(1).max(2_000),
+    summary: z.preprocess(
+      (value) => normalizeBlankString(value),
+      z.string().trim().max(2_000).optional().default("")
+    ),
     author: blogAuthorSchema,
-    tags: z.array(z.string().trim().min(1).max(100)).max(20),
+    tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
     content: z.array(blogContentSectionSchema).min(1).max(50),
     comments: z.array(blogCommentSchema).max(500).optional(),
   })
@@ -91,12 +101,14 @@ export const blogDraftSchema = z
     slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
     category: z.string().trim().min(1).max(100),
     date: dateTextSchema,
-    readTime: z.string().trim().min(1).max(80),
     image: imageReferenceSchema,
     imageKey: z.string().trim().min(1).max(500).optional(),
-    summary: z.string().trim().min(1).max(2_000),
+    summary: z.preprocess(
+      (value) => normalizeBlankString(value),
+      z.string().trim().max(2_000).optional().default("")
+    ),
     author: blogAuthorSchema,
-    tags: z.array(z.string().trim().min(1).max(100)).max(20),
+    tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
     contentText: z.string().trim().min(1).max(40_000),
   })
   .strict();

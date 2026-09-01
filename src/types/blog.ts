@@ -26,7 +26,6 @@ export interface BlogPost {
   slug: string;
   category: string;
   date: string;
-  readTime: string;
   image: string;
   imageKey?: string;
   summary: string;
@@ -34,9 +33,9 @@ export interface BlogPost {
     name: string;
     role: string;
     avatar: string;
-    bio: string;
+    bio?: string;
   };
-  tags: string[];
+  tags?: string[];
   content: BlogContentSection[];
   comments?: BlogComment[];
 }

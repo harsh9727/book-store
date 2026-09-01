@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { blogs as seededBlogs } from "@/data/blogs";
 import type { BlogPost } from "@/types/blog";
 import type { GalleryItem } from "@/types/gallery";
 import {
@@ -26,7 +25,7 @@ let mutationQueue: Promise<unknown> = Promise.resolve();
 function seededStore(): ContentStore {
   return {
     version: 1,
-    blogs: structuredClone(seededBlogs),
+    blogs: [],
     galleries: [],
   };
 }
@@ -65,6 +64,8 @@ function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogP
     .split(/\n\s*\n/gu)
     .map((body) => body.trim())
     .filter(Boolean);
+  const firstParagraph = paragraphs[0]?.replace(/\s+/gu, " ").trim() ?? "";
+  const fallbackSummary = firstParagraph.slice(0, 200) || parsed.title;
 
   return {
     id,
@@ -72,12 +73,15 @@ function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogP
     slug: parsed.slug,
     category: parsed.category,
     date: parsed.date,
-    readTime: parsed.readTime,
     image: parsed.image,
     imageKey: parsed.imageKey,
-    summary: parsed.summary,
-    author: parsed.author,
-    tags: parsed.tags,
+    summary: parsed.summary?.trim() || fallbackSummary,
+    author: {
+      ...parsed.author,
+      avatar: parsed.author.avatar || "/images/logo/logo.webp",
+      bio: parsed.author.bio ?? "",
+    },
+    tags: parsed.tags ?? [],
     content: paragraphs.map((body) => ({ body })),
     ...(previous?.comments ? { comments: previous.comments } : {}),
   };

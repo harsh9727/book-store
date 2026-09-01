@@ -25,6 +25,22 @@
 
 ## Change log
 
+### 2026-09-01 - Remove required blog summary and avatar URL fields
+
+- Outcome: simplified the Blog admin form so it no longer requires a text summary, and blog author avatar uploads are optional. When no avatar image is selected, the app falls back to the default example avatar at `/images/logo/logo.webp` instead of forcing a URL field or a broken image.
+- Main files/areas: Blog admin form, blog content validation, content repository fallback logic, upload-purpose validation, and the related regression tests.
+- Data/API/security impact: no persisted schema migration was required. Summary now defaults to an empty string while the author avatar defaults to the repository fallback image; the public blog cards continue to render a valid avatar source.
+- Verification and exact result: `npx tsc --noEmit` passed, and `node --experimental-strip-types --test tests/content-management.test.ts` passed 7/7 tests.
+- Known limitations or next step: the default avatar is intentionally local and static; if you want a different example image later, replace the fallback asset in the public images directory and keep the same path contract.
+
+### 2026-09-01 - Use blog and gallery title slugs in public URLs
+
+- Outcome: switched public blog detail links from numeric IDs to canonical title-derived slugs, preserving the old numeric path as a compatibility redirect so existing links still resolve to the same content. The same pattern already exists for gallery slug URLs.
+- Main files/areas: public blog list/detail pages, shared blog cards, sitemap, project overview, and progress documentation.
+- Data/API/security impact: no persistent data change; blog lookup still accepts either a slug or legacy numeric ID, and the canonical route is now the title slug.
+- Verification and exact result: `npx tsc --noEmit` passed, and the content-management regression suite passed 5/5.
+- Known limitations or next step: existing old `/blogs/{id}` URLs redirect to the canonical slug route; custom slug edits remain subject to the same uniqueness checks as admin-managed blog slugs.
+
 ### 2026-09-01 - Use Gallery title slugs in public URLs
 
 - Outcome: replaced numeric Gallery detail links with the album's title-derived slug across public cards, related albums, admin View actions, metadata, structured data, and sitemap entries. Legacy numeric/detail aliases resolve the same record and redirect to its canonical slug URL.

@@ -7,7 +7,6 @@ export const blogs: BlogPost[] = [
     slug: "10-must-read-books-every-book-lover-should-read",
     category: "Book Recommendations",
     date: "June 15, 2024",
-    readTime: "6 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Whether you're looking for mind-bending mysteries, profound philosophical journeys, or heartwarming narratives, here are 10 exceptional books that will reignite your love for reading.",
@@ -68,7 +67,6 @@ export const blogs: BlogPost[] = [
     slug: "how-reading-can-transform-your-everyday-life",
     category: "Reading Tips",
     date: "June 10, 2024",
-    readTime: "4 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Scientific research consistently reveals the neurocognitive benefits of deep reading. Discover how cultivating a reading routine reduces stress, sharpens focus, and nurtures empathy.",
@@ -109,7 +107,6 @@ export const blogs: BlogPost[] = [
     slug: "new-book-releases-you-dont-want-to-miss",
     category: "New Releases",
     date: "June 5, 2024",
-    readTime: "5 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Explore this month's most anticipated fiction releases, groundbreaking non-fiction exposés, and captivating thrillers fresh from publishers around the globe.",
@@ -133,7 +130,6 @@ export const blogs: BlogPost[] = [
     slug: "the-best-christian-books-for-inspiration",
     category: "Christian Books",
     date: "May 28, 2024",
-    readTime: "7 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Uplifting devotionals, inspiring memoirs of faith, and spiritual wisdom to guide your daily walk with peace and purpose.",
@@ -157,7 +153,6 @@ export const blogs: BlogPost[] = [
     slug: "why-building-a-daily-reading-habit-matters",
     category: "Reading Tips",
     date: "May 22, 2024",
-    readTime: "5 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Learn the compound effect of reading just 20 pages a day, and how top leaders and innovators harness books for lifelong learning.",
@@ -181,7 +176,6 @@ export const blogs: BlogPost[] = [
     slug: "how-to-choose-the-perfect-book-for-yourself",
     category: "Book Guide",
     date: "May 16, 2024",
-    readTime: "4 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Stuck in a reading slump? Here is an actionable guide to picking your next book based on pacing, tone, themes, and narrative style.",
@@ -205,7 +199,6 @@ export const blogs: BlogPost[] = [
     slug: "the-art-of-annotating-books",
     category: "Reading Tips",
     date: "May 10, 2024",
-    readTime: "5 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Discover margin notes, indexing systems, and color-coded tabs that turn your personal library into an active conversation with brilliant authors.",
@@ -229,7 +222,6 @@ export const blogs: BlogPost[] = [
     slug: "top-christian-classics-for-every-believer",
     category: "Christian Books",
     date: "April 28, 2024",
-    readTime: "7 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Explore foundational works by C.S. Lewis, A.W. Tozer, Brother Lawrence, and Hannah Whitehall Smith that continue to shape spiritual journeys.",
@@ -253,7 +245,6 @@ export const blogs: BlogPost[] = [
     slug: "essential-books-on-money-and-wealth",
     category: "Book Recommendations",
     date: "April 20, 2024",
-    readTime: "6 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "A curated guide to the best literature on personal finance, index investing, behavioral economics, and sustainable wealth creation.",
@@ -277,7 +268,6 @@ export const blogs: BlogPost[] = [
     slug: "how-to-build-a-cozy-home-library",
     category: "Book Guide",
     date: "April 12, 2024",
-    readTime: "4 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Simple design principles, thrift bookstore strategies, and ambient lighting tips to create your dream reading sanctuary at home.",
@@ -301,7 +291,6 @@ export const blogs: BlogPost[] = [
     slug: "golden-age-of-historical-fiction",
     category: "New Releases",
     date: "April 05, 2024",
-    readTime: "8 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "Step back in time with breathtaking historical sagas that meticulously blend authentic historical events with compelling character arcs.",
@@ -325,7 +314,6 @@ export const blogs: BlogPost[] = [
     slug: "cultivating-quietness-meditations-for-busy-minds",
     category: "Christian Books",
     date: "March 29, 2024",
-    readTime: "5 min read",
     image: "/images/blog/blog.jpg",
     summary:
       "How reflective literature and contemplative prayer restore inner equilibrium in an age of constant digital noise and notifications.",

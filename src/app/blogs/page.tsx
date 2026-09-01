@@ -5,18 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CalendarDays,
-  Clock,
   ArrowRight,
   BookOpen,
   ChevronDown,
 } from "lucide-react";
-import { blogs } from "@/data/blogs";
+import type { BlogPost } from "@/types/blog";
 import { blogsFaqs } from "@/data/faqs";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 
 export default function BlogsPage() {
-  const [blogItems, setBlogItems] = useState(blogs);
+  const [blogItems, setBlogItems] = useState<BlogPost[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -34,7 +33,7 @@ export default function BlogsPage() {
     let active = true;
     fetch("/api/content/blogs", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : Promise.reject()))
-      .then((result: { items: typeof blogs }) => {
+      .then((result: { items: BlogPost[] }) => {
         if (active) setBlogItems(result.items);
       })
       .catch(() => undefined);
@@ -55,7 +54,7 @@ export default function BlogsPage() {
       searchQuery.trim() === "" ||
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       blog.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.tags.some((tag) =>
+      (blog.tags ?? []).some((tag) =>
         tag.toLowerCase().includes(searchQuery.toLowerCase())
       );
     return matchesCategory && matchesSearch;
@@ -127,7 +126,7 @@ export default function BlogsPage() {
               >
                 {/* Cover Image */}
                 <Link
-                  href={`/blogs/${blog.id}`}
+                  href={`/blogs/${blog.slug}`}
                   className="relative block aspect-[16/10] overflow-hidden bg-gray-100"
                 >
                   <Image
@@ -148,13 +147,9 @@ export default function BlogsPage() {
                       <CalendarDays size={13} className="text-orange-600" />
                       <span>{blog.date}</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={13} className="text-orange-600" />
-                      <span>{blog.readTime}</span>
-                    </div>
                   </div>
 
-                  <Link href={`/blogs/${blog.id}`}>
+                  <Link href={`/blogs/${blog.slug}`}>
                     <h3 className="line-clamp-2 title text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-600">
                       {blog.title}
                     </h3>
@@ -165,7 +160,7 @@ export default function BlogsPage() {
                   </p>
 
                   {/* Author footer */}
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3.5 mt-auto">
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-3.5 mt-3.5">
                     <div className="flex items-center gap-2.5">
                       <Image
                         src={blog.author.avatar}
@@ -180,7 +175,7 @@ export default function BlogsPage() {
                     </div>
 
                     <Link
-                      href={`/blogs/${blog.id}`}
+                      href={`/blogs/${blog.slug}`}
                       className="flex items-center gap-1 text-xs font-semibold tracking-wide description text-orange-600 hover:text-orange-700"
                     >
                       <span>Read</span>

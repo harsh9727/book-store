@@ -106,7 +106,7 @@ export default function AdminBlogManager({ initialItems }: AdminBlogManagerProps
               ) : pageItems.map((blog) => (
                 <tr key={blog.id} className="hover:bg-slate-50/70">
                   <td className="px-5 py-3 sm:px-6"><div className="relative h-14 w-20 overflow-hidden rounded-lg bg-slate-100"><Image src={blog.image} alt="" fill className="object-cover" sizes="80px" /></div></td>
-                  <td className="max-w-[300px] px-4 py-3"><p className="line-clamp-2 font-semibold text-slate-900">{blog.title}</p><p className="mt-0.5 text-xs text-slate-500">{blog.readTime}</p></td>
+                  <td className="max-w-[300px] px-4 py-3"><p className="line-clamp-2 font-semibold text-slate-900">{blog.title}</p></td>
                   <td className="px-4 py-3"><span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-700">{blog.category}</span></td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">{blog.date}</td>
                   <td className="px-4 py-3 text-slate-600">{blog.author.name}</td>

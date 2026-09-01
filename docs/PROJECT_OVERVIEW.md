@@ -80,6 +80,7 @@ npm run build
 - Dashboard product, order, revenue, and inventory figures are presentation data.
 - Admin Orders, Products, Customers, Analytics, Settings, and Help are not implemented and are therefore not shown in the sidebar; Overview, Blogs, and Gallery are the available admin destinations.
 - Blog and Gallery index routes default to responsive tables with text search, category filtering, and 8-row client-side pagination. Add and Edit navigate to separate protected form routes; Save or Cancel returns to the related list, while View opens the corresponding public detail route. CRUD mutations report success/failure through admin-scoped toasts, and Delete requires confirmation in a custom modal.
+- Blog admin create/edit forms no longer require a summary field, and the author avatar is optional. If no avatar image is uploaded, the form uses the fallback example image `/images/logo/logo.webp` so the public author card still renders a valid image.
 - Image selection errors are displayed directly below the affected banner, cover, or extra-photo input; general API/mutation failures remain form-level and toast notifications.
 - Newly selected Gallery extra photos render local previews before submission, are marked `New`, can be removed individually, and remain subject to the combined 12-photo limit.
 - Blog/gallery metadata persistence requires one writable persistent Node filesystem. Serverless/read-only/multi-replica deployments need a shared database repository before use.

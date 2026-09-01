@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
   CalendarDays,
-  Clock,
   ArrowRight,
   ShoppingBag,
   Sparkles,
@@ -43,7 +42,7 @@ export async function generateMetadata({
   const baseMetadata = createPageMetadata({
     title: blog.title,
     description,
-    path: `/blogs/${blog.id}`,
+    path: `/blogs/${blog.slug}`,
     image: blog.image,
   });
 
@@ -56,7 +55,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: new Date(blog.date).toISOString(),
       authors: [blog.author.name],
-      tags: blog.tags,
+      tags: blog.tags ?? [],
     },
   };
 }
@@ -67,6 +66,10 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
   if (!blog) {
     notFound();
+  }
+
+  if (id !== blog.slug) {
+    redirect(`/blogs/${blog.slug}`);
   }
 
   const relatedBlogs = (await getBlogs())
@@ -82,7 +85,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "@id": `${absoluteUrl(`/blogs/${blog.id}`)}#article`,
+    "@id": `${absoluteUrl(`/blogs/${blog.slug}`)}#article`,
     headline: blog.title,
     description: blog.summary,
     image: absoluteUrl(blog.image),
@@ -100,8 +103,8 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         url: absoluteUrl("/images/logo/logo.webp"),
       },
     },
-    mainEntityOfPage: absoluteUrl(`/blogs/${blog.id}`),
-    keywords: blog.tags.join(", "),
+    mainEntityOfPage: absoluteUrl(`/blogs/${blog.slug}`),
+    keywords: (blog.tags ?? []).join(", "),
   };
 
   return (
@@ -120,10 +123,6 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
           <span className="flex items-center gap-1 text-gray-500">
             <CalendarDays size={18} />
             {blog.date}
-          </span>
-          <span className="flex items-center gap-1 text-gray-500">
-            <Clock size={18} />
-            {blog.readTime}
           </span>
         </div>
 
@@ -222,7 +221,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             {relatedBlogs.map((item) => (
               <Link
                 key={item.id}
-                href={`/blogs/${item.id}`}
+                href={`/blogs/${item.slug}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-all"
               >
                 <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-gray-100 mb-3">

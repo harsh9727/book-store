@@ -42,7 +42,7 @@ const Blogs = async ({ limit }: BlogsProps = {}) => {
                     >
                         {/* Image */}
                         <Link
-                            href={`/blogs/${blog.id}`}
+                            href={`/blogs/${blog.slug}`}
                             className="relative block aspect-[16/10] overflow-hidden bg-gray-100"
                         >
                             <Image
@@ -70,7 +70,7 @@ const Blogs = async ({ limit }: BlogsProps = {}) => {
                             </div>
 
                             {/* Title */}
-                            <Link href={`/blogs/${blog.id}`}>
+                            <Link href={`/blogs/${blog.slug}`}>
                                 <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
                                     {blog.title}
                                 </h3>
@@ -78,7 +78,7 @@ const Blogs = async ({ limit }: BlogsProps = {}) => {
 
                             {/* Read More */}
                             <Link
-                                href={`/blogs/${blog.id}`}
+                                href={`/blogs/${blog.slug}`}
                                 className="group/link mt-auto flex w-fit items-center gap-1.5 pt-4 text-xs font-semibold text-gray-800 transition-colors duration-300 hover:text-orange-600"
                             >
                                 Read More

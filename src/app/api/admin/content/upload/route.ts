@@ -9,7 +9,7 @@ import {
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES } from "@/lib/imageRules";
 
 const MAX_REQUEST_BYTES = (MAX_GALLERY_PHOTOS + 1) * MAX_IMAGE_BYTES + 256 * 1024;
-const allowedPurposes = new Set(["blog-banner", "gallery-cover", "gallery-photos"]);
+const allowedPurposes = new Set(["blog-banner", "blog-avatar", "gallery-cover", "gallery-photos"]);
 
 function response(body: object, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
