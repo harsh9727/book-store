@@ -6,7 +6,14 @@ import { useState } from "react";
 import { ArrowLeft, ImageUp, Save } from "lucide-react";
 import { toast } from "sonner";
 
+import AdminRichTextEditor from "@/components/admin/AdminRichTextEditor";
 import type { BlogPost } from "@/types/blog";
+import {
+  blogRichTextToPlainText,
+  blogToRichText,
+  MAX_BLOG_CONTENT_CHARACTERS,
+  MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
+} from "@/lib/blogRichText";
 import {
   adminJsonRequest,
   slugify,
@@ -18,14 +25,8 @@ interface AdminBlogFormProps {
   initialItem?: BlogPost;
 }
 
-const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
-const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
-
-function articleText(blog?: BlogPost) {
-  return blog?.content
-    .map((section) => [section.heading, section.body].filter(Boolean).join("\n"))
-    .join("\n\n") || "";
-}
+const inputClass =
+  "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 
 export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const router = useRouter();
@@ -33,8 +34,12 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [articleError, setArticleError] = useState("");
   const [bannerError, setBannerError] = useState("");
   const [avatarError, setAvatarError] = useState("");
+  const [richContent, setRichContent] = useState(() =>
+    blogToRichText(initialItem),
+  );
 
   const chooseBanner = (file: File | undefined, input: HTMLInputElement) => {
     if (!file) {
@@ -71,8 +76,23 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const saveBlog = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    const contentText = blogRichTextToPlainText(richContent).trim();
+    if (!contentText) {
+      setArticleError("Add article content before saving.");
+      return;
+    }
+    if (
+      contentText.length > MAX_BLOG_CONTENT_CHARACTERS ||
+      JSON.stringify(richContent).length >
+        MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
+    ) {
+      setArticleError("Article content is too long.");
+      return;
+    }
+
     setBusy(true);
     setError("");
+    setArticleError("");
     try {
       let image = initialItem?.image || "";
       let imageKey = initialItem?.imageKey;
@@ -105,17 +125,25 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
           avatar,
           bio: "",
         },
-        contentText: String(values.get("contentText") || "").trim(),
+        contentText,
+        richContent,
       };
       const url = initialItem
         ? `/api/admin/content/blogs/${encodeURIComponent(String(initialItem.id))}`
         : "/api/admin/content/blogs";
       await adminJsonRequest(url, initialItem ? "PUT" : "POST", payload);
-      toast.success(initialItem ? "Blog updated successfully." : "Blog created successfully.");
+      toast.success(
+        initialItem
+          ? "Blog updated successfully."
+          : "Blog created successfully.",
+      );
       router.push("/admin/blogs");
       router.refresh();
     } catch (saveError) {
-      const errorMessage = saveError instanceof Error ? saveError.message : "Blog could not be saved.";
+      const errorMessage =
+        saveError instanceof Error
+          ? saveError.message
+          : "Blog could not be saved.";
       setError(errorMessage);
       toast.error(errorMessage);
       setBusy(false);
@@ -124,31 +152,180 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="mb-5 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div>
-          <h2 className="text-lg font-bold">{initialItem ? "Edit blog details" : "Add a new blog"}</h2>
-          <p className="text-xs text-slate-500">Banner: JPG, PNG, or WebP; maximum 500 KB.</p>
+          <h2 className="text-lg font-bold">
+            {initialItem ? "Edit blog details" : "Add a new blog"}
+          </h2>
+          <p className="text-xs text-slate-500">
+            Banner: JPG, PNG, or WebP; maximum 500 KB.
+          </p>
         </div>
-        <Link href="/admin/blogs" className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-          <ArrowLeft size={16} />Back to list
+        <Link
+          href="/admin/blogs"
+          className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+        >
+          <ArrowLeft size={16} />
+          Back to list
         </Link>
       </div>
 
-      {error && <p role="alert" className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      {error && (
+        <p
+          role="alert"
+          className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {error}
+        </p>
+      )}
 
       <form onSubmit={saveBlog} className="grid gap-4 sm:grid-cols-2">
-        <label className="sm:col-span-2 text-sm font-semibold">Title<input name="title" required maxLength={220} defaultValue={initialItem?.title} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Slug<input name="slug" maxLength={220} defaultValue={initialItem?.slug} placeholder="auto-from-title" className={inputClass} /></label>
-        <label className="text-sm font-semibold">Category<input name="category" required maxLength={100} defaultValue={initialItem?.category} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Date<input name="date" required defaultValue={initialItem?.date || new Date().toISOString().slice(0, 10)} className={inputClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Banner image<input type="file" accept="image/jpeg,image/png,image/webp" required={!initialItem?.image} aria-invalid={Boolean(bannerError)} aria-describedby={bannerError ? "blog-banner-error" : undefined} onChange={(event) => chooseBanner(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500"><ImageUp size={13} />{bannerFile?.name || (initialItem?.image ? "Current banner will be kept." : "Choose an image.")}</span>{bannerError && <span id="blog-banner-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{bannerError}</span>}</label>
-        <label className="text-sm font-semibold">Author name<input name="authorName" required defaultValue={initialItem?.author.name || "GTBS Editorial Team"} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Author role<input name="authorRole" required defaultValue={initialItem?.author.role || "Editor"} className={inputClass} /></label>
-        <label className="sm:col-span-2 text-sm font-semibold">Author avatar image<input type="file" accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(avatarError)} aria-describedby={avatarError ? "blog-avatar-error" : undefined} onChange={(event) => chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500"><ImageUp size={13} />{avatarFile?.name || (initialItem?.author.avatar ? "Current avatar will be kept." : "No avatar selected — default example image will be used.")}</span>{avatarError && <span id="blog-avatar-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{avatarError}</span>}</label>
-        <label className="sm:col-span-2 text-sm font-semibold">Article content<textarea name="contentText" required maxLength={40000} rows={12} defaultValue={articleText(initialItem)} className={textareaClass} /></label>
+        <label className="sm:col-span-2 text-sm font-semibold">
+          Title
+          <input
+            name="title"
+            required
+            maxLength={220}
+            defaultValue={initialItem?.title}
+            className={inputClass}
+          />
+        </label>
+        <div className="grid min-w-0 gap-4 sm:col-span-2 md:grid-cols-3">
+          <label className="min-w-0 text-sm font-semibold">
+            Slug
+            <input
+              name="slug"
+              maxLength={220}
+              defaultValue={initialItem?.slug}
+              placeholder="auto-from-title"
+              className={inputClass}
+            />
+          </label>
+          <label className="min-w-0 text-sm font-semibold">
+            Category
+            <input
+              name="category"
+              required
+              maxLength={100}
+              defaultValue={initialItem?.category}
+              className={inputClass}
+            />
+          </label>
+          <label className="min-w-0 text-sm font-semibold">
+            Date
+            <input
+              name="date"
+              required
+              defaultValue={
+                initialItem?.date || new Date().toISOString().slice(0, 10)
+              }
+              className={inputClass}
+            />
+          </label>
+        </div>
+        <label className="sm:col-span-2 text-sm font-semibold">
+          Banner image
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            required={!initialItem?.image}
+            aria-invalid={Boolean(bannerError)}
+            aria-describedby={bannerError ? "blog-banner-error" : undefined}
+            onChange={(event) =>
+              chooseBanner(event.currentTarget.files?.[0], event.currentTarget)
+            }
+            className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
+          />
+          <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
+            <ImageUp size={13} />
+            {bannerFile?.name ||
+              (initialItem?.image
+                ? "Current banner will be kept."
+                : "Choose an image.")}
+          </span>
+          {bannerError && (
+            <span
+              id="blog-banner-error"
+              role="alert"
+              className="mt-1.5 block text-xs font-medium text-red-600"
+            >
+              {bannerError}
+            </span>
+          )}
+        </label>
+        <label className="text-sm font-semibold">
+          Author name
+          <input
+            name="authorName"
+            required
+            defaultValue={initialItem?.author.name || "GTBS Editorial Team"}
+            className={inputClass}
+          />
+        </label>
+        <label className="text-sm font-semibold">
+          Author role
+          <input
+            name="authorRole"
+            required
+            defaultValue={initialItem?.author.role || "Editor"}
+            className={inputClass}
+          />
+        </label>
+        <label className="sm:col-span-2 text-sm font-semibold">
+          Author avatar image
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            aria-invalid={Boolean(avatarError)}
+            aria-describedby={avatarError ? "blog-avatar-error" : undefined}
+            onChange={(event) =>
+              chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)
+            }
+            className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
+          />
+          <span className="mt-1 flex items-center gap-1 text-xs font-normal text-slate-500">
+            <ImageUp size={13} />
+            {avatarFile?.name ||
+              (initialItem?.author.avatar
+                ? "Current avatar will be kept."
+                : "No avatar selected — default example image will be used.")}
+          </span>
+          {avatarError && (
+            <span
+              id="blog-avatar-error"
+              role="alert"
+              className="mt-1.5 block text-xs font-medium text-red-600"
+            >
+              {avatarError}
+            </span>
+          )}
+        </label>
+        <div className="sm:col-span-2">
+          <p className="mb-1.5 text-sm font-semibold">Article content</p>
+          <AdminRichTextEditor
+            initialContent={richContent}
+            error={articleError}
+            onChange={(content) => {
+              setRichContent(content);
+              if (articleError) setArticleError("");
+            }}
+          />
+        </div>
         <div className="sm:col-span-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Link href="/admin/blogs" className="flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</Link>
-          <button type="submit" disabled={busy} className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"><Save size={17} />{busy ? "Saving..." : initialItem ? "Update blog" : "Create blog"}</button>
+          <Link
+            href="/admin/blogs"
+            className="flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          >
+            Cancel
+          </Link>
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
+          >
+            <Save size={17} />
+            {busy ? "Saving..." : initialItem ? "Update blog" : "Create blog"}
+          </button>
         </div>
       </form>
     </section>

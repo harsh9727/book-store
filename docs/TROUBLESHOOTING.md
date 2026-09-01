@@ -90,7 +90,35 @@
 
 **Observed 2026-08-31:** Node's built-in test runner hit the same sandbox child-process denial. Running the focused suite in a permitted terminal passed; the production build also completed in the permitted environment. Treat an external pass as environment-specific evidence, not permission to bypass normal workstation controls.
 
+## Turbopack build fails with paging-file error 1455
+
+**Symptom:** `npm run build` stops while restoring the `.next/cache/turbopack` database and reports that it cannot memory-map an SST cache file because the paging file is too small (`os error 1455`).
+
+**Cause:** Windows cannot provide enough committed virtual memory for the cached Turbopack data. This is an environment/resource failure, not a TypeScript or ESLint diagnostic from the application.
+
+**Solution:** close memory-heavy processes or increase the Windows paging-file allocation, then rerun the build. If the cache itself remains inconsistent after resources are available, stop all Next.js processes, remove only this workspace's `.next` directory, and rerun `npm run build` so the cache is regenerated.
+
+**Prevention:** keep the system-managed paging file enabled and avoid running concurrent memory-heavy builds. Do not claim a successful production build unless the command exits with code 0.
+
 **Observed 2026-09-01:** after unused-file/dependency cleanup, production compilation succeeded in 4.1 seconds before the same TypeScript-worker denial. Full lint, generated route types, standalone TypeScript, and the direct 7/7 admin-auth suite passed.
+
+## pnpm registry reports `UNABLE_TO_VERIFY_LEAF_SIGNATURE`
+
+**Symptom:** a dependency install retries registry metadata requests and then fails with `ERR_PNPM_META_FETCH_FAIL` plus `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, even though TLS verification is enabled.
+
+**Cause:** Node's bundled CA set does not include a certificate chain that the Windows machine already trusts in its system certificate store.
+
+**Resolved 2026-09-01:** on Node 22, run the scoped dependency command with `NODE_USE_SYSTEM_CA=1` (PowerShell: `$env:NODE_USE_SYSTEM_CA='1'`) so Node adds the operating system's trusted CA store while keeping TLS verification enabled. The Tiptap install then completed and pnpm's lockfile supply-chain policy check passed.
+
+**Prevention:** keep `strict-ssl` enabled. Configure the organization/root certificate through the system store or an approved `NODE_EXTRA_CA_CERTS` file; never solve this by disabling certificate verification.
+
+## `pnpm list` cannot open its SQLite database
+
+**Symptom:** `pnpm list` reports `ERR_SQLITE_ERROR: unable to open database file` in a restricted workspace shell even though installed packages resolve during lint and TypeScript checks.
+
+**Cause:** pnpm's package-list diagnostic opens its store index outside the writable workspace, and the restricted shell cannot access that database. This does not by itself indicate a corrupt application lockfile or missing dependency.
+
+**Resolved 2026-09-01:** rerun the read-only `pnpm list ... --depth 0` command in a permitted terminal. It confirmed the three installed Tiptap packages at 3.30.5. Do not edit or delete the store database manually.
 
 ## TypeScript references deleted App Router routes
 

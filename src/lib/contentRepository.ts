@@ -4,6 +4,7 @@ import path from "node:path";
 
 import type { BlogPost } from "@/types/blog";
 import type { GalleryItem } from "@/types/gallery";
+import { plainTextToBlogRichText } from "@/lib/blogRichText";
 import {
   blogDraftSchema,
   contentStoreSchema,
@@ -82,6 +83,8 @@ function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogP
       bio: parsed.author.bio ?? "",
     },
     tags: parsed.tags ?? [],
+    richContent:
+      parsed.richContent ?? plainTextToBlogRichText(parsed.contentText),
     content: paragraphs.map((body) => ({ body })),
     ...(previous?.comments ? { comments: previous.comments } : {}),
   };

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getBlog, getBlogs } from "@/lib/contentRepository";
 import Breadcrumb from "@/components/common/Breadcrumb";
+import BlogRichText from "@/components/blog/BlogRichText";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   absoluteUrl,
@@ -158,21 +159,25 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
       </div>
 
       {/* Formatted Article Content */}
-      <div className="space-y-8 text-gray-800">
-        {blog.content.map((section, idx) => (
-          <div key={idx} className="space-y-4">
-            {section.heading && (
-              <h2 className="title text-2xl font-bold text-gray-900 mt-6">
-                {section.heading}
-              </h2>
-            )}
+      {blog.richContent ? (
+        <BlogRichText document={blog.richContent} />
+      ) : (
+        <div className="space-y-8 text-gray-800">
+          {blog.content.map((section, idx) => (
+            <div key={idx} className="space-y-4">
+              {section.heading && (
+                <h2 className="title mt-6 text-2xl font-bold text-gray-900">
+                  {section.heading}
+                </h2>
+              )}
 
-            <p className="description text-base leading-relaxed text-gray-700">
-              {section.body}
-            </p>
-          </div>
-        ))}
-      </div>
+              <p className="description text-base leading-relaxed text-gray-700">
+                {section.body}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Note / Buy Books Callout Card */}
       <div className="mt-10 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-amber-50/40 to-white p-6 md:p-8 shadow-sm">

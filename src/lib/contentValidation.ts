@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+import {
+  isSafeRichTextHref,
+  MAX_BLOG_CONTENT_CHARACTERS,
+  MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
+} from "./blogRichText.ts";
+import type {
+  BlogRichTextDocument,
+  BlogRichTextNode,
+} from "@/types/blog";
+
 const imageReferenceSchema = z
   .string()
   .trim()
@@ -23,6 +33,64 @@ const dateTextSchema = z
   .refine((value) => !Number.isNaN(Date.parse(value)), "Date must be valid.");
 const normalizeBlankString = (value: unknown) =>
   typeof value === "string" && value.trim() === "" ? undefined : value;
+
+const richTextAttributeSchema = z.union([
+  z.string().max(2_048),
+  z.number().finite(),
+  z.boolean(),
+  z.null(),
+]);
+const richTextMarkSchema = z
+  .object({
+    type: z.enum(["bold", "italic", "underline", "strike", "code", "link"]),
+    attrs: z.record(z.string(), richTextAttributeSchema).optional(),
+  })
+  .strict()
+  .superRefine((mark, context) => {
+    if (mark.type !== "link") return;
+    const href = mark.attrs?.href;
+    if (typeof href !== "string" || !isSafeRichTextHref(href)) {
+      context.addIssue({
+        code: "custom",
+        message: "Rich-text links must use a safe web, email, phone, or local URL.",
+        path: ["attrs", "href"],
+      });
+    }
+  });
+const richTextNodeSchema: z.ZodType<BlogRichTextNode> = z.lazy(() =>
+  z
+    .object({
+      type: z.enum([
+        "doc",
+        "paragraph",
+        "heading",
+        "bulletList",
+        "orderedList",
+        "listItem",
+        "blockquote",
+        "codeBlock",
+        "horizontalRule",
+        "hardBreak",
+        "text",
+      ]),
+      attrs: z.record(z.string(), richTextAttributeSchema).optional(),
+      content: z.array(richTextNodeSchema).max(5_000).optional(),
+      marks: z.array(richTextMarkSchema).max(20).optional(),
+      text: z.string().max(MAX_BLOG_CONTENT_CHARACTERS).optional(),
+    })
+    .strict(),
+);
+const blogRichTextDocumentSchema = richTextNodeSchema
+  .refine(
+    (node): node is BlogRichTextDocument =>
+      node.type === "doc" && Array.isArray(node.content),
+    "Rich-text content must be a Tiptap document.",
+  )
+  .refine(
+    (node) =>
+      JSON.stringify(node).length <= MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
+    "Rich-text content is too large.",
+  );
 
 const blogAuthorSchema = z
   .object({
@@ -90,6 +158,7 @@ export const blogPostSchema = z
     ),
     author: blogAuthorSchema,
     tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
+    richContent: blogRichTextDocumentSchema.optional(),
     content: z.array(blogContentSectionSchema).min(1).max(50),
     comments: z.array(blogCommentSchema).max(500).optional(),
   })
@@ -109,7 +178,12 @@ export const blogDraftSchema = z
     ),
     author: blogAuthorSchema,
     tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
-    contentText: z.string().trim().min(1).max(40_000),
+    contentText: z
+      .string()
+      .trim()
+      .min(1)
+      .max(MAX_BLOG_CONTENT_CHARACTERS),
+    richContent: blogRichTextDocumentSchema.optional(),
   })
   .strict();
 

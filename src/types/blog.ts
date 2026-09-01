@@ -20,6 +20,35 @@ export interface BlogContentSection {
   keyTakeaways?: string[];
 }
 
+export interface BlogRichTextMark {
+  type: "bold" | "italic" | "underline" | "strike" | "code" | "link";
+  attrs?: Record<string, boolean | number | string | null>;
+}
+
+export interface BlogRichTextNode {
+  type:
+    | "doc"
+    | "paragraph"
+    | "heading"
+    | "bulletList"
+    | "orderedList"
+    | "listItem"
+    | "blockquote"
+    | "codeBlock"
+    | "horizontalRule"
+    | "hardBreak"
+    | "text";
+  attrs?: Record<string, boolean | number | string | null>;
+  content?: BlogRichTextNode[];
+  marks?: BlogRichTextMark[];
+  text?: string;
+}
+
+export interface BlogRichTextDocument extends BlogRichTextNode {
+  type: "doc";
+  content: BlogRichTextNode[];
+}
+
 export interface BlogPost {
   id: string | number;
   title: string;
@@ -36,6 +65,7 @@ export interface BlogPost {
     bio?: string;
   };
   tags?: string[];
+  richContent?: BlogRichTextDocument;
   content: BlogContentSection[];
   comments?: BlogComment[];
 }

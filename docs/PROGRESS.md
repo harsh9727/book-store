@@ -25,6 +25,22 @@
 
 ## Change log
 
+### 2026-09-01 - Tiptap rich-text Blog editor
+
+- Outcome: replaced the Blog admin Article content textarea with a responsive Tiptap editor. The toolbar supports bold, italic, underline, strikethrough, level-two/three headings, bullet and numbered lists, block quotes, code blocks, horizontal rules, safe links, unlink, undo, and redo. Saved formatting now renders on the public Blog detail page; existing plain/section-based articles still load into the editor and retain their public fallback rendering.
+- Main files/areas: Tiptap dependencies and lockfile, Blog admin editor/form, rich-content domain types and helpers, content schemas/repository, public Blog renderer/detail route, focused content tests, and affected project/architecture/rules/security/standards/troubleshooting documentation.
+- Data/API/security impact: Blog drafts and stored posts may now include bounded, allow-listed Tiptap JSON while retaining the existing derived plain-text `content` sections for compatibility and summary fallback. The server rejects unknown nodes/marks, oversized JSON, and unsafe link protocols. Public rendering maps validated nodes to React elements and does not use `dangerouslySetInnerHTML`; authentication, same-origin checks, request-size limits, uploads, and atomic persistence are unchanged.
+- Verification and exact result: `pnpm add @tiptap/react @tiptap/pm @tiptap/starter-kit --store-dir D:\.pnpm-store\v11` passed with the lockfile supply-chain policy check; permitted `pnpm list @tiptap/react @tiptap/pm @tiptap/starter-kit --depth 0` confirmed all three at 3.30.5; `npx tsc --noEmit` passed; `npm run lint` passed with 0 errors/warnings; direct `node --experimental-strip-types tests/content-management.test.ts` passed 9/9, including safe rich content plus unsafe-link/unknown-node rejection; `git diff HEAD --check` passed apart from existing Git LF-to-CRLF notices. `npm run test:content` was blocked by the documented Windows sandbox `spawn EPERM`, and `npx next build --webpack` was blocked at worker startup by the same `spawn EPERM`, so a complete production-build pass is not claimed.
+- Known limitations or next step: this first editor scope intentionally excludes embedded images, tables, text colors, and collaboration. Article images remain managed through the separate validated banner upload; authenticated pixel-level browser testing is still required in a normal local/deployment environment.
+
+### 2026-09-01 - Responsive Blog metadata row
+
+- Outcome: aligned Slug, Category, and Date in one horizontal row on medium and larger Blog admin forms while retaining a single-column stack on narrow screens. The form heading actions also stack on narrow screens so the Back action does not crowd the title.
+- Main files/areas: Blog admin create/edit form layout, project overview, and progress documentation.
+- Data/API/security impact: none; this is a responsive presentation-only change and preserves field names, validation, submission, upload, and persistence behavior.
+- Verification and exact result: `git diff --check` passed apart from existing Git LF-to-CRLF notices; `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed. `npm run build` could not complete because Turbopack failed while memory-mapping its existing Windows cache with paging-file error 1455; this environment issue is documented in troubleshooting, so a complete production-build pass is not claimed.
+- Known limitations or next step: the responsive layout was verified structurally as a mobile-first single-column grid that changes to three columns at Tailwind's `md` breakpoint; final pixel-level confirmation still depends on rendering the authenticated form in a browser at representative viewport widths.
+
 ### 2026-09-01 - Remove required blog summary and avatar URL fields
 
 - Outcome: simplified the Blog admin form so it no longer requires a text summary, and blog author avatar uploads are optional. When no avatar image is selected, the app falls back to the default example avatar at `/images/logo/logo.webp` instead of forcing a URL field or a broken image.

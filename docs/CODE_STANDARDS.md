@@ -21,6 +21,7 @@
 - Reset filtered pagination in the filter/search event handler instead of calling a state setter from an effect.
 - Store imperative carousel instances in refs and access them only in callbacks or event handlers.
 - Prefer semantic HTML over generic containers.
+- Keep rich-text documents as typed/validated JSON. Render allow-listed nodes and marks as React elements; do not pass editor HTML directly to `dangerouslySetInnerHTML`.
 
 ## Components
 
@@ -44,6 +45,7 @@
 - Associate clear validation errors with fields.
 - Buttons declare `type`.
 - Icon-only controls require `aria-label`.
+- Rich-text toolbar controls require `type="button"`, accessible labels, visible active/disabled states, and mobile wrapping.
 - Use `aria-current` for active navigation and semantic async status text.
 
 ## Errors

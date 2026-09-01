@@ -22,6 +22,27 @@ const blogDraft = {
   contentText: "Article body.",
 };
 
+const richContent = {
+  type: "doc" as const,
+  content: [
+    {
+      type: "heading" as const,
+      attrs: { level: 2 },
+      content: [{ type: "text" as const, text: "A useful heading" }],
+    },
+    {
+      type: "paragraph" as const,
+      content: [
+        {
+          type: "text" as const,
+          text: "Formatted article body.",
+          marks: [{ type: "bold" as const }],
+        },
+      ],
+    },
+  ],
+};
+
 const galleryDraft = {
   slug: "community-event",
   title: "Community event",
@@ -38,6 +59,41 @@ const galleryDraft = {
 test("accepts valid blog and gallery drafts", () => {
   assert.equal(blogDraftSchema.safeParse(blogDraft).success, true);
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
+});
+
+test("accepts allow-listed Tiptap JSON and rejects unsafe rich content", () => {
+  assert.equal(
+    blogDraftSchema.safeParse({ ...blogDraft, richContent }).success,
+    true,
+  );
+
+  const unsafeLink = {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "Unsafe link",
+            marks: [{ type: "link", attrs: { href: "javascript:alert(1)" } }],
+          },
+        ],
+      },
+    ],
+  };
+  assert.equal(
+    blogDraftSchema.safeParse({ ...blogDraft, richContent: unsafeLink })
+      .success,
+    false,
+  );
+  assert.equal(
+    blogDraftSchema.safeParse({
+      ...blogDraft,
+      richContent: { type: "doc", content: [{ type: "iframe" }] },
+    }).success,
+    false,
+  );
 });
 
 test("accepts blog drafts without tags or author bio", () => {

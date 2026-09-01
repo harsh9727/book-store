@@ -29,6 +29,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Admin pages are no-index and excluded from public chrome.
 - Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
 - Content JSON bodies are capped at 128 KiB and validated with strict Zod schemas.
+- Blog rich-text payloads are additionally bounded and allow-list Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Public rich text is rendered through explicit React elements without `dangerouslySetInnerHTML`.
 - Upload bodies are capped for one cover plus twelve 500 KiB photos and multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
 - Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 
