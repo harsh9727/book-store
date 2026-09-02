@@ -92,6 +92,30 @@
 
 **Observed 2026-09-02:** both admin-auth and content test commands hit `spawn EPERM` while starting their Node test workers in the restricted Windows sandbox. The same commands passed in the permitted environment (7/7 admin-auth and 14/14 content tests); repository-wide ESLint and standalone TypeScript also passed in the sandbox.
 
+**Observed 2026-09-02 (dynamic catalog):** the restricted content suite and production build again hit the same child-process denial. Permitted reruns passed 16/16 content tests and completed the production build with TypeScript, 33/33 static pages, and exit code 0.
+
+## Development server crashes with `Fatal process out of memory: Zone`
+
+**Symptom:** `pnpm dev` starts successfully, compiles routes such as `/product/[id]` and `/admin/categories`, then the Node/Next process terminates with exit code `3765269347` and a native `Fatal process out of memory: Zone` message.
+
+**Cause observed 2026-09-02:** the Turbopack filesystem cache had grown to about 1,186.64 MiB in `.next`; `.next/dev` accounted for about 1,000.82 MiB and included individual SST cache files of about 243.50 MiB and 145.26 MiB. On this Windows machine that cache coincided with the previously observed paging-file/native-memory pressure. This is a bundler-process crash, not a Product/Category API response failure.
+
+**Resolved:** the default `pnpm dev` script now runs `next dev --webpack`, which is an officially supported Next.js fallback. Stop every server for this workspace, remove only `D:\react-projects\E-com\e-com\.next`, then restart with `pnpm dev`. The directory is generated and will be recreated. `pnpm dev:turbopack` remains available only for deliberate reproduction/tracing.
+
+**Prevention:** do not run Webpack and Turbopack development servers concurrently against the same output directory. If `.next/dev/cache/turbopack` grows abnormally and the crash returns, stop the server and clear only this workspace's `.next`; also keep the Windows system-managed paging file enabled. Do not delete the repository root, `storage/`, or source directories.
+
+**Next 16 note:** development startup can auto-append a managed block to `AGENTS.md`. This repository sets `agentRules: false` because `AGENTS.md` is an existing project-owned working agreement. Keep that configuration unless automatic rule generation is intentionally adopted and reviewed.
+
+## React says a component has not mounted yet, followed by `Array buffer allocation failed`
+
+**Symptom:** the terminal forwards `Can't perform a React state update on a component that hasn't mounted yet`, then reports `RangeError: Array buffer allocation failed`, unhandled rejections, and a layout `ChunkLoadError` timeout. The overlay may highlight `<LanguageProvider>` in `RootLayout` even though that JSX line contains no state update.
+
+**Cause observed 2026-09-02:** Windows commit usage was about 14,858.8 MiB against a 15,712.6 MiB limit while the Next child held about 1,279.3 MiB private memory. Native allocation failed while compiling/serving the layout chunk; the browser router's asynchronous failed-chunk recovery then produced the React development warning. The highlighted provider was the failed layout boundary, not proof of a render-time setter.
+
+**Resolved:** `experimental.webpackMemoryOptimizations: true` and `experimental.preloadEntriesOnStart: false` reduce development memory pressure. `LanguageProvider` now wraps only public `SiteChrome`, so admin routes do not mount its external-store subscription or Google Translate effects; its delayed public translation callback is deactivated and cleared during cleanup. Stop all stale dev servers and restart `pnpm dev` after this configuration change.
+
+**If it returns:** close memory-heavy browser tabs, VS Code windows, Adobe/Creative Cloud processes, or other development servers and keep a system-managed/larger Windows paging file. Then stop Next, clear only this repository's generated `.next`, and restart. A React `useEffect` rewrite cannot repair an OS-level array-buffer allocation failure by itself.
+
 ## VS Code reports missing aliases in a moved admin file
 
 **Symptom:** the Problems panel groups `Cannot find module` and follow-on implicit-`any` diagnostics under a former flat path such as `src/components/admin/AdminBlogForm.tsx`, even though the component was moved to `src/components/admin/blog/AdminBlogForm.tsx`.
@@ -163,6 +187,26 @@
 **Resolved 2026-09-01:** declare the class property normally and assign it inside the constructor. This preserves runtime behavior and lets the focused Node test runner import the module without a transpilation step.
 
 **Prevention:** files imported directly by the repository's strip-only test scripts must use erasable TypeScript syntax; avoid enums, namespaces, and constructor parameter properties in that import graph.
+
+## Node strip-only tests cannot resolve an `@/` alias from a newly imported module
+
+**Symptom:** `pnpm test:content` fails before running tests with `ERR_MODULE_NOT_FOUND: Cannot find package '@/data'`, after a test directly imports a repository module that itself uses Next.js path aliases.
+
+**Cause:** Node's direct `--experimental-strip-types` runner strips TypeScript syntax but does not apply the Next.js bundler's `@/` resolution to the newly exposed import graph.
+
+**Resolved 2026-09-02:** moved the catalog initialization predicate into dependency-free `src/lib/catalogMigration.ts` and imported that helper by a relative path from the test. The repository continues to consume it through the normal `@/lib/...` application alias, while the focused suite passed 17/17.
+
+**Prevention:** keep utilities tested by the direct Node runner dependency-free or ensure every dependency in that test import graph uses Node-resolvable specifiers. Do not pull a route/repository graph into a unit test only to reach one pure predicate.
+
+## TypeScript rejects a legacy catalog record passed to the migration helper
+
+**Symptom:** `npx tsc --noEmit` reports `TS2345` because `Record<string, unknown>` is not assignable to a type requiring `catalogInitialized`, `products`, and `categories` properties.
+
+**Cause:** legacy JSON is deliberately allowed to omit all three catalog keys, but the first helper signature used `Pick<Record<...>>`, which incorrectly made every selected key required.
+
+**Resolved 2026-09-02:** the predicate now accepts a `Partial<Record<...>>` for those three known keys and continues narrowing each array at runtime. TypeScript and focused ESLint passed afterward.
+
+**Prevention:** migration helpers must model the oldest accepted persisted shape, including absent keys; validate/narrow unknown JSON inside the helper instead of asserting the current schema prematurely.
 
 ## External images fail
 

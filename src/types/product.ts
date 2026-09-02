@@ -1,3 +1,12 @@
+export const PRODUCT_BADGES = [
+  "Best Sellers",
+  "New Releases",
+  "Trending Products",
+  "Accessories",
+] as const;
+
+export type ProductBadge = (typeof PRODUCT_BADGES)[number];
+
 export interface ProductReview {
   id: string;
   user: string;
@@ -16,6 +25,7 @@ export interface Product {
   originalPrice?: number;
   discount?: number;
   image: string;
+  imageKey?: string;
   images?: string[];
   category: string;
   rating?: number;

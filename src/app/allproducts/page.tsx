@@ -11,8 +11,8 @@ import {
   ChevronDown,
   Filter,
 } from "lucide-react";
-import { products } from "@/data/products";
-import { categories } from "@/data/categories";
+import type { Product } from "@/types/product";
+import type { Category } from "@/types/category";
 import { shopFaqs } from "@/data/faqs";
 import ProductGrid from "@/components/product/ProductGrid";
 import Breadcrumb from "@/components/common/Breadcrumb";
@@ -38,9 +38,32 @@ function AllProductsContent({
   const [selectedCollection, setSelectedCollection] = useState(initialCollection);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState<SortOption>("featured");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [catalogError, setCatalogError] = useState("");
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/content/catalog", { signal: controller.signal, cache: "no-store" })
+      .then(async (response) => {
+        const result = (await response.json()) as { products?: Product[]; categories?: Category[]; message?: string };
+        if (!response.ok || !result.products || !result.categories) throw new Error(result.message || "Catalog could not be loaded.");
+        setProducts(result.products);
+        setCategories(result.categories);
+        setCatalogLoading(false);
+      })
+      .catch((fetchError) => {
+        if ((fetchError as Error).name !== "AbortError") {
+          setCatalogError(fetchError instanceof Error ? fetchError.message : "Catalog could not be loaded.");
+          setCatalogLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, []);
 
   // Prevent background scroll when mobile filter modal is open
   useEffect(() => {
@@ -88,7 +111,7 @@ function AllProductsContent({
       { id: "all", name: "All Genres", slug: "all", count: allCount },
       ...list,
     ];
-  }, []);
+  }, [categories, products]);
 
   // Filter & Sort Logic
   const filteredAndSortedProducts = useMemo(() => {
@@ -121,6 +144,10 @@ function AllProductsContent({
           (p.rating && p.rating >= 4.5)
             ? true
             : false;
+      } else if (selectedCollection === "accessories") {
+        matchesCollection =
+          p.category.toLowerCase() === "accessories" ||
+          (p.badge?.toLowerCase().includes("accessor") ?? false);
       }
 
       // Search Query
@@ -149,6 +176,7 @@ function AllProductsContent({
     selectedCollection,
     searchQuery,
     sortBy,
+    products,
   ]);
 
   const activeFilterCount = [
@@ -178,6 +206,8 @@ function AllProductsContent({
     <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 md:py-10">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
+      {catalogLoading && <p role="status" className="mb-5 rounded-xl bg-orange-50 px-4 py-3 text-sm text-orange-800">Loading the latest catalog...</p>}
+      {catalogError && <p role="alert" className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{catalogError}</p>}
 
       {/* Header Banner */}
       <div className="mb-6 sm:mb-10 text-center max-w-2xl mx-auto px-2">
@@ -349,7 +379,7 @@ function AllProductsContent({
                   { id: "all", label: "All Collections" },
                   { id: "bestseller", label: "Best Sellers" },
                   { id: "new", label: "New Releases" },
-                  { id: "trending", label: "Trending Books" },
+                  { id: "trending", label: "Trending Products" },
                   { id: "accessories", label: "Accessories"}
                 ].map((item) => (
                   <label
@@ -447,7 +477,7 @@ function AllProductsContent({
 
               {selectedCollection !== "all" && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Collection: {selectedCollection === "new" ? "New Releases" : selectedCollection === "bestseller" ? "Best Sellers" : "Trending Books"}
+                  Collection: {selectedCollection === "new" ? "New Releases" : selectedCollection === "bestseller" ? "Best Sellers" : selectedCollection === "accessories" ? "Accessories" : "Trending Products"}
                   <button
                     type="button"
                     onClick={() => selectCollection("all")}
@@ -657,7 +687,8 @@ function AllProductsContent({
                     { id: "all", label: "All Collections" },
                     { id: "bestseller", label: "Best Sellers" },
                     { id: "new", label: "New Releases" },
-                    { id: "trending", label: "Trending Books" },
+                    { id: "trending", label: "Trending Products" },
+                    { id: "accessories", label: "Accessories" },
                   ].map((item) => (
                     <label
                       key={item.id}

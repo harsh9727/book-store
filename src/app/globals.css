@@ -41,6 +41,17 @@ body > .skiptranslate {
   font-family: var(--font-inter), sans-serif !important;
 }
 
+.number-input-no-spinner::-webkit-inner-spin-button,
+.number-input-no-spinner::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.number-input-no-spinner {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
 .container {
   width: 100%;
   margin:0 auto;

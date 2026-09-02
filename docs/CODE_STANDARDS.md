@@ -16,7 +16,9 @@
 - Keep route metadata in pages/layouts or shared SEO helpers.
 - Use route handlers for server HTTP behavior.
 - Keep persistence behind typed repository functions; do not read or write runtime content files from pages/components.
+- Treat Product IDs and Category slugs as normalized lowercase route keys; validate Product-to-Category relationships again inside repository mutations, not only in forms.
 - Do not synchronously mirror state in effects; derive or initialize it when possible.
+- Every delayed callback, subscription, or asynchronous browser integration created in an effect must be cancelled, deactivated, or detached in that effect's cleanup before its component can unmount.
 - Never access `ref.current` during render.
 - Reset filtered pagination in the filter/search event handler instead of calling a state setter from an effect.
 - Store imperative carousel instances in refs and access them only in callbacks or event handlers.
@@ -67,6 +69,8 @@
 - Add auth regression coverage to `tests/admin-auth.test.ts` whenever an authentication invariant changes.
 
 ## Verification
+
+On this Windows workspace, use `pnpm dev` for the stable Webpack development server. Use `pnpm dev:turbopack` only when intentionally reproducing or tracing Turbopack behavior; stop the server before switching bundlers and clear only this workspace's generated `.next` directory if their caches conflict.
 
 For changed files:
 

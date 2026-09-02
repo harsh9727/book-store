@@ -4,26 +4,74 @@
 
 | Area | Status | Notes |
 | --- | --- | --- |
-| Public storefront | In progress | Main pages exist; data is local/static |
-| Product catalog | Prototype | Typed data and product detail UI |
+| Public storefront | In progress | Main pages exist; catalog and editorial content are file-backed |
+| Product catalog | Dynamic filesystem baseline | Admin CRUD, category relation, storefront feeds, and product detail UI |
 | Cart/wishlist | Placeholder | Static empty-state routes; no state or persistence layer |
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
 | Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
-| Admin dashboard | Content navigation complete | Dashboard figures remain presentation data; blog/gallery CRUD use persistent admin navigation and list-first tables |
+| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery management is implemented |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
 | Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
 
 ## Current priorities
 
-1. Add persistent product/inventory storage.
-2. Build functional admin Orders and Products modules.
-3. Replace dashboard presentation figures with server data.
+1. Replace single-instance filesystem content storage with a shared production database.
+2. Build a functional admin Orders module.
+3. Replace dashboard presentation figures with repository data.
 4. Add shared deployment/WAF login throttling and database-backed admin lifecycle when hosting requirements are chosen.
 5. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-09-02 - Product Category popup and Price spinner cleanup
+
+- Outcome: changed Add category in Product create/edit from an expanded inline panel to a centered modal popup with name, auto-derived/custom slug, Cancel, close, backdrop-close, inline failure feedback, and Create and select actions. Removed the browser increment/decrement arrows from the Product Price input with a scoped cross-browser CSS class.
+- Main files/areas: Product admin form, global scoped number-input styling, and catalog UI documentation.
+- Data/API/security impact: none. The popup continues to create through the existing authenticated Category API and selects its returned slug; Product and Category schemas/persistence are unchanged from the preceding catalog update.
+- Verification and exact result: focused ESLint for `AdminProductForm.tsx` passed; `pnpm exec tsc --noEmit` passed; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: spinner removal applies only to Product Price; other numeric admin fields retain their native browser controls.
+
+### 2026-09-02 - Single-price Product form, controlled badges, and inline Category creation
+
+- Outcome: removed Original price from Product create/edit so admin-authored Products use one Price, replaced the free-text Badge input with a fixed dropdown for Best Sellers, New Releases, Trending Products, and Accessories, and added an inline Category creator beside the Product Category selector. A newly created Category is inserted into the dropdown and selected immediately. Accessories badge membership now feeds both the home Accessories carousel and the matching all-products collection filter.
+- Main files/areas: Product admin form, Product badge constants and draft validation, catalog repository normalization, home/all-products collection selection, Category API reuse, focused content tests, and catalog documentation.
+- Data/API/security impact: Product draft validation rejects `originalPrice` and unknown badge strings; the stored Product schema retains legacy original-price/discount/free-text badge fields so existing content files remain readable. Inline Category creation uses the existing authenticated, same-origin, marker-protected Category POST endpoint and does not bypass Category validation.
+- Verification and exact result: focused ESLint passed for all changed implementation/test files; `pnpm exec tsc --noEmit` passed; permitted `pnpm test:content` passed 17/17 and now covers rejected Original price and custom Badge drafts; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: existing stored Products can retain legacy original-price/discount/custom-badge values until edited. Editing maps recognized legacy badge text to the supported dropdown and saves the new single-price shape; unrecognized legacy badges become No badge. A Category created inline is persisted immediately even if the Product form is later cancelled.
+
+### 2026-09-02 - Category descriptions removed from authoring and cards
+
+- Outcome: removed the Description input from Category create/edit, removed legacy description text from the admin Category list, and removed description rendering from home-page Category cards. Category mutation validation now rejects the removed field instead of silently retaining an obsolete authoring path.
+- Main files/areas: Category admin manager, home Category section, Category draft validation and focused content tests, plus product/architecture/rules documentation.
+- Data/API/security impact: Category create/update payloads now contain only name and slug. The persisted Category schema keeps its optional description solely so existing content files and seed records remain valid; authorization and other catalog behavior are unchanged.
+- Verification and exact result: focused ESLint passed for the Category admin, home section, validation, and test files; `pnpm exec tsc --noEmit` passed; the restricted `pnpm test:content` hit the documented Windows sandbox `spawn EPERM`, while the permitted rerun passed 17/17 and verifies that Category drafts containing the removed description field are rejected. A later full `pnpm lint` attempt was blocked before linting by the machine's existing native `RangeError: Array buffer allocation failed`; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: existing legacy descriptions can remain in storage but are neither editable nor displayed; saving a Category replaces that record with the supported name-and-slug shape. A production build and another memory-intensive full lint retry were not run alongside the user's active dev server because the machine remains under the separately documented Windows commit-memory pressure.
+
+### 2026-09-02 - React pre-mount warning and chunk-memory recovery
+
+- Outcome: fixed the admin-side `Can't perform a React state update on a component that hasn't mounted yet` failure path by removing the storefront-only Language provider and Google Translate lifecycle from all `/admin` renders, cleaning up its delayed translation callback on public unmount, and enabling Next.js's low-risk Webpack memory optimization with entry preloading disabled. Added a catalog initialization marker so the accidental legacy `products: []`/`categories: []` state recovers the committed seeds once, while a deliberately emptied initialized catalog remains empty.
+- Main files/areas: root layout and public site chrome boundary, language/Google Translate lifecycle, Next.js memory configuration, content store schema/repository migration, catalog tests, and troubleshooting/architecture/security documentation.
+- Data/API/security impact: admin pages no longer initialize the storefront language subscription or third-party Google Translate script. Existing runtime stores with no initialized catalog marker and no catalog records hydrate Product/Category seeds; repository reads mark the in-memory store initialized so the next mutation persists the distinction. API authorization and validation are unchanged.
+- Verification and exact result: before the fix, Windows committed memory was about 14,858.8 MiB of a 15,712.6 MiB limit and the Next child held about 1,279.3 MiB private memory. After memory optimization/recompile, the child initially measured about 1,130.2 MiB; three final live rounds returned 200 for `/product/atomic-habits`, `/api/content/catalog`, and `/manifest.webmanifest`, plus the expected unauthenticated 307 for `/admin/categories`, without an allocation/chunk failure. `pnpm lint` passed; `npx tsc --noEmit` exposed one migration-helper input typing mismatch, then passed after the helper accepted partial legacy records; focused ESLint passed; permitted `pnpm test:content` passed 17/17 including legacy-vs-intentional empty catalog behavior; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: the React warning was downstream of native `Array buffer allocation failed`/layout `ChunkLoadError`, not a render-time setter in `RootLayout`. After broad route warming the Next child retained about 1,538.7 MiB private memory and Windows had only about 526 MiB physical/782 MiB commit headroom. A production build was not run concurrently with the user's active dev server because that would materially increase the exact pressure being fixed; the immediately preceding dynamic-catalog change already had a successful 33/33 production build. Close memory-heavy Chrome/VS Code/Adobe processes or increase the Windows paging file if native allocation failures recur.
+
+### 2026-09-02 - Windows development OOM fallback
+
+- Outcome: changed the default local `pnpm dev` command to Next.js's supported Webpack development mode after Turbopack crashed with `Fatal process out of memory: Zone`. Added `pnpm dev:turbopack` as an explicit opt-in diagnostic path, cleared only the generated workspace `.next` output before verification, and disabled Next 16's dev-time agent-rule generation so startup does not modify the repository-owned `AGENTS.md` working agreement.
+- Main files/areas: package scripts, Next.js configuration, local development setup/tooling documentation, and troubleshooting guidance.
+- Data/API/security impact: none. Product/Category content, APIs, authentication, uploads, and runtime storage are unchanged; the change only selects the local development bundler.
+- Verification and exact result: before cleanup, `.next` measured about 1,186.64 MiB, including about 1,000.82 MiB under `.next/dev`; the largest Turbopack SST files measured about 243.50 MiB and 145.26 MiB. The restricted shell reproduced its known `spawn EPERM`, while the permitted `pnpm dev` Webpack server became ready in 2.0 seconds. Three warmed request rounds returned 200 for `/product/atomic-habits`, `/api/content/catalog`, and `/`, plus the expected unauthenticated 307 for `/admin/categories`; no process crash occurred. The regenerated `.next` measured about 118 MiB. A final configuration startup became ready in 1.447 seconds without rewriting `AGENTS.md`; Product/catalog returned 200 and the protected Category route returned 307 as expected. `pnpm lint` and `npx tsc --noEmit` passed, and `git diff --check` exited 0 with only existing LF-to-CRLF notices.
+- Known limitations or next step: production `pnpm build` continues to use the default Turbopack build because it passes in the permitted environment. `pnpm dev:turbopack` may reproduce the native Windows memory failure until the machine's paging-file/resource constraint or upstream cache behavior is resolved.
+
+### 2026-09-02 - Dynamic Products and separate Categories module
+
+- Outcome: moved the public product catalog from direct static imports to the validated file-backed repository and added protected admin Product list/create/edit/delete routes. Added a separate inline Category management workspace with create/edit/delete, product counts, category selection in Product forms, automatic product reassignment when a category slug changes, and deletion protection while products remain assigned. Home product carousels, category cards, all-products filtering, product details, and sitemap now consume repository catalog data; the former home placeholder product arrays were removed.
+- Main files/areas: Product/Category domain types and seeds, strict catalog schemas, atomic content repository, protected catalog APIs, UploadThing product-image purpose, admin Product/Category components and routes, shared admin navigation, public catalog API/storefront consumers, focused tests, and catalog documentation.
+- Data/API/security impact: legacy `storage/content.json` documents without catalog keys are hydrated from committed Product/Category seeds and persist those arrays on the next mutation. Product and Category writes require the existing signed admin session, same-origin checks, marker header, strict Zod payloads, and a 64 KiB JSON cap. Product images retain the 500 KiB JPG/PNG/WebP client/server/signature checks; replaced/deleted managed primary images receive best-effort provider cleanup. The persistence layer remains suitable only for one writable Node instance.
+- Verification and exact result: `pnpm lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `pnpm test:content` passed 16/16 tests including Product/Category draft acceptance and malformed catalog rejection; the restricted `pnpm build` compiled in 7.8 seconds but hit the documented `spawn EPERM` worker denial, while the permitted rerun compiled, completed TypeScript, generated 33/33 static pages, listed all new admin/API routes, and exited 0; `git diff --check` exited 0 with only existing LF-to-CRLF notices.
+- Known limitations or next step: catalog mutations still use single-instance filesystem persistence rather than a shared database. Product content is currently one language block, collection membership is inferred from badge text/rating, only the primary uploaded Product image has a managed provider key, and dashboard revenue/order/inventory figures remain presentation data.
 
 ### 2026-09-02 - Admin content titles moved into header
 

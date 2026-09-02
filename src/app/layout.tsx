@@ -4,7 +4,6 @@ import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
 import JsonLd from "@/components/seo/JsonLd";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
 
@@ -100,12 +99,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased">
-        <LanguageProvider>
-          <JsonLd data={storeStructuredData} />
-          <SiteChrome>
-            {children}
-          </SiteChrome>
-        </LanguageProvider>
+        <JsonLd data={storeStructuredData} />
+        <SiteChrome>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );

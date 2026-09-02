@@ -7,7 +7,6 @@ import { ShoppingBag, Eye } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
-import { products } from "@/data/products";
 
 export interface ProductCardProps {
   product: Product | {
@@ -31,13 +30,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const coverSrc = "image" in product && product.image ? product.image : "cover" in product ? product.cover : null;
-  const catalogProduct = products.find(
-    (item) => item.title === product.title && item.author === product.author
-  );
   const productId =
     typeof product.id === "string" && isNaN(Number(product.id))
       ? product.id
-      : catalogProduct?.id;
+      : undefined;
   const productHref = productId ? `/product/${productId}` : "/allproducts";
 
   const handleWhatsApp = (e: React.MouseEvent) => {

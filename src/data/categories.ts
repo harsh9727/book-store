@@ -1,10 +1,4 @@
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  count?: number;
-}
+import type { Category } from "@/types/category";
 
 export const categories: Category[] = [
   {
@@ -54,5 +48,23 @@ export const categories: Category[] = [
     name: "Christian Literature & Novels",
     slug: "novels",
     description: "Inspiring fiction, timeless classics, and allegorical stories",
+  },
+  {
+    id: "romance",
+    name: "Romance",
+    slug: "romance",
+    description: "Stories about relationships, resilience, and love",
+  },
+  {
+    id: "mystery",
+    name: "Mystery & Thriller",
+    slug: "mystery",
+    description: "Suspenseful mysteries, thrillers, and psychological fiction",
+  },
+  {
+    id: "accessories",
+    name: "Reading Accessories",
+    slug: "accessories",
+    description: "Journals, gifts, and practical essentials for readers",
   },
 ];

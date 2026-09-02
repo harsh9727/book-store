@@ -27,11 +27,14 @@ This records implemented controls and known risks; it is not a formal security c
 - Logout expires the browser cookie; global emergency revocation is available by incrementing `ADMIN_SESSION_VERSION`.
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
-- Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
+- Admin pages are outside `LanguageProvider`; they neither initialize Google Translate nor load its third-party script. Gujarati translation remains an explicit public-storefront opt-in only.
+- Product/category/blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
+- Product and Category mutation bodies are capped at 64 KiB and validated with strict schemas. Product writes also verify the referenced Category inside the serialized repository mutation, preventing stale clients from creating orphan relationships.
+- Product primary image references are restricted to local paths or UploadThing hosts; extra image references additionally allow the two already configured Unsplash hosts. Arbitrary remote image hosts are rejected before persistence.
 - Blog create/update JSON bodies are capped at 256 KiB for the two authored language documents; other content JSON bodies retain the 128 KiB default. Every payload is validated with a strict Zod schema.
 - English and Gujarati Blog rich-text payloads are independently bounded and use the same allow-list of Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Both public language variants render through explicit React elements without `dangerouslySetInnerHTML`.
 - Gallery mutations require strict bounded English and Gujarati text blocks; unknown fields such as the removed Subtitle are rejected. Stored legacy Gallery records may retain optional Subtitle data but it is no longer accepted from create/update forms.
-- Upload bodies are capped for one cover plus twelve 500 KiB photos and multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
+- Upload bodies are capped for one cover/primary image or twelve Gallery photos plus multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
 - Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 
 ## Storefront cookies
@@ -61,6 +64,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Hidden UI is not authorization.
 - Every future admin mutation performs its own authorization.
 - Every admin mutation also applies the shared same-origin request check; the marker header is defense-in-depth, not a secret.
+- Inline Category creation in the Product form uses the same protected Category mutation endpoint and must never rely on Product-form visibility as authorization.
 - Credentials never go in URLs, analytics, logs, or error responses.
 
 ## Input/output safety

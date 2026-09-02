@@ -5,13 +5,15 @@ import {
   BookOpenText,
   Images,
   LayoutDashboard,
+  Package,
   Store,
+  Tags,
 } from "lucide-react";
 
 import AdminLogoutButton from "@/components/admin/login/AdminLogoutButton";
 
 interface AdminContentShellProps {
-  active: "overview" | "blogs" | "galleries";
+  active: "overview" | "products" | "categories" | "blogs" | "galleries";
   title?: string;
   description?: string;
   children: ReactNode;
@@ -19,6 +21,8 @@ interface AdminContentShellProps {
 
 const navigation = [
   { key: "overview", label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+  { key: "products", label: "Products", href: "/admin/products", icon: Package },
+  { key: "categories", label: "Categories", href: "/admin/categories", icon: Tags },
   { key: "blogs", label: "Blogs", href: "/admin/blogs", icon: BookOpenText },
   { key: "galleries", label: "Gallery", href: "/admin/galleries", icon: Images },
 ];
@@ -85,7 +89,7 @@ export default function AdminContentShell({
               <AdminLogoutButton />
             </div>
             <nav className="order-4 flex w-full gap-1 overflow-x-auto lg:hidden" aria-label="Mobile admin navigation">
-              {navigation.slice(0, 3).map(({ key, label, href, icon: Icon }) => {
+              {navigation.map(({ key, label, href, icon: Icon }) => {
                 const isActive = key === active;
                 return (
                   <Link

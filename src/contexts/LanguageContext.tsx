@@ -125,8 +125,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
 
     const translateWindow = window as GoogleTranslateWindow;
+    let active = true;
+    let applyTimer: number | undefined;
 
     const initializeTranslateElement = () => {
+      if (!active) return;
       const TranslateElement = translateWindow.google?.translate?.TranslateElement;
       const container = document.getElementById("google_translate_element");
 
@@ -142,7 +145,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
 
       if (getLanguageSnapshot() === "gu") {
-        window.setTimeout(applyGujaratiTranslation, 250);
+        applyTimer = window.setTimeout(() => {
+          if (active) applyGujaratiTranslation();
+        }, 250);
       }
     };
 
@@ -150,10 +155,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     if (translateWindow.google?.translate?.TranslateElement) {
       initializeTranslateElement();
-      return;
-    }
-
-    if (!document.getElementById(GOOGLE_TRANSLATE_SCRIPT_ID)) {
+    } else if (!document.getElementById(GOOGLE_TRANSLATE_SCRIPT_ID)) {
       const script = document.createElement("script");
       script.id = GOOGLE_TRANSLATE_SCRIPT_ID;
       script.src =
@@ -161,6 +163,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       script.async = true;
       document.body.appendChild(script);
     }
+
+    return () => {
+      active = false;
+      if (applyTimer !== undefined) window.clearTimeout(applyTimer);
+      if (translateWindow.googleTranslateElementInit === initializeTranslateElement) {
+        translateWindow.googleTranslateElementInit = () => undefined;
+      }
+    };
   }, [language]);
 
   useEffect(() => {

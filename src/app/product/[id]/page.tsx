@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
@@ -14,22 +13,19 @@ import {
   siteUrl,
   truncateDescription,
 } from "@/lib/seo";
+import { getProduct, getProducts } from "@/lib/contentRepository";
+
+export const dynamic = "force-dynamic";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
-}
-
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }));
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = products.find((item) => item.id === id);
+  const product = await getProduct(id);
 
   if (!product) {
     return {
@@ -56,7 +52,7 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
+  const [product, products] = await Promise.all([getProduct(id), getProducts()]);
 
   if (!product) {
     notFound();

@@ -3,20 +3,32 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { BlogPost } from "@/types/blog";
+import type { Category } from "@/types/category";
 import type { GalleryItem } from "@/types/gallery";
+import type { Product } from "@/types/product";
+import { categories as seededCategories } from "@/data/categories";
+import { products as seededProducts } from "@/data/products";
 import { plainTextToBlogRichText } from "@/lib/blogRichText";
+import { hasInitializedCatalog } from "@/lib/catalogMigration";
 import {
   blogDraftSchema,
+  categoryDraftSchema,
   contentStoreSchema,
   galleryDraftSchema,
+  productDraftSchema,
   type BlogDraft,
+  type CategoryDraft,
   type GalleryDraft,
+  type ProductDraft,
 } from "@/lib/contentValidation";
 
 interface ContentStore {
   version: 1;
+  catalogInitialized: boolean;
   blogs: BlogPost[];
   galleries: GalleryItem[];
+  products: Product[];
+  categories: Category[];
 }
 
 const storageDirectory = path.join(process.cwd(), "storage");
@@ -26,15 +38,27 @@ let mutationQueue: Promise<unknown> = Promise.resolve();
 function seededStore(): ContentStore {
   return {
     version: 1,
+    catalogInitialized: true,
     blogs: [],
     galleries: [],
+    products: seededProducts.map((product) => ({ ...product })),
+    categories: seededCategories.map((category) => ({ ...category })),
   };
 }
 
 async function readStore(): Promise<ContentStore> {
   try {
     const raw = await readFile(storagePath, "utf8");
-    return contentStoreSchema.parse(JSON.parse(raw)) as ContentStore;
+    const stored = JSON.parse(raw) as Record<string, unknown>;
+    const storedProducts = Array.isArray(stored.products) ? stored.products : [];
+    const storedCategories = Array.isArray(stored.categories) ? stored.categories : [];
+    const catalogIsInitialized = hasInitializedCatalog(stored);
+    return contentStoreSchema.parse({
+      ...stored,
+      catalogInitialized: true,
+      products: catalogIsInitialized ? storedProducts : seededProducts,
+      categories: catalogIsInitialized ? storedCategories : seededCategories,
+    }) as ContentStore;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return seededStore();
     throw error;
@@ -194,5 +218,114 @@ export function deleteGallery(id: string) {
     const index = store.galleries.findIndex((gallery) => String(gallery.id) === id);
     if (index < 0) return null;
     return store.galleries.splice(index, 1)[0];
+  });
+}
+
+function productFromDraft(draft: ProductDraft): Product {
+  const parsed = productDraftSchema.parse(draft);
+  return { ...parsed };
+}
+
+export async function getProducts() {
+  return (await readStore()).products;
+}
+
+export async function getProduct(id: string) {
+  return (await getProducts()).find((product) => product.id === id);
+}
+
+export function createProduct(draft: ProductDraft) {
+  return mutateStore((store) => {
+    const parsed = productDraftSchema.parse(draft);
+    if (store.products.some((product) => product.id === parsed.id)) {
+      throw new Error("A product with this slug already exists.");
+    }
+    if (!store.categories.some((category) => category.slug === parsed.category)) {
+      throw new Error("Choose an existing category.");
+    }
+    const product = productFromDraft(parsed);
+    store.products.unshift(product);
+    return product;
+  });
+}
+
+export function updateProduct(id: string, draft: ProductDraft) {
+  return mutateStore((store) => {
+    const index = store.products.findIndex((product) => product.id === id);
+    if (index < 0) return null;
+    const parsed = productDraftSchema.parse(draft);
+    if (store.products.some((product, itemIndex) => itemIndex !== index && product.id === parsed.id)) {
+      throw new Error("A product with this slug already exists.");
+    }
+    if (!store.categories.some((category) => category.slug === parsed.category)) {
+      throw new Error("Choose an existing category.");
+    }
+    const product = productFromDraft(parsed);
+    store.products[index] = { ...product, reviews: store.products[index].reviews };
+    return store.products[index];
+  });
+}
+
+export function deleteProduct(id: string) {
+  return mutateStore((store) => {
+    const index = store.products.findIndex((product) => product.id === id);
+    if (index < 0) return null;
+    return store.products.splice(index, 1)[0];
+  });
+}
+
+export async function getCategories() {
+  return (await readStore()).categories;
+}
+
+export async function getCategory(identifier: string) {
+  return (await getCategories()).find(
+    (category) => category.id === identifier || category.slug === identifier,
+  );
+}
+
+export function createCategory(draft: CategoryDraft) {
+  return mutateStore((store) => {
+    const parsed = categoryDraftSchema.parse(draft);
+    if (store.categories.some((category) => category.slug === parsed.slug)) {
+      throw new Error("A category with this slug already exists.");
+    }
+    const category: Category = { ...parsed, id: randomUUID() };
+    store.categories.push(category);
+    store.categories.sort((left, right) => left.name.localeCompare(right.name));
+    return category;
+  });
+}
+
+export function updateCategory(id: string, draft: CategoryDraft) {
+  return mutateStore((store) => {
+    const index = store.categories.findIndex((category) => category.id === id);
+    if (index < 0) return null;
+    const parsed = categoryDraftSchema.parse(draft);
+    if (store.categories.some((category, itemIndex) => itemIndex !== index && category.slug === parsed.slug)) {
+      throw new Error("A category with this slug already exists.");
+    }
+    const previousSlug = store.categories[index].slug;
+    const category: Category = { ...parsed, id: store.categories[index].id };
+    store.categories[index] = category;
+    if (previousSlug !== parsed.slug) {
+      store.products = store.products.map((product) =>
+        product.category === previousSlug ? { ...product, category: parsed.slug } : product,
+      );
+    }
+    store.categories.sort((left, right) => left.name.localeCompare(right.name));
+    return category;
+  });
+}
+
+export function deleteCategory(id: string) {
+  return mutateStore((store) => {
+    const index = store.categories.findIndex((category) => category.id === id);
+    if (index < 0) return null;
+    const category = store.categories[index];
+    if (store.products.some((product) => product.category === category.slug)) {
+      throw new Error("Move or delete the products in this category first.");
+    }
+    return store.categories.splice(index, 1)[0];
   });
 }

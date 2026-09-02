@@ -7,8 +7,8 @@ Browser
   ├─ Public App Router pages
   │    ├─ shared site chrome
   │    ├─ feature components
-  │    ├─ local catalog/seed data
-  │    └─ file-backed blog/gallery repository
+  │    ├─ catalog/content seed data
+  │    └─ file-backed product/category/blog/gallery repository
   └─ Admin pages
        ├─ login → POST /api/admin/login
        ├─ signed HttpOnly session cookie
@@ -23,30 +23,39 @@ Browser
 | `src/app/` | Routes, layouts, metadata, pages, and route handlers |
 | `src/components/` | Reusable UI organized by feature |
 | `src/contexts/` | Cross-tree client providers |
-| `src/data/` | Static typed catalog/content |
+| `src/data/` | Typed first-run/backward-compatible seeds and remaining static content |
 | `src/lib/` | Utilities, SEO, constants, and auth |
 | `src/types/` | Shared domain types |
 | `public/images/` | Static image assets |
-| `storage/content.json` | Ignored runtime blog/gallery metadata, created on first mutation |
+| `storage/content.json` | Ignored runtime product/category/blog/gallery metadata, created on first mutation |
 | `docs/` | Maintained project knowledge |
 
 ## Rendering boundaries
 
 - Pages are Server Components by default.
 - Use `"use client"` only for state, effects, events, storage, or client navigation.
-- The root layout loads fonts, metadata, structured data, language context, and `SiteChrome`.
-- `SiteChrome` removes public header/footer controls for `/admin` routes.
+- The root layout loads fonts, metadata, structured data, and `SiteChrome`.
+- `SiteChrome` removes public header/footer controls for `/admin` routes and mounts `LanguageProvider` only around the public branch.
 - The language provider loads Google Translate only after Gujarati is selected; English storefront browsing does not initialize the translation integration.
+- Local `pnpm dev` uses Next.js Webpack mode to avoid the observed native Windows Turbopack cache-memory crash. `experimental.webpackMemoryOptimizations` reduces peak Webpack usage and `preloadEntriesOnStart: false` avoids front-loading every route module on a memory-constrained workstation. Production builds retain the default bundler; `pnpm dev:turbopack` is an explicit diagnostic command rather than the stable local path. `agentRules: false` prevents Next dev from rewriting the repository-owned `AGENTS.md`; project instructions remain maintained manually.
 
 ## Storefront data flow
 
-Typed objects in `src/data/` feed pages and components. Product IDs form dynamic routes. Cart and wishlist routes currently render static empty states and have no state or persistence layer. No production database/repository layer exists yet. When one is added, introduce a typed service/repository boundary rather than importing database clients throughout UI code.
+Product and Category records flow through `contentRepository.ts`. The home catalog sections and Category cards read it in Server Components; `/allproducts` hydrates its interactive filters from the no-store `/api/content/catalog` endpoint; Product detail metadata/rendering and sitemap resolve the same repository records. Product IDs are normalized slugs and form dynamic routes. Cart and wishlist still render static empty states with no state or persistence layer. The catalog repository is dynamic but remains a single-instance filesystem implementation rather than a production database.
 
 Catalog, blog, and gallery filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
 
-## Blog and gallery content flow
+## Catalog and editorial content flow
 
-1. `src/data/blogs.ts` remains the only committed content seed; `src/data/galleries.ts` is intentionally empty so gallery data is admin-managed only.
+1. `src/data/products.ts` and `src/data/categories.ts` provide the initial catalog when `storage/content.json` is absent or has no initialized catalog marker and both catalog arrays are absent/empty. A populated legacy catalog is retained. Once `catalogInitialized: true` is persisted, its arrays—including intentional empty arrays—are authoritative.
+2. Product create/update verifies that the referenced Category exists inside the serialized mutation. The Product form may first open an Add category modal and create a missing Category through the normal Category POST endpoint, then inserts and selects the returned record locally. This Category mutation is independent, so cancelling the Product does not roll it back. Category slug edits rewrite assigned Product category slugs in the same atomic write; delete refuses a Category that still owns Products.
+3. Product and Category route handlers apply admin authorization, origin/marker verification, a 64 KiB request limit, and strict Zod validation. Product drafts accept one Price and an optional allow-listed collection Badge; Original price and arbitrary badge text are legacy-at-rest fields and are rejected on new mutations. The repository parses again at the persistence boundary and serializes all content mutations through one in-process queue.
+4. Product primary images use the shared server-mediated upload path. Managed keys allow best-effort cleanup on replacement/deletion; extra Product image URLs are validated local/HTTPS references but are not provider-managed by the current form.
+5. Home New Releases, Best Sellers, Trending, and Accessories sections derive membership from the controlled Product Badge, while legacy matching remains supported and Accessories also includes the accessories Category. The same Accessories collection rule is used by the all-products filter and its View All link. All sections share one interactive carousel component; empty collections render an explicit empty state rather than former placeholder Products.
+
+The existing editorial flow shares the same store:
+
+1. `src/data/blogs.ts` remains committed editorial seed data; `src/data/galleries.ts` is intentionally empty so gallery data is admin-managed only.
 2. `contentRepository.ts` reads `storage/content.json` when present and validates the complete document with Zod; invalid persisted data fails instead of being silently replaced.
 3. Admin create/update/delete requests require the signed admin session, matching Origin/fetch metadata, and `X-GTBS-Admin-Request: 1`.
 4. Mutations are serialized in-process and written through a uniquely named temporary file followed by an atomic rename.
@@ -63,11 +72,11 @@ On the public Gallery detail route, `GalleryLightbox` progressively exposes phot
 
 Gallery detail links, canonical metadata, structured data, and sitemap entries use the stored slug. `getGallery` continues to resolve either an ID or slug, allowing an incoming numeric URL to find the record and redirect to the canonical `/gallery/[slug]` address.
 
-The Overview, Blog, and Gallery admin pages render through the shared `AdminContentShell`, which provides one consistent desktop sidebar, top header, and compact admin route bar on smaller screens. Overview omits the shell's optional content-management heading and renders its dashboard content directly; Blog and Gallery provide a heading and description that the shell places in the top header, including on their add/edit routes. Admin navigation exposes only implemented destinations: Overview, Blogs, and Gallery. The Blog and Gallery index routes render list-only tables and perform search, category filtering, and 8-row pagination client-side over the server-loaded collection; search/filter events reset the page directly instead of synchronizing it through an effect. Add links to `/admin/blogs/add` or `/admin/galleries/add`; row Edit links to the matching `/admin/.../[id]/edit` route. Those protected server pages load reusable client form components, edit pages fetch the identified record before rendering, and successful saves return to the related list. The admin layout owns a persistent Sonner toaster; create/update/delete outcomes publish there. Delete buttons first populate a shared client confirmation modal and call the protected endpoint only after explicit confirmation. The protected API remains the source of persistence.
+The Overview, Products, Categories, Blog, and Gallery admin pages render through the shared `AdminContentShell`, which provides one consistent desktop sidebar, top header, and horizontally scrollable route bar on smaller screens. Overview renders its dashboard content directly; management routes provide headings/descriptions in the shared header. Product, Blog, and Gallery index routes use list-first tables and protected standalone add/edit pages. Categories intentionally use a separate inline CRUD workspace beside their list because the authored domain has only name and slug. Category draft validation rejects description input; the stored Category schema keeps its optional legacy field so existing content files continue to validate, but the admin list/form and home Category cards do not render it. The admin layout owns a persistent Sonner toaster; destructive actions use the shared confirmation modal, and the protected API remains the source of persistence.
 
-Admin UI components are grouped by domain beneath `src/components/admin/`: Blog forms, management, and rich-text editing live in `blog/`; Gallery forms and management live in `gallery/`; login and logout controls live in `login/`. Cross-domain components such as `AdminContentShell` and `ConfirmDeleteModal` remain at the admin root. Route modules import these components through the `@/components/admin/...` alias, so folder organization does not affect the public or protected route structure.
+Admin UI components are grouped by domain beneath `src/components/admin/`: Product, Category, Blog, Gallery, and login controls live in their matching feature folders. Cross-domain components such as `AdminContentShell` and `ConfirmDeleteModal` remain at the admin root. Route modules import these components through the `@/components/admin/...` alias, so folder organization does not affect the public or protected route structure.
 
-Image controls keep field-specific client validation state: Blog banner, Gallery cover, and Gallery extra photos each render their own validation message adjacent to the input. Cross-field, upload-provider, and API mutation failures remain general form errors and toasts.
+Image controls keep field-specific client validation state: Product primary image, Blog banner, Gallery cover, and Gallery extra photos each render their own validation message adjacent to the input. Cross-field, upload-provider, and API mutation failures remain general form errors and toasts.
 
 The Blog editors are focused Client Components inside the existing admin form. English and Gujarati each have independent Tiptap state, disable immediate server rendering to avoid Next.js hydration mismatches, report JSON changes to the form, and wrap their 40-pixel toolbar controls on narrow screens. The form checks both articles for non-empty, bounded content before uploading images or calling the mutation API.
 
@@ -100,11 +109,11 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 - **Status:** Accepted
 - **Reason:** Server rendering, route handlers, metadata, and nested layouts in one app.
 
-### ADR-002: Static typed data for prototyping
+### ADR-002: Typed seeds for first-run catalog hydration
 
-- **Status:** Temporary
-- **Reason:** Enables UI development before backend selection.
-- **Consequence:** Orders, inventory, analytics, and carts are not production-persistent.
+- **Status:** Superseded for catalog runtime reads; retained for seeds
+- **Reason:** Existing Product/Category data must survive the transition to dynamic administration without forcing a one-off migration command.
+- **Consequence:** Missing legacy catalog keys hydrate from committed seeds, while persisted arrays become authoritative. Orders, analytics, and carts remain non-persistent.
 
 ### ADR-003: Environment-backed single admin
 
@@ -124,10 +133,10 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 - **Reason:** Plaintext deployment passwords, missing MFA, short signing secrets, and insecure cookies are not acceptable for the administration boundary.
 - **Consequence:** Existing deployments must run `npm run admin:setup`, install the TOTP secret in an authenticator, configure HTTPS/canonical URL, and replace the legacy `ADMIN_PASSWORD` before production login becomes available.
 
-### ADR-006: File-backed content repository
+### ADR-006: File-backed catalog and content repository
 
 - **Status:** Temporary
-- **Reason:** Delivers dynamic blog/gallery CRUD without introducing an unselected database platform.
+- **Reason:** Delivers dynamic Product/Category/Blog/Gallery CRUD without introducing an unselected database platform.
 - **Consequence:** Hosting must provide a writable persistent filesystem and one application instance. A shared database adapter is required before serverless or horizontally scaled deployment.
 
 ### ADR-007: Server-mediated UploadThing images

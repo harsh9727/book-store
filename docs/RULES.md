@@ -23,10 +23,13 @@ Update every topic document whose facts changed. New errors and resolutions belo
 ## Product rules
 
 - Public routes use storefront chrome; admin routes do not.
+- Storefront language/Google Translate effects mount only for public routes; admin routes remain outside that provider and third-party script lifecycle.
 - Indian storefront prices use rupees and Indian formatting unless source data requires otherwise.
 - Static or browser-local features must be labeled mock, demo, or local in documentation.
 - Placeholder actions must not be described as complete functionality.
 - Dynamic routes must handle unknown IDs safely, normally through Next.js not-found behavior.
+- Products must reference an existing Category slug. Renaming a Category slug updates assigned Products atomically; Categories with assigned Products cannot be deleted.
+- Home catalog sections, all-products filtering, product detail routes, category cards, and sitemap entries read through the catalog repository rather than importing mutable runtime arrays.
 
 ## UI rules
 
@@ -45,8 +48,11 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Do not mutate imported domain data.
 - Introduce typed service/repository functions when persistence is added.
 - Admin state-changing requests require same-origin verification and the `X-GTBS-Admin-Request` marker.
-- Blog/gallery admin APIs also require a verified admin session and bounded, strict Zod payloads.
-- Blog banners, gallery covers, and gallery photos accept JPG, PNG, or WebP only, with a 500 KiB maximum per image.
+- Catalog/blog/gallery admin APIs also require a verified admin session and bounded, strict Zod payloads.
+- Category create/update accepts only name and slug. Category descriptions must not appear in the admin form/list or home-page Category cards; the optional stored field exists only for legacy file compatibility.
+- Product create/update accepts one Price and no Original price. Badge is optional but, when present, must be one of Best Sellers, New Releases, Trending Products, or Accessories.
+- The Product form may create a missing Category from an Add category modal only through the existing protected Category API; after success, the returned Category must be added to the selector and selected without requiring a page reload.
+- Blog banners, gallery covers/photos, and Product primary images accept JPG, PNG, or WebP only, with a 500 KiB maximum per image.
 - A gallery can contain at most 12 extra photos; the cover image is separate from that limit.
 - Blog and Gallery index routes must open on their list table, keep admin navigation visible, place Add above the table, and expose View, Edit, and Delete actions for each row. Add and Edit must use separate protected `/add` and `/[id]/edit` pages rather than inline forms.
 - Blog and Gallery tables show at most 8 rows per page, support case-insensitive text search and category filtering, and reset to page 1 whenever either filter changes.
@@ -63,7 +69,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Public Gallery detail pages display at most 8 photos initially in a responsive 1/2/4-column grid. View more reveals the next batch, and the lightbox must navigate only photos currently revealed to the visitor.
 - While the public Gallery lightbox is open, Left Arrow and Right Arrow navigate the revealed photo set and Escape closes it; keyboard listeners must be removed whenever the viewer is closed.
 - Public Gallery detail links and SEO URLs must use the stored title-derived slug. A resolvable non-canonical identifier must redirect to that slug URL; an unknown identifier returns not found.
-- Admin sidebars expose only implemented destinations: Overview, Blogs, and Gallery. Do not show placeholder navigation for unavailable modules.
+- Admin sidebars expose only implemented destinations: Overview, Products, Categories, Blogs, and Gallery. Do not show placeholder navigation for unavailable modules.
 - Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
 - Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.

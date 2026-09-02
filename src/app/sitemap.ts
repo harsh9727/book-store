@@ -1,12 +1,11 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/data/products";
-import { getBlogs, getGalleries } from "@/lib/contentRepository";
+import { getBlogs, getGalleries, getProducts } from "@/lib/contentRepository";
 import { absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [blogs, galleries] = await Promise.all([getBlogs(), getGalleries()]);
+  const [blogs, galleries, products] = await Promise.all([getBlogs(), getGalleries(), getProducts()]);
   const staticPages: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/shop"), changeFrequency: "weekly", priority: 0.9 },

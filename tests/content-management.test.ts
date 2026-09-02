@@ -4,14 +4,17 @@ import test from "node:test";
 import { galleries } from "../src/data/galleries.ts";
 import {
   blogDraftSchema,
+  categoryDraftSchema,
   contentStoreSchema,
   galleryDraftSchema,
   MAX_BLOG_DRAFT_BODY_BYTES,
+  productDraftSchema,
 } from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
+import { hasInitializedCatalog } from "../src/lib/catalogMigration.ts";
 import type { BlogPost } from "../src/types/blog.ts";
 import type { GalleryItem } from "../src/types/gallery.ts";
 
@@ -82,9 +85,43 @@ const galleryDraft = {
   },
 };
 
+const categoryDraft = {
+  name: "Devotionals",
+  slug: "devotionals",
+};
+
+const productDraft = {
+  id: "daily-devotional",
+  title: "Daily Devotional",
+  author: "GTBS Editorial Team",
+  price: 499,
+  image: "/images/products/atomic-habits.jpg",
+  category: "devotionals",
+  badge: "New Releases",
+  inStock: true,
+  stockCount: 10,
+  format: ["Paperback"],
+  features: ["One reflection for every day"],
+};
+
 test("accepts valid blog and gallery drafts", () => {
   assert.equal(blogDraftSchema.safeParse(blogDraft).success, true);
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
+});
+
+test("accepts valid category and product drafts", () => {
+  assert.equal(categoryDraftSchema.safeParse(categoryDraft).success, true);
+  assert.equal(productDraftSchema.safeParse(productDraft).success, true);
+});
+
+test("rejects malformed catalog fields", () => {
+  assert.equal(categoryDraftSchema.safeParse({ ...categoryDraft, slug: "Bad Category" }).success, false);
+  assert.equal(categoryDraftSchema.safeParse({ ...categoryDraft, description: "Removed field" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, price: -1 }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, originalPrice: 599 }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, badge: "Custom badge" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, category: "Bad Category" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, image: "https://example.com/book.jpg" }).success, false);
 });
 
 test("requires Gujarati Gallery content and rejects the removed Subtitle field", () => {
@@ -282,7 +319,28 @@ test("accepts blank summary and avatar strings and normalizes them to defaults",
 
 test("accepts an empty blog and gallery store without any committed fallback data", () => {
   assert.deepEqual(galleries, []);
-  assert.equal(contentStoreSchema.safeParse({ version: 1, blogs: [], galleries }).success, true);
+  const parsed = contentStoreSchema.safeParse({ version: 1, blogs: [], galleries });
+  assert.equal(parsed.success, true);
+  if (parsed.success) {
+    assert.equal(parsed.data.catalogInitialized, false);
+    assert.deepEqual(parsed.data.products, []);
+    assert.deepEqual(parsed.data.categories, []);
+  }
+});
+
+test("distinguishes legacy empty catalogs from intentionally initialized empty catalogs", () => {
+  assert.equal(
+    hasInitializedCatalog({ catalogInitialized: false, products: [], categories: [] }),
+    false,
+  );
+  assert.equal(
+    hasInitializedCatalog({ catalogInitialized: true, products: [], categories: [] }),
+    true,
+  );
+  assert.equal(
+    hasInitializedCatalog({ catalogInitialized: false, products: [productDraft], categories: [] }),
+    true,
+  );
 });
 
 test("rejects invalid slugs and dates", () => {

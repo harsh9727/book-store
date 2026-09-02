@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
@@ -57,7 +58,7 @@ export default async function AdminDashboardPage() {
       <div className="mx-auto max-w-[1500px]">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div><p className="mb-1 text-sm font-semibold text-orange-600">{dateLabel}</p><h1 className="title text-2xl font-bold tracking-tight sm:text-3xl">{greeting}, Admin</h1><p className="mt-1 text-sm text-slate-500">Here’s what’s happening with your store today.</p></div>
-            <button className="inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-[#172019] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#243327]"><Package size={17} /> Add new product</button>
+            <Link href="/admin/products/add" className="inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-[#172019] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#243327]"><Package size={17} /> Add new product</Link>
           </div>
 
           <section aria-label="Store summary" className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

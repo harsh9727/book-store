@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import {
   BookOpen,
@@ -15,8 +13,7 @@ import {
   Compass,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { categories } from "@/data/categories";
-import { products } from "@/data/products";
+import { getCategories, getProducts } from "@/lib/contentRepository";
 
 // Icon mapping per category slug
 const categoryIconMap: Record<string, LucideIcon> = {
@@ -30,7 +27,8 @@ const categoryIconMap: Record<string, LucideIcon> = {
   novels: BookMarked,
 };
 
-const CategorySection = () => {
+const CategorySection = async () => {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
       <div className="container px-3 lg:px-6 mx-auto">
@@ -88,12 +86,6 @@ const CategorySection = () => {
                     {category.name}
                   </h3>
 
-                  {/* Category Short Description */}
-                  {category.description && (
-                    <p className="description mt-1.5 text-xs sm:text-[14px] leading-relaxed text-gray-500 line-clamp-2">
-                      {category.description}
-                    </p>
-                  )}
                 </div>
 
                 {/* Bottom Action Row */}
