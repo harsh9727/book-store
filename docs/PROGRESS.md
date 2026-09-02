@@ -25,6 +25,30 @@
 
 ## Change log
 
+### 2026-09-02 - Admin content titles moved into header
+
+- Outcome: moved the shared Blog and Gallery management headings and descriptions from the main content area into the admin header. The list routes now show `Blog management` and `Gallery management` in the header, and their add/edit routes use the same consistent title placement; mobile keeps the title on its own responsive row.
+- Main files/areas: shared admin content shell, admin route overview, and admin shell architecture documentation.
+- Data/API/security impact: none; this is a presentation-only change and authentication, navigation, CRUD requests, uploads, and persistence are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: authenticated browser-level visual review is still recommended at mobile and desktop widths.
+
+### 2026-09-02 - Unified Overview admin chrome
+
+- Outcome: moved the Overview dashboard onto the same shared admin shell used by Blog and Gallery, giving all three workspaces the same desktop sidebar, Storefront/Sign out header, mobile identity row, and mobile navigation. The dashboard greeting, summary cards, sales chart, inventory panel, and recent-orders table are unchanged.
+- Main files/areas: Overview dashboard composition, shared admin shell props/navigation state, project overview, and admin architecture documentation.
+- Data/API/security impact: none; the dashboard retains its server-side session check, and authentication, content CRUD, persistence, and routes are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; permitted `npm run test:admin-auth` passed 7/7; permitted `npm run test:content` passed 14/14; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: dashboard metrics and product/order actions remain presentation-only as previously documented.
+
+### 2026-09-02 - Admin components organized by feature
+
+- Outcome: reorganized the flat admin component directory into `blog`, `gallery`, and `login` feature folders without changing routes or runtime behavior. Components shared across multiple admin features remain at the admin root.
+- Main files/areas: `src/components/admin/`, imports in protected admin route pages, admin component architecture, and component organization standards.
+- Data/API/security impact: none; authentication, content validation, persistence, uploads, and public/admin routes are unchanged.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; after the documented Windows sandbox test-worker denial, the permitted `npm run test:admin-auth` passed 7/7 and `npm run test:content` passed 14/14; stale-import search found no references to the former flat component paths; `git diff --check` passed apart from Git's existing LF-to-CRLF notices.
+- Known limitations or next step: VS Code can retain diagnostics for an already-open buffer at the deleted flat path after the move. Close that deleted-file tab and open `src/components/admin/blog/AdminBlogForm.tsx`; restart the TypeScript server or reload the editor window if the stale Problems group remains. Future admin feature components should follow the same domain-folder convention.
+
 ### 2026-09-01 - Gujarati Gallery CRUD and standalone cards
 
 - Outcome: removed Subtitle from Gallery create/edit and mutation payloads, then added Blog-style Common fields, English content, Gujarati content, and Gallery images cards. Gujarati title, category, location, description, and optional organizer are authored separately. Public Gallery filtering/search, album cards, detail content, breadcrumbs, organizer, and related albums switch reactively to saved Gujarati data.
@@ -220,9 +244,9 @@
 ### 2026-08-30 - Admin login hydration fixed
 
 - Outcome: made the admin email and remember-me inputs deterministic during server rendering and hydration, then restored the saved email after hydration.
-- Main files/areas: `src/components/admin/AdminLoginForm.tsx` and hydration troubleshooting guidance.
+- Main files/areas: the admin login form (now `src/components/admin/login/AdminLoginForm.tsx`) and hydration troubleshooting guidance.
 - Data/API/security impact: no API or session changes; remembered admin email remains browser-local and passwords are not persisted.
-- Verification and exact result: `npx eslint src/components/admin/AdminLoginForm.tsx` passed; `npx tsc --noEmit` passed.
+- Verification and exact result at the time: focused ESLint for the admin login form passed; `npx tsc --noEmit` passed.
 - Known limitations or next step: browser extensions can independently mutate form markup and may need to be disabled when diagnosing unrelated hydration warnings.
 
 ### 2026-08-30 - Storefront cookie consent removed
@@ -245,7 +269,7 @@
 
 - Added desktop/mobile navigation, account header, KPIs, sales chart, inventory, and recent orders.
 - Added a dynamic Asia/Kolkata date/greeting and compact mobile logout.
-- Areas: `src/app/admin/dashboard/page.tsx`, `src/components/admin/AdminLogoutButton.tsx`.
+- Areas: `src/app/admin/dashboard/page.tsx`, and the admin logout button now at `src/components/admin/login/AdminLogoutButton.tsx`.
 - Verification: focused ESLint passed; `npx tsc --noEmit` passed; Next compiled the bundle, then Windows denied the TypeScript worker with `spawn EPERM`.
 - Remaining: figures and non-Overview actions are placeholders.
 

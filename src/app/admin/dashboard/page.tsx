@@ -1,25 +1,17 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
-  ArrowDownRight, ArrowUpRight, Bell, BookOpen, BookOpenText, ChevronRight,
-  IndianRupee, LayoutDashboard, Package, Search, ShoppingBag, Users, Images,
+  ArrowDownRight, ArrowUpRight, BookOpen, ChevronRight,
+  IndianRupee, Package, ShoppingBag, Users,
 } from "lucide-react";
-import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
+import AdminContentShell from "@/components/admin/AdminContentShell";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
 import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: { absolute: `Admin Dashboard | ${siteConfig.name}` },
 };
-
-const navigation = [
-  { label: "Overview", icon: LayoutDashboard, href: "/admin/dashboard", active: true },
-  { label: "Blogs", icon: BookOpenText, href: "/admin/blogs" },
-  { label: "Gallery", icon: Images, href: "/admin/galleries" },
-];
 
 const stats = [
   { label: "Total revenue", value: "₹1,24,580", change: "+12.5%", positive: true, icon: IndianRupee, color: "bg-orange-50 text-orange-600" },
@@ -61,44 +53,8 @@ export default async function AdminDashboardPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="min-h-screen bg-[#f7f7f5] text-slate-900 lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
-      <aside className="hidden min-h-screen border-r border-slate-200 bg-[#172019] text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
-        <div className="flex h-20 items-center gap-3 border-b border-white/10 px-6">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
-            <Image src="/images/logo/logo.webp" alt="GTBS" width={36} height={36} className="h-8 w-8 object-contain" />
-          </span>
-          <div className="min-w-0"><p className="truncate text-sm font-bold tracking-wide">GTBS BOOK STORE</p><p className="text-xs text-white/50">Admin workspace</p></div>
-        </div>
-        <nav aria-label="Admin navigation" className="flex-1 space-y-1 px-3 py-6">
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">Workspace</p>
-          {navigation.map(({ label, icon: Icon, href, active }) => (
-            <Link key={label} href={href} aria-current={active ? "page" : undefined}
-              className={`flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition ${active ? "bg-orange-500 text-white shadow-lg shadow-orange-950/20" : "text-white/65 hover:bg-white/10 hover:text-white"}`}>
-              <Icon size={18} /><span className="flex-1">{label}</span>
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="min-w-0">
-        <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:h-20 lg:px-8">
-            <div className="flex items-center gap-3 lg:hidden"><Image src="/images/logo/logo.webp" alt="GTBS" width={38} height={38} className="h-9 w-9 object-contain" /><div><p className="text-sm font-bold">GTBS Admin</p><p className="text-[11px] text-slate-500">Book store</p></div></div>
-            <label className="hidden h-11 w-full max-w-sm items-center gap-3 rounded-xl bg-slate-100 px-4 text-slate-500 md:flex">
-              <Search size={17} /><input aria-label="Search dashboard" placeholder="Search orders, books, customers..." className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" /><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] text-slate-400">⌘K</kbd>
-            </label>
-            <div className="ml-auto flex items-center gap-2 sm:gap-3">
-              <button aria-label="Notifications" className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"><Bell size={18} /><span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-orange-500" /></button>
-              <div className="hidden border-l border-slate-200 pl-3 sm:block"><p className="max-w-44 truncate text-sm font-semibold">Administrator</p><p className="max-w-44 truncate text-xs text-slate-500">{session.email}</p></div>
-              <AdminLogoutButton />
-            </div>
-          </div>
-          <nav aria-label="Mobile admin navigation" className="flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2 lg:hidden">
-            {navigation.map(({ label, icon: Icon, href, active }) => <Link key={label} href={href} className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${active ? "bg-orange-50 text-orange-600" : "text-slate-500"}`}><Icon size={15} />{label}</Link>)}
-          </nav>
-        </header>
-
-        <main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8">
+    <AdminContentShell active="overview">
+      <div className="mx-auto max-w-[1500px]">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div><p className="mb-1 text-sm font-semibold text-orange-600">{dateLabel}</p><h1 className="title text-2xl font-bold tracking-tight sm:text-3xl">{greeting}, Admin</h1><p className="mt-1 text-sm text-slate-500">Here’s what’s happening with your store today.</p></div>
             <button className="inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-[#172019] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#243327]"><Package size={17} /> Add new product</button>
@@ -135,8 +91,7 @@ export default async function AdminDashboardPage() {
               <tbody className="divide-y divide-slate-100">{orders.map((order) => <tr key={order.id} className="hover:bg-slate-50/60"><td className="px-6 py-4 font-bold">{order.id}</td><td className="px-6 py-4 text-slate-600">{order.customer}</td><td className="px-6 py-4 text-slate-600">{order.product}</td><td className="px-6 py-4 text-slate-500">{order.date}</td><td className="px-6 py-4 font-semibold">{order.total}</td><td className="px-6 py-4"><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ring-1 ring-inset ${statusStyles[order.status]}`}>{order.status}</span></td></tr>)}</tbody>
             </table></div>
           </section>
-        </main>
       </div>
-    </div>
+    </AdminContentShell>
   );
 }

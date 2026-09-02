@@ -27,7 +27,7 @@ The repository currently implements a frontend-led storefront with a local TypeS
 | Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
-| Admin | `/admin/login`, `/admin/dashboard`, `/admin/blogs`, `/admin/blogs/add`, `/admin/blogs/[id]/edit`, `/admin/galleries`, `/admin/galleries/add`, `/admin/galleries/[id]/edit` | Protected dashboard, list-first content tables, and separate add/edit pages with persistent navigation |
+| Admin | `/admin/login`, `/admin/dashboard`, `/admin/blogs`, `/admin/blogs/add`, `/admin/blogs/[id]/edit`, `/admin/galleries`, `/admin/galleries/add`, `/admin/galleries/[id]/edit` | Protected dashboard and content workspaces share one responsive sidebar/header; content page titles and descriptions appear in that header, while Blog and Gallery use list-first tables with separate add/edit pages |
 | Admin API | `/api/admin/login`, `/api/admin/logout`, `/api/admin/content/*` | Auth plus validated same-origin content CRUD and UploadThing uploads |
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 

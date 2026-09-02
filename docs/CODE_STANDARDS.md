@@ -27,6 +27,7 @@
 
 - Components use PascalCase; hooks start with `use`; utilities use camelCase.
 - Feature components live in their domain; generic primitives live in `ui` or `common`.
+- Group admin feature components under `src/components/admin/<feature>/`; keep only genuinely cross-feature admin components at `src/components/admin/`.
 - Pages focus on composition, loading, authorization, and route concerns.
 - Extract repeated/stateful dashboard behavior before adding more admin modules.
 - Avoid abstractions that do not clarify reuse, domain, or server/client boundaries.

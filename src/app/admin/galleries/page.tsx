@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import AdminContentShell from "@/components/admin/AdminContentShell";
-import AdminGalleryManager from "@/components/admin/AdminGalleryManager";
+import AdminGalleryManager from "@/components/admin/gallery/AdminGalleryManager";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
 import { getGalleries } from "@/lib/contentRepository";
 

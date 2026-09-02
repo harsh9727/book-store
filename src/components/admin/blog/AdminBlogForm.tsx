@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowLeft, ImageUp, Save } from "lucide-react";
 import { toast } from "sonner";
 
-import AdminRichTextEditor from "@/components/admin/AdminRichTextEditor";
+import AdminRichTextEditor from "@/components/admin/blog/AdminRichTextEditor";
 import type { BlogPost } from "@/types/blog";
 import {
   blogRichTextToPlainText,

@@ -2,19 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
-  BookOpen,
   BookOpenText,
   Images,
   LayoutDashboard,
   Store,
 } from "lucide-react";
 
-import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
+import AdminLogoutButton from "@/components/admin/login/AdminLogoutButton";
 
 interface AdminContentShellProps {
-  active: "blogs" | "galleries";
-  title: string;
-  description: string;
+  active: "overview" | "blogs" | "galleries";
+  title?: string;
+  description?: string;
   children: ReactNode;
 }
 
@@ -73,13 +72,19 @@ export default function AdminContentShell({
               <Image src="/images/logo/logo.webp" alt="GTBS" width={36} height={36} className="h-9 w-9 object-contain" />
               <span className="text-sm font-bold">GTBS Admin</span>
             </Link>
-            <div className="ml-auto flex items-center gap-2">
+            {title ? (
+              <div className="order-3 min-w-0 w-full lg:order-none lg:w-auto">
+                <h1 className="title text-xl font-bold sm:text-2xl">{title}</h1>
+                {description ? <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">{description}</p> : null}
+              </div>
+            ) : null}
+            <div className="order-2 ml-auto flex items-center gap-2 lg:order-none">
               <Link href="/" className="hidden h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:flex">
                 <Store size={16} />Storefront
               </Link>
               <AdminLogoutButton />
             </div>
-            <nav className="order-3 flex w-full gap-1 overflow-x-auto lg:hidden" aria-label="Mobile admin navigation">
+            <nav className="order-4 flex w-full gap-1 overflow-x-auto lg:hidden" aria-label="Mobile admin navigation">
               {navigation.slice(0, 3).map(({ key, label, href, icon: Icon }) => {
                 const isActive = key === active;
                 return (
@@ -100,13 +105,6 @@ export default function AdminContentShell({
         </header>
 
         <main className="px-4 py-7 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
-              <BookOpen size={14} />Content management
-            </div>
-            <h1 className="title text-3xl font-bold">{title}</h1>
-            <p className="mt-1 text-sm text-slate-500">{description}</p>
-          </div>
           {children}
         </main>
       </div>

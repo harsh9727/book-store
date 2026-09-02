@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import AdminBlogManager from "@/components/admin/AdminBlogManager";
+import AdminBlogManager from "@/components/admin/blog/AdminBlogManager";
 import AdminContentShell from "@/components/admin/AdminContentShell";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
 import { getBlogs } from "@/lib/contentRepository";

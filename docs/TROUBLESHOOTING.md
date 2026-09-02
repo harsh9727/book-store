@@ -90,6 +90,20 @@
 
 **Observed 2026-08-31:** Node's built-in test runner hit the same sandbox child-process denial. Running the focused suite in a permitted terminal passed; the production build also completed in the permitted environment. Treat an external pass as environment-specific evidence, not permission to bypass normal workstation controls.
 
+**Observed 2026-09-02:** both admin-auth and content test commands hit `spawn EPERM` while starting their Node test workers in the restricted Windows sandbox. The same commands passed in the permitted environment (7/7 admin-auth and 14/14 content tests); repository-wide ESLint and standalone TypeScript also passed in the sandbox.
+
+## VS Code reports missing aliases in a moved admin file
+
+**Symptom:** the Problems panel groups `Cannot find module` and follow-on implicit-`any` diagnostics under a former flat path such as `src/components/admin/AdminBlogForm.tsx`, even though the component was moved to `src/components/admin/blog/AdminBlogForm.tsx`.
+
+**Cause:** VS Code retained the deleted file as an open editor buffer. Because that orphaned buffer is no longer part of the configured TypeScript project, its `@/` aliases can appear unresolved; the implicit-`any` messages are cascading diagnostics. The repository compiler does not report these errors.
+
+**Solution:** close the tab for the deleted flat-path file, open the component from its new feature folder, and run **TypeScript: Restart TS Server** from the Command Palette. Use **Developer: Reload Window** if the deleted path still remains in Problems.
+
+**Prevention:** after moving open TypeScript files, reopen them from the Explorer at the new path before continuing edits.
+
+**Observed 2026-09-02:** the old file was absent on disk, the new Blog form imported `@/components/admin/blog/AdminRichTextEditor`, no stale source import remained, and `npx tsc --noEmit --pretty false` exited successfully with no diagnostics.
+
 ## Turbopack build fails with paging-file error 1455
 
 **Symptom:** `npm run build` stops while restoring the `.next/cache/turbopack` database and reports that it cannot memory-map an SST cache file because the paging file is too small (`os error 1455`).
