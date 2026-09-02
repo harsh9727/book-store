@@ -1,16 +1,31 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ArrowLeft, Plus, Save, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { adminJsonRequest, slugify, uploadAdminImages, validateClientImages } from "@/lib/adminContentClient";
+import { MAX_PRODUCT_DETAIL_IMAGES } from "@/lib/imageRules";
 import type { Category } from "@/types/category";
-import { PRODUCT_BADGES, type Product, type ProductBadge } from "@/types/product";
+import {
+  PRODUCT_BADGES,
+  type Product,
+  type ProductBadge,
+  type ProductDetailImage,
+  type ProductSpecification,
+  type ProductVariant,
+} from "@/types/product";
 
 interface Props { initialItem?: Product; categories: Category[]; }
+
+interface NewDetailImagePreview {
+  id: string;
+  file: File;
+  previewUrl: string;
+}
 
 const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
@@ -24,8 +39,35 @@ function normalizeBadge(value?: string): ProductBadge | "" {
   return "";
 }
 
+function initialSpecifications(product?: Product): ProductSpecification[] {
+  if (product?.specifications?.length) return product.specifications;
+  if (!product) return [];
+  return [
+    product.publisher ? { name: "Publisher", value: product.publisher } : null,
+    product.publishedDate ? { name: "Publication date", value: product.publishedDate } : null,
+    product.pages ? { name: "Pages", value: String(product.pages) } : null,
+    product.language ? { name: "Language", value: product.language } : null,
+    product.isbn ? { name: "ISBN", value: product.isbn } : null,
+    product.dimensions ? { name: "Dimensions", value: product.dimensions } : null,
+  ].filter((item): item is ProductSpecification => item !== null);
+}
+
+function initialVariants(product?: Product): ProductVariant[] {
+  if (product?.variants?.length) return product.variants;
+  return product?.format?.length ? [{ name: "Format", options: product.format }] : [];
+}
+
+function initialDetailImages(product?: Product): ProductDetailImage[] {
+  if (product?.detailImages?.length) return product.detailImages;
+  return (product?.images || [])
+    .filter((url) => url !== product?.image)
+    .slice(0, MAX_PRODUCT_DETAIL_IMAGES)
+    .map((url, index) => ({ id: `legacy-${index + 1}`, url, title: `Detail image ${index + 1}` }));
+}
+
 export default function AdminProductForm({ initialItem, categories: initialCategories }: Props) {
   const router = useRouter();
+  const previewUrlsRef = useRef(new Set<string>());
   const [categoryOptions, setCategoryOptions] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState(initialItem?.category || "");
   const [categoryCreatorOpen, setCategoryCreatorOpen] = useState(false);
@@ -33,10 +75,66 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   const [newCategorySlug, setNewCategorySlug] = useState("");
   const [categoryBusy, setCategoryBusy] = useState(false);
   const [categoryError, setCategoryError] = useState("");
+  const [specifications, setSpecifications] = useState<ProductSpecification[]>(() => initialSpecifications(initialItem));
+  const [variants, setVariants] = useState<ProductVariant[]>(() => initialVariants(initialItem));
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [newDetailImages, setNewDetailImages] = useState<NewDetailImagePreview[]>([]);
+  const [retainedDetailImages, setRetainedDetailImages] = useState<ProductDetailImage[]>(() => initialDetailImages(initialItem));
   const [imageError, setImageError] = useState("");
+  const [detailImagesError, setDetailImagesError] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const previewUrls = previewUrlsRef.current;
+    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
+
+  const selectCardImage = (file: File | undefined, input: HTMLInputElement) => {
+    if (!file) {
+      setImageFile(null);
+      setImageError("");
+      return;
+    }
+    const validationError = validateClientImages([file]);
+    if (validationError) {
+      setImageError(validationError);
+      setImageFile(null);
+      input.value = "";
+      return;
+    }
+    setImageError("");
+    setImageFile(file);
+  };
+
+  const selectDetailImages = (files: File[], input: HTMLInputElement) => {
+    const validationError = validateClientImages(files);
+    if (validationError) {
+      setDetailImagesError(validationError);
+      input.value = "";
+      return;
+    }
+    if (retainedDetailImages.length + newDetailImages.length + files.length > MAX_PRODUCT_DETAIL_IMAGES) {
+      setDetailImagesError(`A product can contain at most ${MAX_PRODUCT_DETAIL_IMAGES} extra detail images.`);
+      input.value = "";
+      return;
+    }
+    const previews = files.map((file) => {
+      const previewUrl = URL.createObjectURL(file);
+      previewUrlsRef.current.add(previewUrl);
+      return { id: crypto.randomUUID(), file, previewUrl };
+    });
+    setDetailImagesError("");
+    setNewDetailImages((current) => [...current, ...previews]);
+    input.value = "";
+  };
+
+  const removeNewDetailImage = (image: NewDetailImagePreview) => {
+    URL.revokeObjectURL(image.previewUrl);
+    previewUrlsRef.current.delete(image.previewUrl);
+    setNewDetailImages((current) => current.filter((item) => item.id !== image.id));
+    setDetailImagesError("");
+  };
 
   const createCategory = async () => {
     const name = newCategoryName.trim();
@@ -73,46 +171,50 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
-    const optionalNumber = (name: string) => {
-      const raw = String(values.get(name) || "").trim();
-      return raw === "" ? undefined : Number(raw);
-    };
     setBusy(true);
     setError("");
     try {
-      let image = String(values.get("image") || "").trim() || initialItem?.image || "";
-      let imageKey = image === initialItem?.image ? initialItem?.imageKey : undefined;
+      let image = initialItem?.image || "";
+      let imageKey = initialItem?.imageKey;
       if (imageFile) {
         const [uploaded] = await uploadAdminImages("product-image", [imageFile]);
         image = uploaded.url;
         imageKey = uploaded.key;
       }
-      if (!image) throw new Error("Upload an image or enter an image URL.");
+      if (!image) throw new Error("Choose a card image before saving.");
+      const uploadedDetailImages = newDetailImages.length
+        ? await uploadAdminImages("product-detail-images", newDetailImages.map((item) => item.file))
+        : [];
+      const detailImages: ProductDetailImage[] = [
+        ...retainedDetailImages,
+        ...uploadedDetailImages.map((item) => ({
+          id: crypto.randomUUID(),
+          url: item.url,
+          key: item.key,
+          title: item.name.replace(/\.[^.]+$/u, ""),
+        })),
+      ];
       const title = String(values.get("title") || "").trim();
       const payload = {
         id: slugify(String(values.get("slug") || "").trim() || title),
         title,
-        author: String(values.get("author") || "").trim(),
         price: Number(values.get("price")),
         image,
         imageKey,
-        images: String(values.get("images") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean),
+        detailImages,
         category: selectedCategory,
-        rating: optionalNumber("rating"),
-        reviewsCount: optionalNumber("reviewsCount"),
-        inStock: values.get("inStock") === "on",
-        stockCount: optionalNumber("stockCount"),
         badge: String(values.get("badge") || "").trim() || undefined,
-        format: values.getAll("format").map(String),
-        pages: optionalNumber("pages"),
-        publisher: String(values.get("publisher") || "").trim() || undefined,
-        publishedDate: String(values.get("publishedDate") || "").trim() || undefined,
-        isbn: String(values.get("isbn") || "").trim() || undefined,
-        language: String(values.get("language") || "").trim() || undefined,
-        dimensions: String(values.get("dimensions") || "").trim() || undefined,
+        specifications: specifications
+          .map((item) => ({ name: item.name.trim(), value: item.value.trim() }))
+          .filter((item) => item.name || item.value),
+        variants: variants
+          .map((variant) => ({
+            name: variant.name.trim(),
+            options: [...new Set(variant.options.map((option) => option.trim()).filter(Boolean))],
+          }))
+          .filter((variant) => variant.name || variant.options.length),
         description: String(values.get("description") || "").trim() || undefined,
         synopsis: String(values.get("synopsis") || "").trim() || undefined,
-        authorBio: String(values.get("authorBio") || "").trim() || undefined,
         features: String(values.get("features") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean),
       };
       const url = initialItem ? `/api/admin/content/products/${encodeURIComponent(initialItem.id)}` : "/api/admin/content/products";
@@ -129,14 +231,13 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   };
 
   return <section className="space-y-5">
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-lg font-bold">{initialItem ? "Edit product" : "Add a new product"}</h2><p className="text-xs text-slate-500">Catalog, stock, pricing, and product-detail content.</p></div><Link href="/admin/products" className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"><ArrowLeft size={16} />Back to list</Link></div>
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-lg font-bold">{initialItem ? "Edit product" : "Add a new product"}</h2><p className="text-xs text-slate-500">Catalog, pricing, media, variants, and product-detail content.</p></div><Link href="/admin/products" className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"><ArrowLeft size={16} />Back to list</Link></div>
     {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
     <form onSubmit={save} className="grid gap-5 lg:grid-cols-2">
       <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:col-span-2"><legend className="px-2 font-bold">Core details</legend>
         <label className="text-sm font-semibold sm:col-span-2">Title<input name="title" required maxLength={220} defaultValue={initialItem?.title} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Slug<input name="slug" maxLength={220} defaultValue={initialItem?.id} placeholder="auto-from-title" className={inputClass} /></label>
-        <label className="text-sm font-semibold">Author<input name="author" required maxLength={160} defaultValue={initialItem?.author} className={inputClass} /></label>
-        <div>
+        <label className="min-w-0 text-sm font-semibold">Slug<input name="slug" maxLength={220} defaultValue={initialItem?.id} placeholder="auto-from-title" className={inputClass} /></label>
+        <div className="min-w-0">
           <div className="flex items-center justify-between gap-3">
             <label htmlFor="product-category" className="text-sm font-semibold">Category</label>
             <button type="button" onClick={() => { setCategoryCreatorOpen(true); setCategoryError(""); }} className="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700">
@@ -148,40 +249,33 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
             {categoryOptions.map((item) => <option key={item.id} value={item.slug}>{item.name}</option>)}
           </select>
         </div>
-        <label className="text-sm font-semibold">Badge<select name="badge" defaultValue={normalizeBadge(initialItem?.badge)} className={inputClass}><option value="">No badge</option>{PRODUCT_BADGES.map((badge) => <option key={badge} value={badge}>{badge}</option>)}</select></label>
-        <label className="text-sm font-semibold sm:col-span-2">Price (₹)<input name="price" type="number" min="0" step="0.01" required defaultValue={initialItem?.price} className={`${inputClass} number-input-no-spinner`} /></label>
+        <label className="min-w-0 text-sm font-semibold">Badge<select name="badge" defaultValue={normalizeBadge(initialItem?.badge)} className={inputClass}><option value="">No badge</option>{PRODUCT_BADGES.map((badge) => <option key={badge} value={badge}>{badge}</option>)}</select></label>
+        <label className="min-w-0 text-sm font-semibold">Price (₹)<input name="price" type="number" min="0" step="0.01" required defaultValue={initialItem?.price} className={`${inputClass} number-input-no-spinner`} /></label>
       </fieldset>
 
-      <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><legend className="px-2 font-bold">Inventory and rating</legend>
-        <label className="flex items-center gap-2 text-sm font-semibold"><input name="inStock" type="checkbox" defaultChecked={initialItem?.inStock !== false} className="h-4 w-4 accent-orange-600" />Available for sale</label>
-        <label className="text-sm font-semibold">Stock count<input name="stockCount" type="number" min="0" step="1" defaultValue={initialItem?.stockCount} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Rating<input name="rating" type="number" min="0" max="5" step="0.1" defaultValue={initialItem?.rating} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Reviews count<input name="reviewsCount" type="number" min="0" step="1" defaultValue={initialItem?.reviewsCount} className={inputClass} /></label>
+      <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2 sm:grid-cols-2"><legend className="px-2 font-bold">Product images</legend>
+        <p className="text-xs text-slate-500 sm:col-span-2">Choose one card image and up to {MAX_PRODUCT_DETAIL_IMAGES} extra images for the Product detail page. Every image must be JPG, PNG, or WebP and 500 KB or smaller.</p>
+        <label className="text-sm font-semibold sm:col-span-2">Card image<input type="file" accept="image/jpeg,image/png,image/webp" required={!initialItem?.image} aria-invalid={Boolean(imageError)} aria-describedby={imageError ? "product-card-image-error" : undefined} onChange={(event) => selectCardImage(event.currentTarget.files?.[0], event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${imageError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 block text-xs font-normal text-slate-500">{imageFile?.name || (initialItem?.image ? "Current card image will be kept." : "Choose the primary card image.")}</span>{imageError && <span id="product-card-image-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{imageError}</span>}</label>
+        <label className="text-sm font-semibold sm:col-span-2">Detail page extra images<input type="file" multiple accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(detailImagesError)} aria-describedby={detailImagesError ? "product-detail-images-error" : undefined} onChange={(event) => selectDetailImages(Array.from(event.currentTarget.files || []), event.currentTarget)} className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${detailImagesError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`} /><span className="mt-1 block text-xs font-normal text-slate-500">{retainedDetailImages.length + newDetailImages.length} / {MAX_PRODUCT_DETAIL_IMAGES} selected</span>{detailImagesError && <span id="product-detail-images-error" role="alert" className="mt-1.5 block text-xs font-medium text-red-600">{detailImagesError}</span>}</label>
+        {(retainedDetailImages.length > 0 || newDetailImages.length > 0) && <div className="grid grid-cols-3 gap-2 sm:col-span-2 sm:grid-cols-4 md:grid-cols-6">{retainedDetailImages.map((item) => <div key={item.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100"><Image src={item.url} alt={item.title} fill className="object-cover" sizes="160px" /><button type="button" onClick={() => { setRetainedDetailImages((current) => current.filter((image) => image.id !== item.id)); setDetailImagesError(""); }} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white" aria-label={`Remove ${item.title}`}><X size={13} /></button></div>)}{newDetailImages.map((item) => <div key={item.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100 ring-2 ring-orange-400/70"><Image src={item.previewUrl} alt={`Selected preview: ${item.file.name}`} fill unoptimized className="object-cover" sizes="160px" /><span className="absolute bottom-1 left-1 rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">New</span><button type="button" onClick={() => removeNewDetailImage(item)} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white" aria-label={`Remove selected image ${item.file.name}`}><X size={13} /></button></div>)}</div>}
       </fieldset>
 
-      <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><legend className="px-2 font-bold">Product image</legend>
-        <label className="text-sm font-semibold">Image URL<input name="image" maxLength={2048} defaultValue={initialItem?.image} placeholder="/images/... or UploadThing URL" className={inputClass} /></label>
-        <label className="text-sm font-semibold">Upload replacement<input type="file" accept="image/jpeg,image/png,image/webp" aria-invalid={Boolean(imageError)} onChange={(event) => { const file = event.currentTarget.files?.[0]; if (!file) return setImageFile(null); const validationError = validateClientImages([file]); setImageError(validationError || ""); setImageFile(validationError ? null : file); if (validationError) event.currentTarget.value = ""; }} className="mt-1.5 block w-full rounded-xl border border-dashed border-slate-300 p-3 text-sm" />{imageError && <span className="mt-1 block text-xs text-red-600">{imageError}</span>}</label>
-        <label className="text-sm font-semibold">Extra image URLs, one per line<textarea name="images" rows={4} defaultValue={initialItem?.images?.filter((image) => image !== initialItem.image).join("\n")} className={textareaClass} /></label>
+      <fieldset className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Specifications</legend>
+        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Add any product-specific detail, such as Material, Size, Weight, Publisher, ISBN, or Warranty.</p><button type="button" onClick={() => setSpecifications((current) => [...current, { name: "", value: "" }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add specification</button></div>
+        {specifications.length ? <div className="space-y-3">{specifications.map((specification, index) => <div key={`specification-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Name<input value={specification.name} onChange={(event) => setSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Material" className={inputClass} /></label><label className="text-xs font-semibold">Value<input value={specification.value} onChange={(event) => setSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, value: event.target.value } : item))} maxLength={500} placeholder="e.g. Stainless steel" className={inputClass} /></label><button type="button" onClick={() => setSpecifications((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove specification ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No specifications added.</p>}
       </fieldset>
 
-      <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:col-span-2"><legend className="px-2 font-bold">Book specifications</legend>
-        <label className="text-sm font-semibold">Pages<input name="pages" type="number" min="1" step="1" defaultValue={initialItem?.pages} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Publisher<input name="publisher" maxLength={240} defaultValue={initialItem?.publisher} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Published date<input name="publishedDate" maxLength={120} defaultValue={initialItem?.publishedDate} className={inputClass} /></label>
-        <label className="text-sm font-semibold">ISBN<input name="isbn" maxLength={40} defaultValue={initialItem?.isbn} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Language<input name="language" maxLength={80} defaultValue={initialItem?.language} className={inputClass} /></label>
-        <label className="text-sm font-semibold">Dimensions<input name="dimensions" maxLength={160} defaultValue={initialItem?.dimensions} className={inputClass} /></label>
-        <div className="sm:col-span-2"><span className="text-sm font-semibold">Formats</span><div className="mt-2 flex flex-wrap gap-4">{["Hardcover", "Paperback", "E-Book", "Audiobook"].map((format) => <label key={format} className="flex items-center gap-2 text-sm"><input type="checkbox" name="format" value={format} defaultChecked={initialItem?.format?.includes(format as NonNullable<Product["format"]>[number])} className="accent-orange-600" />{format}</label>)}</div></div>
+      <fieldset className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Variants</legend>
+        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Create product-specific groups such as Size, Color, Format, Pack, Storage, or Edition.</p><button type="button" onClick={() => setVariants((current) => [...current, { name: "", options: [] }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add variant</button></div>
+        {variants.length ? <div className="space-y-3">{variants.map((variant, index) => <div key={`variant-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Variant name<input value={variant.name} onChange={(event) => setVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Color" className={inputClass} /></label><label className="text-xs font-semibold">Options, one per line<textarea value={variant.options.join("\n")} onChange={(event) => setVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, options: event.target.value.split(/\r?\n/gu) } : item))} rows={3} placeholder={"Black\nWhite\nOrange"} className={textareaClass} /></label><button type="button" onClick={() => setVariants((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove variant ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No variants added. Products can be saved without variants.</p>}
       </fieldset>
 
       <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Storefront content</legend>
         <label className="text-sm font-semibold">Short description<textarea name="description" maxLength={10000} rows={4} defaultValue={initialItem?.description} className={textareaClass} /></label>
-        <label className="text-sm font-semibold">Synopsis<textarea name="synopsis" maxLength={20000} rows={5} defaultValue={initialItem?.synopsis} className={textareaClass} /></label>
-        <label className="text-sm font-semibold">Author bio<textarea name="authorBio" maxLength={10000} rows={4} defaultValue={initialItem?.authorBio} className={textareaClass} /></label>
+        <label className="text-sm font-semibold">Detailed overview<textarea name="synopsis" maxLength={20000} rows={5} defaultValue={initialItem?.synopsis} className={textareaClass} /></label>
         <label className="text-sm font-semibold">Features, one per line<textarea name="features" rows={5} defaultValue={initialItem?.features?.join("\n")} className={textareaClass} /></label>
       </fieldset>
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end lg:col-span-2"><Link href="/admin/products" className="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600">Cancel</Link><button disabled={busy || !selectedCategory || Boolean(imageError)} className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"><Save size={17} />{busy ? "Saving..." : initialItem ? "Update product" : "Create product"}</button></div>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end lg:col-span-2"><Link href="/admin/products" className="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600">Cancel</Link><button disabled={busy || !selectedCategory || Boolean(imageError) || Boolean(detailImagesError)} className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"><Save size={17} />{busy ? "Saving..." : initialItem ? "Update product" : "Create product"}</button></div>
     </form>
     {categoryCreatorOpen && (
       <div

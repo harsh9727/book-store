@@ -36,17 +36,17 @@ export async function generateMetadata({
 
   const description = truncateDescription(
     product.description ||
-      `Buy ${product.title} by ${product.author} from Gujarat Tract Book Store.`
+      `Buy ${product.title} from Gujarat Tract Book Store.`
   );
 
   return {
     ...createPageMetadata({
-      title: `${product.title} by ${product.author}`,
+      title: product.title,
       description,
       path: `/product/${product.id}`,
       image: product.image,
     }),
-    keywords: [product.title, product.author, product.category, "Christian books"],
+    keywords: [product.title, product.category, "GTBS products"],
   };
 }
 
@@ -58,6 +58,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const detailImageUrls = [
+    ...(product.detailImages || []).map((image) => image.url),
+    ...(product.images || []),
+  ];
+
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Shop", href: "/shop" },
@@ -67,25 +72,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const productStructuredData = {
     "@context": "https://schema.org",
-    "@type": ["Book", "Product"],
+    "@type": "Product",
     "@id": `${absoluteUrl(`/product/${product.id}`)}#product`,
     name: product.title,
     description: product.description,
-    image: [product.image, ...(product.images || [])].map(absoluteUrl),
-    author: {
-      "@type": "Person",
-      name: product.author,
-    },
-    isbn: product.isbn,
-    bookFormat: product.format,
-    numberOfPages: product.pages,
-    inLanguage: product.language || "English",
+    image: [...new Set([product.image, ...detailImageUrls])].map(absoluteUrl),
     category: product.category,
-    brand: {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#store`,
-      name: siteConfig.legalName,
-    },
     offers: {
       "@type": "Offer",
       url: absoluteUrl(`/product/${product.id}`),
@@ -116,7 +108,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <div className="lg:col-span-5">
           <ProductImages
             mainImage={product.image}
-            images={product.images}
+            images={detailImageUrls}
             title={product.title}
             badge={product.badge}
           />

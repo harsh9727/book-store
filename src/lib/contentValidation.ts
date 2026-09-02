@@ -317,16 +317,40 @@ const productReviewSchema = z
   })
   .strict();
 
+const productSpecificationSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100),
+    value: z.string().trim().min(1).max(500),
+  })
+  .strict();
+
+const productVariantSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100),
+    options: z.array(z.string().trim().min(1).max(160)).min(1).max(50),
+  })
+  .strict();
+
+const productDetailImageSchema = z
+  .object({
+    id: z.string().trim().min(1).max(100),
+    url: productGalleryImageSchema,
+    key: z.string().trim().min(1).max(500).optional(),
+    title: z.string().trim().min(1).max(220),
+  })
+  .strict();
+
 export const productSchema = z
   .object({
     id: slugSchema,
     title: z.string().trim().min(1).max(220),
-    author: z.string().trim().min(1).max(160),
+    author: optionalText(160),
     price: z.number().finite().nonnegative().max(10_000_000),
     originalPrice: z.number().finite().nonnegative().max(10_000_000).optional(),
     discount: z.number().finite().min(0).max(100).optional(),
     image: productPrimaryImageSchema,
     imageKey: z.string().trim().min(1).max(500).optional(),
+    detailImages: z.array(productDetailImageSchema).max(6).optional(),
     images: z.array(productGalleryImageSchema).max(6).optional(),
     category: slugSchema,
     rating: z.number().finite().min(0).max(5).optional(),
@@ -334,6 +358,8 @@ export const productSchema = z
     inStock: z.boolean().optional(),
     stockCount: z.number().int().nonnegative().max(10_000_000).optional(),
     badge: optionalText(80),
+    specifications: z.array(productSpecificationSchema).max(50).optional(),
+    variants: z.array(productVariantSchema).max(20).optional(),
     format: z.array(z.enum(["Hardcover", "Paperback", "E-Book", "Audiobook"])).max(4).optional(),
     pages: z.number().int().positive().max(100_000).optional(),
     publisher: optionalText(240),
@@ -350,7 +376,26 @@ export const productSchema = z
   .strict();
 
 export const productDraftSchema = productSchema
-  .omit({ originalPrice: true, discount: true, badge: true, reviews: true })
+  .omit({
+    originalPrice: true,
+    discount: true,
+    badge: true,
+    author: true,
+    authorBio: true,
+    images: true,
+    rating: true,
+    reviewsCount: true,
+    inStock: true,
+    stockCount: true,
+    reviews: true,
+    format: true,
+    pages: true,
+    publisher: true,
+    publishedDate: true,
+    isbn: true,
+    language: true,
+    dimensions: true,
+  })
   .extend({ badge: z.enum(PRODUCT_BADGES).optional() });
 
 export const contentStoreSchema = z

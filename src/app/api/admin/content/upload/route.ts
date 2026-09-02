@@ -6,10 +6,10 @@ import {
   uploadImages,
   validateImageFile,
 } from "@/lib/imageUpload";
-import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES } from "@/lib/imageRules";
+import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, MAX_PRODUCT_DETAIL_IMAGES } from "@/lib/imageRules";
 
 const MAX_REQUEST_BYTES = (MAX_GALLERY_PHOTOS + 1) * MAX_IMAGE_BYTES + 256 * 1024;
-const allowedPurposes = new Set(["blog-banner", "blog-avatar", "gallery-cover", "gallery-photos", "product-image"]);
+const allowedPurposes = new Set(["blog-banner", "blog-avatar", "gallery-cover", "gallery-photos", "product-image", "product-detail-images"]);
 
 function response(body: object, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
@@ -30,7 +30,11 @@ export async function POST(request: NextRequest) {
   const purpose = String(formData.get("purpose") || "");
   if (!allowedPurposes.has(purpose)) return response({ message: "Invalid upload purpose." }, 400);
   const files = formData.getAll("files").filter((entry): entry is File => entry instanceof File);
-  const maximumFiles = purpose === "gallery-photos" ? MAX_GALLERY_PHOTOS : 1;
+  const maximumFiles = purpose === "gallery-photos"
+    ? MAX_GALLERY_PHOTOS
+    : purpose === "product-detail-images"
+      ? MAX_PRODUCT_DETAIL_IMAGES
+      : 1;
   if (files.length < 1 || files.length > maximumFiles) {
     return response({ message: `Upload between 1 and ${maximumFiles} image(s).` }, 400);
   }

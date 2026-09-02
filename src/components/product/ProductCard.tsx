@@ -12,7 +12,6 @@ export interface ProductCardProps {
   product: Product | {
     id: string | number;
     title: string;
-    author: string;
     price: number;
     originalPrice?: number;
     image?: ImageProps["src"];
@@ -77,10 +76,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       </div>
 
-      {/* Book Metadata */}
+      {/* Product Metadata */}
       <div className="flex flex-1 flex-col p-3.5">
         <span className="text-[13px] description tracking-wide font-semibold text-orange-600">
-          {product.category || "Christian Books"}
+          {product.category || "Products"}
         </span>
 
         <Link href={productHref}>
@@ -88,8 +87,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.title}
           </h3>
         </Link>
-
-        <p className="mt-1 text-sm text-gray-600">by {product.author}</p>
 
         {/* Price & Product Actions */}
         <div className="mt-auto flex items-center justify-between pt-3.5">

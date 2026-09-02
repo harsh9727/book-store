@@ -24,7 +24,7 @@ export function validateClientImages(files: File[]) {
 }
 
 export async function uploadAdminImages(
-  purpose: "blog-banner" | "blog-avatar" | "gallery-cover" | "gallery-photos" | "product-image",
+  purpose: "blog-banner" | "blog-avatar" | "gallery-cover" | "gallery-photos" | "product-image" | "product-detail-images",
   files: File[]
 ) {
   const body = new FormData();

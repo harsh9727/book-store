@@ -14,7 +14,7 @@ export default function ProductGrid({
     return (
       <div className="py-12 text-center">
         <p className="text-gray-500 description text-sm">
-          No books found matching the selected criteria.
+          No products found matching the selected criteria.
         </p>
       </div>
     );

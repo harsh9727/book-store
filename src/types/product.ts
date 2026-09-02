@@ -7,6 +7,23 @@ export const PRODUCT_BADGES = [
 
 export type ProductBadge = (typeof PRODUCT_BADGES)[number];
 
+export interface ProductSpecification {
+  name: string;
+  value: string;
+}
+
+export interface ProductVariant {
+  name: string;
+  options: string[];
+}
+
+export interface ProductDetailImage {
+  id: string;
+  url: string;
+  key?: string;
+  title: string;
+}
+
 export interface ProductReview {
   id: string;
   user: string;
@@ -20,12 +37,14 @@ export interface ProductReview {
 export interface Product {
   id: string;
   title: string;
-  author: string;
+  author?: string;
   price: number;
   originalPrice?: number;
   discount?: number;
   image: string;
   imageKey?: string;
+  detailImages?: ProductDetailImage[];
+  /** Legacy detail-image URLs retained for persisted catalog compatibility. */
   images?: string[];
   category: string;
   rating?: number;
@@ -33,6 +52,9 @@ export interface Product {
   inStock?: boolean;
   stockCount?: number;
   badge?: string;
+  specifications?: ProductSpecification[];
+  variants?: ProductVariant[];
+  /** Legacy book-specific fields retained for persisted catalog compatibility. */
   format?: ("Hardcover" | "Paperback" | "E-Book" | "Audiobook")[];
   pages?: number;
   publisher?: string;

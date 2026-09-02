@@ -16,13 +16,22 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const [selectedFormat, setSelectedFormat] = useState(
-    product.format && product.format.length > 0 ? product.format[0] : "Paperback"
+  const variantGroups = product.variants?.length
+    ? product.variants
+    : product.format?.length
+      ? [{ name: "Format", options: product.format }]
+      : [];
+  const [selectedVariants, setSelectedVariants] = useState(() =>
+    variantGroups.map((variant) => variant.options[0] || ""),
   );
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
-    toast.success(`Added ${quantity}x "${product.title}" (${selectedFormat}) to your cart!`);
+    const variantSummary = variantGroups
+      .map((variant, index) => selectedVariants[index] ? `${variant.name}: ${selectedVariants[index]}` : "")
+      .filter(Boolean)
+      .join(", ");
+    toast.success(`Added ${quantity}x "${product.title}"${variantSummary ? ` (${variantSummary})` : ""} to your cart!`);
   };
 
   const copyProductLink = async (url: string) => {
@@ -93,18 +102,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </button>
       </div>
 
-      {/* Book Title */}
+      {/* Product Title */}
       <h1 className="title text-2xl font-bold tracking-tight text-gray-900 md:text-3xl lg:text-4xl">
         {product.title}
       </h1>
-
-      {/* Author */}
-      <p className="mt-2 text-sm text-gray-600">
-        by{" "}
-        <span className="font-semibold text-gray-900 underline decoration-orange-300 decoration-2 underline-offset-2">
-          {product.author}
-        </span>
-      </p>
 
       {/* Pricing */}
       <div className="mt-5">
@@ -113,30 +114,30 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </span>
       </div>
 
-      {/* Format Selector */}
-      {product.format && product.format.length > 0 && (
-        <div className="mt-6">
-          <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Select Format
-          </label>
+      {/* Dynamic Variant Selectors */}
+      {variantGroups.map((variant, variantIndex) => (
+        <div key={`${variant.name}-${variantIndex}`} className="mt-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Select {variant.name}
+          </p>
           <div className="mt-2.5 flex flex-wrap gap-2.5">
-            {product.format.map((fmt) => (
+            {variant.options.map((option) => (
               <button
-                key={fmt}
+                key={option}
                 type="button"
-                onClick={() => setSelectedFormat(fmt)}
+                onClick={() => setSelectedVariants((current) => current.map((value, index) => index === variantIndex ? option : value))}
                 className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                  selectedFormat === fmt
+                  selectedVariants[variantIndex] === option
                     ? "border-orange-600 bg-orange-50/70 text-orange-700 shadow-sm ring-1 ring-orange-600"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {fmt}
+                {option}
               </button>
             ))}
           </div>
         </div>
-      )}
+      ))}
 
       {/* Description Snippet */}
       {product.description && (

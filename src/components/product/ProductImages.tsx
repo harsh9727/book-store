@@ -16,7 +16,7 @@ export default function ProductImages({
   title,
   badge,
 }: ProductImagesProps) {
-  const allImages = images && images.length > 0 ? images : [mainImage];
+  const allImages = [...new Set([mainImage, ...(images || [])])];
   const [selectedImage, setSelectedImage] = useState(allImages[0]);
 
   return (

@@ -31,6 +31,8 @@
 - Feature components live in their domain; generic primitives live in `ui` or `common`.
 - Group admin feature components under `src/components/admin/<feature>/`; keep only genuinely cross-feature admin components at `src/components/admin/`.
 - Pages focus on composition, loading, authorization, and route concerns.
+- Flexible Product specifications and variants use typed arrays of bounded objects, not unvalidated arbitrary records. Client forms trim/drop blank rows and duplicate option text before sending; strict server schemas remain authoritative.
+- Product and Gallery multi-image forms store pending `File` objects separately from persisted image records, revoke every object URL on removal/unmount, and never treat a local preview as proof of provider upload.
 - Extract repeated/stateful dashboard behavior before adding more admin modules.
 - Avoid abstractions that do not clarify reuse, domain, or server/client boundaries.
 

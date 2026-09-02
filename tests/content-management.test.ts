@@ -93,14 +93,19 @@ const categoryDraft = {
 const productDraft = {
   id: "daily-devotional",
   title: "Daily Devotional",
-  author: "GTBS Editorial Team",
   price: 499,
   image: "/images/products/atomic-habits.jpg",
+  detailImages: [
+    {
+      id: "detail-1",
+      url: "/images/products/atomic-habits-detail.jpg",
+      title: "Detail view",
+    },
+  ],
   category: "devotionals",
   badge: "New Releases",
-  inStock: true,
-  stockCount: 10,
-  format: ["Paperback"],
+  specifications: [{ name: "Material", value: "Paper" }],
+  variants: [{ name: "Edition", options: ["Standard", "Gift"] }],
   features: ["One reflection for every day"],
 };
 
@@ -120,6 +125,24 @@ test("rejects malformed catalog fields", () => {
   assert.equal(productDraftSchema.safeParse({ ...productDraft, price: -1 }).success, false);
   assert.equal(productDraftSchema.safeParse({ ...productDraft, originalPrice: 599 }).success, false);
   assert.equal(productDraftSchema.safeParse({ ...productDraft, badge: "Custom badge" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, author: "Removed field" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, authorBio: "Removed field" }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, images: ["/images/legacy.jpg"] }).success, false);
+  assert.equal(
+    productDraftSchema.safeParse({
+      ...productDraft,
+      detailImages: Array.from({ length: 7 }, (_, index) => ({
+        id: `detail-${index}`,
+        url: `/images/detail-${index}.jpg`,
+        title: `Detail ${index}`,
+      })),
+    }).success,
+    false,
+  );
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, stockCount: 10 }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, rating: 5 }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, format: ["Paperback"] }).success, false);
+  assert.equal(productDraftSchema.safeParse({ ...productDraft, variants: [{ name: "Size", options: [] }] }).success, false);
   assert.equal(productDraftSchema.safeParse({ ...productDraft, category: "Bad Category" }).success, false);
   assert.equal(productDraftSchema.safeParse({ ...productDraft, image: "https://example.com/book.jpg" }).success, false);
 });

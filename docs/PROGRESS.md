@@ -25,6 +25,54 @@
 
 ## Change log
 
+### 2026-09-02 - Admin Product stock column removed
+
+- Outcome: removed the Stock header and availability values from the admin Product list, leaving Product, Category, Price, and Actions. Reduced the table minimum width and updated the empty-state cell span for the four-column layout.
+- Main files/areas: Product admin list and catalog UI documentation.
+- Data/API/security impact: none; legacy availability and stock fields remain unchanged in stored Product records and storefront behavior.
+- Verification and exact result: focused ESLint passed; `pnpm exec tsc --noEmit` passed; source inspection confirmed the four headers, absence of stock rendering, and `colSpan={4}` for the empty state; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: none for this list-only presentation change.
+
+### 2026-09-02 - Responsive Product Core details pairing
+
+- Outcome: paired Slug with Category and Badge with Price in the Product Core details grid at the `sm` breakpoint and above. Mobile remains a single-column stack; constrained fields use `min-w-0` so controls shrink within their grid tracks instead of overflowing.
+- Main files/areas: Product admin Core details layout and responsive UI documentation.
+- Data/API/security impact: none; field names, values, validation, mutations, and persistence are unchanged.
+- Verification and exact result: focused ESLint passed; `pnpm exec tsc --noEmit` passed; source inspection confirmed the base one-column grid, `sm:grid-cols-2`, full-width Title, and `min-w-0` on constrained controls; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: no behavioral change; this is layout-only.
+
+### 2026-09-02 - Gallery-style Product card and detail images
+
+- Outcome: replaced Product Image URL and extra-URL text fields with a Gallery-style upload card: one required Card image plus up to 6 multi-select Detail page extra images. Added per-field validation, selected-count feedback, immediate `New` previews, retained-image previews, and individual removal. Product detail now always starts with the card image and exposes retained/uploaded extras as thumbnails.
+- Main files/areas: Product admin media UI, Product detail-image type/schema, upload purpose and limits, Product update/delete provider cleanup, detail-page image composition/structured data, focused tests, and media documentation.
+- Data/API/security impact: Product drafts now persist bounded `detailImages` records containing ID, configured-host URL, optional managed key, and title; legacy `images: string[]` remains at rest only and is rejected by new mutations. The protected upload endpoint accepts at most 6 files for `product-detail-images`, applies the existing JPG/PNG/WebP signature and 500 KiB-per-file validation, and update/delete removes unretained managed card/detail keys best-effort.
+- Verification and exact result: `pnpm exec tsc --noEmit` passed; focused ESLint passed for all changed Product form/detail/API/schema/type/test files; permitted `pnpm test:content` passed 17/17 with managed detail-image draft acceptance, rejected legacy URL arrays, and rejected seventh detail-image coverage; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: only uploaded/managed detail images are authored now; legacy local/configured-host URLs are retained and migrated into detail-image records on the next save. As with Gallery, an upload that succeeds before a later content mutation fails can leave an orphaned provider file for manual cleanup.
+
+### 2026-09-02 - Product Brand / creator fields removed
+
+- Outcome: removed Brand / creator from Core details and Brand / creator details from Storefront content. Also removed creator text from Product admin rows, cards, detail hero/tabs, all-products search, metadata, keywords, and structured data so Products no longer depend on that legacy concept. Slug now spans the full Core details row.
+- Main files/areas: Product form/list, Product card/detail/tabs/search/SEO, Product domain/schema, focused tests, and catalog documentation.
+- Data/API/security impact: Product create/update rejects `author` and `authorBio`. Both remain optional only in the at-rest schema/type so existing seeded and persisted Products continue to validate; saving an edited Product removes those legacy values.
+- Verification and exact result: focused ESLint passed; `pnpm exec tsc --noEmit` passed; permitted `pnpm test:content` passed 17/17 with removed author and authorBio rejection coverage; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: old content files can retain unused creator values until each Product is edited; these values are no longer shown on Product surfaces.
+
+### 2026-09-02 - Inventory and rating authoring removed from Products
+
+- Outcome: removed the complete Inventory and rating card from Product create/edit, including Available for sale, Stock count, Rating, and Reviews count. Product Image now spans the full form width. Admin Product rows with no stored stock count show `Available` instead of the misleading `0 available` label.
+- Main files/areas: Product admin form/list, Product mutation schema, focused catalog tests, and catalog documentation.
+- Data/API/security impact: Product create/update now rejects the four removed inventory/rating properties. The persisted Product schema retains them only so legacy content and seeded reviews/ratings/availability continue to load; editing a Product saves the supported shape without those legacy values.
+- Verification and exact result: focused ESLint passed; `pnpm exec tsc --noEmit` passed; permitted `pnpm test:content` passed 17/17 with removed Stock count and Rating rejection coverage; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: legacy Products may still display their saved availability, stock, and ratings until edited. New Products default to available in current storefront logic, and no replacement inventory management workflow is implemented.
+
+### 2026-09-02 - Flexible general Product specifications and variants
+
+- Outcome: generalized Product create/edit and detail presentation beyond books. Replaced fixed Pages, Publisher, Published date, ISBN, Language, Dimensions, and four Format checkboxes with removable dynamic specification name/value rows and product-specific variant groups whose options are entered one per line. Renamed authored/display copy to Brand / creator, Product Overview, Product Specifications, and generic product language. The detail hero renders every saved variant group as its own selector and includes selections in the existing add-to-cart toast.
+- Main files/areas: Product domain types and strict schemas, Product admin form/list, Product detail info/tabs/SEO structured data, generic product card/grid/related copy, focused content tests, and catalog documentation.
+- Data/API/security impact: Product drafts accept up to 50 specifications and 20 variant groups, each with up to 50 bounded options; fixed legacy book fields are rejected on new mutations. The at-rest schema retains the former Format and book-detail properties so existing JSON remains valid. Editing a legacy Product presents those values as generic rows/groups and saves the flexible shape. Structured data now identifies detail records as generic `Product` with a Brand instead of forcing `Book` attributes.
+- Verification and exact result: `pnpm exec tsc --noEmit` passed; focused ESLint passed for every changed Product implementation, schema, type, and test file; permitted `pnpm test:content` passed 17/17 including flexible specification/variant acceptance plus rejected legacy Format and empty-option variants; `git diff --check` exited 0 with only LF-to-CRLF notices.
+- Known limitations or next step: variants currently define selectable labels/options only; per-combination SKU, price, image, and stock are not modeled, and the existing cart remains a presentation/toast placeholder. Existing legacy values remain readable until that Product is edited and saved.
+
 ### 2026-09-02 - Product Category popup and Price spinner cleanup
 
 - Outcome: changed Add category in Product create/edit from an expanded inline panel to a centered modal popup with name, auto-derived/custom slug, Cancel, close, backdrop-close, inline failure feedback, and Create and select actions. Removed the browser increment/decrement arrows from the Product Price input with a scoped cross-browser CSS class.

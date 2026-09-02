@@ -154,7 +154,6 @@ function AllProductsContent({
       const matchesSearch =
         searchQuery.trim() === "" ||
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesCat && matchesPrice && matchesCollection && matchesSearch;

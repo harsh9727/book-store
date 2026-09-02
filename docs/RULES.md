@@ -51,8 +51,14 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Catalog/blog/gallery admin APIs also require a verified admin session and bounded, strict Zod payloads.
 - Category create/update accepts only name and slug. Category descriptions must not appear in the admin form/list or home-page Category cards; the optional stored field exists only for legacy file compatibility.
 - Product create/update accepts one Price and no Original price. Badge is optional but, when present, must be one of Best Sellers, New Releases, Trending Products, or Accessories.
+- Product specifications must be arbitrary bounded name/value rows rather than fixed book fields. Product variants must be optional named groups with product-specific options; do not hardcode Size, Color, Format, or any other group as universally required.
+- New Product mutations must reject legacy fixed Format/book-detail fields. Existing stored Products may read those fields only for backward-compatible display and edit migration.
+- Product create/edit must not expose or submit Available for sale, Stock count, Rating, or Reviews count. Their optional persisted fields exist only for legacy catalog compatibility until a separate inventory/review workflow is designed.
+- Product create/edit and storefront Product surfaces must not expose or submit Brand / creator or Brand / creator details. Legacy `author` and `authorBio` fields remain optional at rest only so old content files validate.
 - The Product form may create a missing Category from an Add category modal only through the existing protected Category API; after success, the returned Category must be added to the selector and selected without requiring a page reload.
-- Blog banners, gallery covers/photos, and Product primary images accept JPG, PNG, or WebP only, with a 500 KiB maximum per image.
+- Blog banners, Gallery covers/photos, and Product card/detail images accept JPG, PNG, or WebP only, with a 500 KiB maximum per image. A Product may have one card image and at most 6 extra detail images.
+- Product detail-image selections must preview before save, support individual removal, and include the card image first on the public detail gallery. Managed images removed during update/delete receive best-effort provider cleanup.
+- Product Core details must stack on mobile and use two columns from `sm` upward, pairing Slug/Category and Badge/Price without horizontal overflow.
 - A gallery can contain at most 12 extra photos; the cover image is separate from that limit.
 - Blog and Gallery index routes must open on their list table, keep admin navigation visible, place Add above the table, and expose View, Edit, and Delete actions for each row. Add and Edit must use separate protected `/add` and `/[id]/edit` pages rather than inline forms.
 - Blog and Gallery tables show at most 8 rows per page, support case-insensitive text search and category filtering, and reset to page 1 whenever either filter changes.

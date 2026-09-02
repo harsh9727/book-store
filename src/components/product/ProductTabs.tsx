@@ -1,23 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, CheckCircle, FileText, UserCheck } from "lucide-react";
-import { Product } from "@/types/product";
+import { CheckCircle, FileText, PackageOpen } from "lucide-react";
+import type { Product, ProductSpecification } from "@/types/product";
 
 interface ProductTabsProps {
   product: Product;
 }
 
-type ProductTab = "synopsis" | "specs" | "author";
+type ProductTab = "overview" | "specs";
 
 const tabs = [
-  { id: "synopsis", label: "Synopsis & Features", icon: BookOpen },
-  { id: "specs", label: "Book Specifications", icon: FileText },
-  { id: "author", label: "About the Author", icon: UserCheck },
+  { id: "overview", label: "Overview & Features", icon: PackageOpen },
+  { id: "specs", label: "Specifications", icon: FileText },
 ] as const;
 
+function getSpecifications(product: Product): ProductSpecification[] {
+  if (product.specifications?.length) return product.specifications;
+  return [
+    product.publisher ? { name: "Publisher", value: product.publisher } : null,
+    product.publishedDate ? { name: "Publication date", value: product.publishedDate } : null,
+    product.pages ? { name: "Pages", value: String(product.pages) } : null,
+    product.language ? { name: "Language", value: product.language } : null,
+    product.isbn ? { name: "ISBN", value: product.isbn } : null,
+    product.dimensions ? { name: "Dimensions", value: product.dimensions } : null,
+  ].filter((item): item is ProductSpecification => item !== null);
+}
+
 export default function ProductTabs({ product }: ProductTabsProps) {
-  const [activeTab, setActiveTab] = useState<ProductTab>("synopsis");
+  const [activeTab, setActiveTab] = useState<ProductTab>("overview");
+  const specifications = getSpecifications(product);
 
   return (
     <div className="mt-14">
@@ -45,14 +57,14 @@ export default function ProductTabs({ product }: ProductTabsProps) {
       </div>
 
       <div className="pt-8">
-        {activeTab === "synopsis" && (
+        {activeTab === "overview" && (
           <div className="max-w-4xl space-y-6 text-gray-700">
             <div>
               <h3 className="title mb-3 text-xl font-bold text-gray-900">
-                Book Overview
+                Product Overview
               </h3>
               <p className="description text-base leading-relaxed text-gray-600">
-                {product.synopsis || product.description}
+                {product.synopsis || product.description || "No detailed overview is available for this product."}
               </p>
             </div>
 
@@ -64,10 +76,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
                 <ul className="space-y-2.5 text-sm text-gray-700">
                   {product.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2.5">
-                      <CheckCircle
-                        size={17}
-                        className="mt-0.5 shrink-0 text-orange-600"
-                      />
+                      <CheckCircle size={17} className="mt-0.5 shrink-0 text-orange-600" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -80,56 +89,25 @@ export default function ProductTabs({ product }: ProductTabsProps) {
         {activeTab === "specs" && (
           <div className="max-w-3xl">
             <h3 className="title mb-5 text-xl font-bold text-gray-900">
-              Technical Details
+              Product Specifications
             </h3>
-            <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Publisher</span>
-                <span className="text-gray-900">
-                  {product.publisher || "Global Publishing House"}
-                </span>
+            {specifications.length ? (
+              <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                {specifications.map((specification, index) => (
+                  <div key={`${specification.name}-${index}`} className={`grid grid-cols-1 p-4 text-sm sm:grid-cols-2 ${index % 2 === 0 ? "bg-gray-50/50" : ""}`}>
+                    <span className="font-semibold text-gray-500">{specification.name}</span>
+                    <span className="text-gray-900">{specification.value}</span>
+                  </div>
+                ))}
               </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Publication Date</span>
-                <span className="text-gray-900">{product.publishedDate || "2023"}</span>
-              </div>
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Print Length</span>
-                <span className="text-gray-900">
-                  {product.pages ? `${product.pages} pages` : "320 pages"}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Language</span>
-                <span className="text-gray-900">{product.language || "English"}</span>
-              </div>
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">ISBN-13</span>
-                <span className="font-mono text-gray-900">
-                  {product.isbn || "978-0123456789"}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Dimensions</span>
-                <span className="text-gray-900">
-                  {product.dimensions || "6.0 x 1.0 x 9.0 inches"}
-                </span>
-              </div>
-            </div>
+            ) : (
+              <p className="rounded-2xl border border-dashed border-gray-200 p-6 text-sm text-gray-500">
+                No specifications are available for this product.
+              </p>
+            )}
           </div>
         )}
 
-        {activeTab === "author" && (
-          <div className="max-w-3xl space-y-4">
-            <h3 className="title text-xl font-bold text-gray-900">
-              About {product.author}
-            </h3>
-            <p className="description text-base leading-relaxed text-gray-600">
-              {product.authorBio ||
-                `${product.author} is an internationally acclaimed author whose writings have captivated readers worldwide. Known for insightful prose and deep emotional authenticity.`}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
