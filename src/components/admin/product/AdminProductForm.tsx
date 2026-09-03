@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -14,9 +14,9 @@ import {
   validateClientImages,
 } from "@/lib/adminContentClient";
 import { MAX_PRODUCT_DETAIL_IMAGES } from "@/lib/imageRules";
-import AdminContentLanguageSelect, {
+import AdminBilingualFormSteps, {
   type AdminContentLanguage,
-} from "@/components/admin/AdminContentLanguageSelect";
+} from "@/components/admin/AdminBilingualFormSteps";
 import type { Category } from "@/types/category";
 import {
   PRODUCT_BADGES,
@@ -247,19 +247,27 @@ export default function AdminProductForm({
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
-    setBusy(true);
     setError("");
+    const title = String(values.get("title") || "").trim();
+    if (!title) {
+      setFormLanguage("en");
+      setError("Enter the English product title before continuing.");
+      return;
+    }
+    if (formLanguage === "en") {
+      setFormLanguage("gu");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const gujaratiTitle = String(values.get("gujaratiTitle") || "").trim();
+    if (!gujaratiTitle) {
+      setError("Enter the Gujarati product title before saving.");
+      return;
+    }
+
+    setBusy(true);
     try {
-      const title = String(values.get("title") || "").trim();
-      const gujaratiTitle = String(values.get("gujaratiTitle") || "").trim();
-      if (!title) {
-        setFormLanguage("en");
-        throw new Error("Enter the English product title before saving.");
-      }
-      if (!gujaratiTitle) {
-        setFormLanguage("gu");
-        throw new Error("Enter the Gujarati product title before saving.");
-      }
       let image = initialItem?.image || "";
       let imageKey = initialItem?.imageKey;
       if (imageFile) {
@@ -381,11 +389,8 @@ export default function AdminProductForm({
             Catalog, pricing, media, variants, and product-detail content.
           </p>
         </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <AdminContentLanguageSelect
-            value={formLanguage}
-            onChange={setFormLanguage}
-          />
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          <AdminBilingualFormSteps currentStep={formLanguage} />
           <Link
             href="/admin/products"
             className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
@@ -412,6 +417,7 @@ export default function AdminProductForm({
             English title
             <input
               name="title"
+              required={formLanguage === "en"}
               maxLength={220}
               defaultValue={initialItem?.title}
               className={inputClass}
@@ -424,6 +430,7 @@ export default function AdminProductForm({
             <input
               name="gujaratiTitle"
               lang="gu"
+              required={formLanguage === "gu"}
               maxLength={220}
               defaultValue={initialItem?.gujarati?.title}
               className={inputClass}
@@ -896,6 +903,21 @@ export default function AdminProductForm({
           >
             Cancel
           </Link>
+          {formLanguage === "gu" && (
+            <button
+              type="button"
+              onClick={() => {
+                setError("");
+                setFormLanguage("en");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              disabled={busy}
+              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+            >
+              <ArrowLeft size={17} />
+              Previous
+            </button>
+          )}
           <button
             disabled={
               busy ||
@@ -905,12 +927,18 @@ export default function AdminProductForm({
             }
             className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
           >
-            <Save size={17} />
-            {busy
-              ? "Saving..."
-              : initialItem
-                ? "Update product"
-                : "Create product"}
+            {formLanguage === "en" ? (
+              <ArrowRight size={17} />
+            ) : (
+              <Save size={17} />
+            )}
+            {formLanguage === "en"
+              ? "Next"
+              : busy
+                ? "Saving..."
+                : initialItem
+                  ? "Update product"
+                  : "Create product"}
           </button>
         </div>
       </form>

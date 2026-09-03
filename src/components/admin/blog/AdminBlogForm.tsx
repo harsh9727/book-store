@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, ImageUp, Save } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImageUp, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import AdminRichTextEditor from "@/components/admin/blog/AdminRichTextEditor";
-import AdminContentLanguageSelect, {
+import AdminBilingualFormSteps, {
   type AdminContentLanguage,
-} from "@/components/admin/AdminContentLanguageSelect";
+} from "@/components/admin/AdminBilingualFormSteps";
 import type { BlogPost } from "@/types/blog";
 import {
   blogRichTextToPlainText,
@@ -91,9 +91,30 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       englishFields.some((field) => !String(values.get(field) || "").trim())
     ) {
       setFormLanguage("en");
-      setError("Complete all required English content fields before saving.");
+      setError("Complete all required English content fields before continuing.");
       return;
     }
+    const contentText = blogRichTextToPlainText(richContent).trim();
+    if (!contentText) {
+      setFormLanguage("en");
+      setArticleError("Add article content before continuing.");
+      return;
+    }
+    if (
+      contentText.length > MAX_BLOG_CONTENT_CHARACTERS ||
+      JSON.stringify(richContent).length > MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
+    ) {
+      setFormLanguage("en");
+      setArticleError("Article content is too long.");
+      return;
+    }
+    if (formLanguage === "en") {
+      setArticleError("");
+      setFormLanguage("gu");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     const gujaratiFields = [
       "gujaratiTitle",
       "gujaratiCategory",
@@ -103,20 +124,12 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     if (
       gujaratiFields.some((field) => !String(values.get(field) || "").trim())
     ) {
-      setFormLanguage("gu");
       setError("Complete all required Gujarati content fields before saving.");
       return;
     }
-    const contentText = blogRichTextToPlainText(richContent).trim();
     const gujaratiContentText =
       blogRichTextToPlainText(gujaratiRichContent).trim();
-    if (!contentText) {
-      setFormLanguage("en");
-      setArticleError("Add article content before saving.");
-      return;
-    }
     if (!gujaratiContentText) {
-      setFormLanguage("gu");
       setGujaratiArticleError("Add Gujarati article content before saving.");
       return;
     }
@@ -125,16 +138,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       JSON.stringify(gujaratiRichContent).length >
         MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
     ) {
-      setFormLanguage("gu");
       setGujaratiArticleError("Gujarati article content is too long.");
-      return;
-    }
-    if (
-      contentText.length > MAX_BLOG_CONTENT_CHARACTERS ||
-      JSON.stringify(richContent).length > MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
-    ) {
-      setFormLanguage("en");
-      setArticleError("Article content is too long.");
       return;
     }
 
@@ -222,11 +226,8 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               Banner: JPG, PNG, or WebP; maximum 500 KB.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <AdminContentLanguageSelect
-              value={formLanguage}
-              onChange={setFormLanguage}
-            />
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <AdminBilingualFormSteps currentStep={formLanguage} />
             <Link
               href="/admin/blogs"
               className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
@@ -477,13 +478,38 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
           >
             Cancel
           </Link>
+          {formLanguage === "gu" && (
+            <button
+              type="button"
+              onClick={() => {
+                setError("");
+                setFormLanguage("en");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              disabled={busy}
+              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+            >
+              <ArrowLeft size={17} />
+              Previous
+            </button>
+          )}
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || Boolean(bannerError) || Boolean(avatarError)}
             className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
           >
-            <Save size={17} />
-            {busy ? "Saving..." : initialItem ? "Update blog" : "Create blog"}
+            {formLanguage === "en" ? (
+              <ArrowRight size={17} />
+            ) : (
+              <Save size={17} />
+            )}
+            {formLanguage === "en"
+              ? "Next"
+              : busy
+                ? "Saving..."
+                : initialItem
+                  ? "Update blog"
+                  : "Create blog"}
           </button>
         </div>
       </form>

@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Sequential bilingual admin CRUD forms
+
+- Outcome: removed the free-choice language dropdown from Product, Blog, Gallery, Testimonial, and Team add/edit forms. Each bilingual form now opens on English with a `Next` action, validates English and shared required fields without uploading or persisting, then reveals Gujarati with `Previous` and the final create/update action. A shared two-step indicator communicates progress, and both language drafts remain mounted and preserved when moving between steps. Category CRUD remains unchanged because Categories have no localized fields or language dropdown.
+- Main files/areas: shared admin bilingual-step indicator; Product, Blog, Gallery, Testimonial, and Team add/edit forms; project overview, architecture, workflow rules, and progress documentation.
+- Data/API/security impact: none. The bilingual payloads, protected endpoints, image-upload path, bounded validation, storage schemas, and authentication controls are unchanged; final mutations occur only from step 2.
+- Verification and exact result: `npm run lint` passed with 0 errors/warnings; `npx tsc --noEmit` passed; direct in-process `node --experimental-strip-types tests/admin-auth.test.ts` passed 7/7; direct in-process `node --experimental-strip-types tests/content-management.test.ts` passed 22/22; `git diff --check` passed with only line-ending notices. The package test scripts were attempted, but the restricted Windows environment blocked the Node test runner child processes with the documented `spawn EPERM`. `npm run build` compiled successfully in 5.9 seconds and then the same restriction blocked its TypeScript worker with `spawn EPERM`, so a complete build pass is not claimed.
+- Known limitations or next step: no authenticated browser-level visual CRUD run was performed in this environment; the existing API/schema suites verify that the unchanged final bilingual payload contracts remain valid.
+
 ### 2026-09-03 - Global animated skeleton loading system across all pages
 
 - Outcome: designed and implemented a full animated skeleton shimmer loading system. Added `.skeleton-shimmer` smooth wave animation in `src/app/globals.css`. Built comprehensive, domain-matching skeleton components in `src/components/common/Skeleton.tsx` (`ProductCardSkeleton`, `BlogCardSkeleton`, `GalleryCardSkeleton`, `ProductDetailSkeleton`, `BlogDetailSkeleton`, `GalleryDetailSkeleton`, `CatalogPageSkeleton`, `HomePageSkeleton`). Implemented Next.js App Router streaming `loading.tsx` routes for global root (`/loading.tsx`), `/allproducts/loading.tsx`, `/product/[id]/loading.tsx`, `/blogs/loading.tsx`, `/blogs/[id]/loading.tsx`, `/gallery/loading.tsx`, `/gallery/[id]/loading.tsx`, `/about/loading.tsx`, `/contact/loading.tsx`, and `/admin/loading.tsx`. Updated client components (`AllProductsPage`, `BlogsPage`, `GalleryPage`) with instant client-side shimmer skeleton states during dynamic catalog fetches.

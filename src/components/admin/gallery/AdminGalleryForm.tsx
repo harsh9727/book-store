@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Save, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, X } from "lucide-react";
 import { toast } from "sonner";
 
 import type { GalleryItem, GalleryPhoto } from "@/types/gallery";
@@ -15,9 +15,9 @@ import {
   validateClientImages,
 } from "@/lib/adminContentClient";
 import { MAX_GALLERY_PHOTOS } from "@/lib/imageRules";
-import AdminContentLanguageSelect, {
+import AdminBilingualFormSteps, {
   type AdminContentLanguage,
-} from "@/components/admin/AdminContentLanguageSelect";
+} from "@/components/admin/AdminBilingualFormSteps";
 
 interface AdminGalleryFormProps {
   initialItem?: GalleryItem;
@@ -114,7 +114,12 @@ export default function AdminGalleryForm({
       englishFields.some((field) => !String(values.get(field) || "").trim())
     ) {
       setFormLanguage("en");
-      setError("Complete all required English content fields before saving.");
+      setError("Complete all required English content fields before continuing.");
+      return;
+    }
+    if (formLanguage === "en") {
+      setFormLanguage("gu");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     const gujaratiFields = [
@@ -215,11 +220,8 @@ export default function AdminGalleryForm({
               Every image: max 500 KB. Extra photos: max 12.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <AdminContentLanguageSelect
-              value={formLanguage}
-              onChange={setFormLanguage}
-            />
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <AdminBilingualFormSteps currentStep={formLanguage} />
             <Link
               href="/admin/galleries"
               className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
@@ -529,17 +531,38 @@ export default function AdminGalleryForm({
           >
             Cancel
           </Link>
+          {formLanguage === "gu" && (
+            <button
+              type="button"
+              onClick={() => {
+                setError("");
+                setFormLanguage("en");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              disabled={busy}
+              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+            >
+              <ArrowLeft size={17} />
+              Previous
+            </button>
+          )}
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || Boolean(coverError) || Boolean(photosError)}
             className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
           >
-            <Save size={17} />
-            {busy
-              ? "Saving..."
-              : initialItem
-                ? "Update gallery"
-                : "Create gallery"}
+            {formLanguage === "en" ? (
+              <ArrowRight size={17} />
+            ) : (
+              <Save size={17} />
+            )}
+            {formLanguage === "en"
+              ? "Next"
+              : busy
+                ? "Saving..."
+                : initialItem
+                  ? "Update gallery"
+                  : "Create gallery"}
           </button>
         </div>
       </form>
