@@ -116,6 +116,26 @@
 
 **If it returns:** close memory-heavy browser tabs, VS Code windows, Adobe/Creative Cloud processes, or other development servers and keep a system-managed/larger Windows paging file. Then stop Next, clear only this repository's generated `.next`, and restart. A React `useEffect` rewrite cannot repair an OS-level array-buffer allocation failure by itself.
 
+## Product detail reports duplicate React child keys
+
+**Symptom:** opening `/product/[id]` shows `Encountered two children with the same key` and names a repeated Product feature line.
+
+**Cause:** the highlights list previously used the feature text itself as its React key. Repeated feature values therefore produced identical sibling keys.
+
+**Resolved 2026-09-03:** each rendered feature occurrence now has a unique text-and-position key, so previously stored duplicates render without a React warning. Product create/edit also removes exact duplicate feature lines before submission.
+
+**Prevention:** do not use editable, non-unique display text alone as a React list key. Use a persisted item ID where the data model provides one, or add a deterministic occurrence discriminator for ordered scalar lists.
+
+## Next.js reports missing smooth-scroll behavior metadata
+
+**Symptom:** route navigation logs `Detected scroll-behavior: smooth on the <html> element` and asks for `data-scroll-behavior="smooth"`.
+
+**Cause:** global CSS intentionally applies `scroll-behavior: smooth` to the HTML element, but the root layout did not declare that behavior for Next.js route-transition scroll management.
+
+**Resolved 2026-09-03:** the root `<html>` element now includes `data-scroll-behavior="smooth"`. Smooth scrolling remains available normally, while Next.js can disable it temporarily when restoring scroll position during navigation.
+
+**Prevention:** when applying smooth scrolling to the document root, keep the matching `data-scroll-behavior="smooth"` attribute on the root App Router layout.
+
 ## VS Code reports missing aliases in a moved admin file
 
 **Symptom:** the Problems panel groups `Cannot find module` and follow-on implicit-`any` diagnostics under a former flat path such as `src/components/admin/AdminBlogForm.tsx`, even though the component was moved to `src/components/admin/blog/AdminBlogForm.tsx`.

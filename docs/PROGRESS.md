@@ -25,6 +25,22 @@
 
 ## Change log
 
+### 2026-09-03 - Smooth-scroll route-transition warning fixed
+
+- Outcome: declared the existing global smooth-scroll behavior on the root HTML element so Next.js can manage it correctly during client-side route transitions without emitting the browser warning.
+- Main files/areas: root App Router layout and troubleshooting documentation.
+- Data/API/security impact: none; the existing smooth scrolling remains enabled outside Next.js route-transition scroll handling.
+- Verification and exact result: `pnpm exec eslint src/app/layout.tsx` passed; `pnpm exec tsc --noEmit` passed; source inspection confirmed global `scroll-behavior: smooth` is paired with `data-scroll-behavior="smooth"` on the root HTML element; `git diff --check` passed.
+- Known limitations or next step: none.
+
+### 2026-09-03 - Duplicate Product feature key warning fixed
+
+- Outcome: Product detail highlights now use a unique occurrence key even when legacy Product data contains repeated feature text, preventing React's duplicate-child-key warning without hiding stored content. Product create/edit also removes exact duplicate feature lines before submission so newly saved records do not retain repeated highlights.
+- Main files/areas: Product detail tabs, Product admin feature normalization, and troubleshooting documentation.
+- Data/API/security impact: no API, schema, persistence-format, authentication, or authorization change. Feature order is preserved, and only exact duplicate lines entered during a Product save are collapsed.
+- Verification and exact result: `pnpm exec eslint src/components/product/ProductTabs.tsx src/components/admin/product/AdminProductForm.tsx` passed; `pnpm exec tsc --noEmit` passed; the restricted `pnpm test:content` run hit the documented Windows sandbox `spawn EPERM`, while the permitted rerun passed 17/17; final source inspection confirmed feature keys include their occurrence index and submitted feature lines pass through an insertion-order-preserving `Set`; `git diff --check` passed.
+- Known limitations or next step: existing duplicate feature values remain in storage until that Product is edited and saved, but render safely in the meantime.
+
 ### 2026-09-02 - Admin Product stock column removed
 
 - Outcome: removed the Stock header and availability values from the admin Product list, leaving Product, Category, Price, and Actions. Reduced the table minimum width and updated the empty-state cell span for the four-column layout.

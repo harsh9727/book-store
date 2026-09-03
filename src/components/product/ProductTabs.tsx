@@ -74,8 +74,8 @@ export default function ProductTabs({ product }: ProductTabsProps) {
                   Key Highlights
                 </h4>
                 <ul className="space-y-2.5 text-sm text-gray-700">
-                  {product.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
+                  {product.features.map((feature, index) => (
+                    <li key={`${feature}-${index}`} className="flex items-start gap-2.5">
                       <CheckCircle size={17} className="mt-0.5 shrink-0 text-orange-600" />
                       <span>{feature}</span>
                     </li>

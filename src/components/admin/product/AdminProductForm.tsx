@@ -215,7 +215,7 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
           .filter((variant) => variant.name || variant.options.length),
         description: String(values.get("description") || "").trim() || undefined,
         synopsis: String(values.get("synopsis") || "").trim() || undefined,
-        features: String(values.get("features") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean),
+        features: [...new Set(String(values.get("features") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean))],
       };
       const url = initialItem ? `/api/admin/content/products/${encodeURIComponent(initialItem.id)}` : "/api/admin/content/products";
       await adminJsonRequest(url, initialItem ? "PUT" : "POST", payload);
