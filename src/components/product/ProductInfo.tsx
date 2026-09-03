@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ShoppingCart,
-  Minus,
-  Plus,
-  Share2,
-} from "lucide-react";
+import { ShoppingCart, Minus, Plus, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -28,17 +23,23 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       : product.format?.length
         ? [{ name: "Format", options: product.format }]
         : [];
-  const [selectedVariantIndexes, setSelectedVariantIndexes] = useState<number[]>(() =>
-    variantGroups.map(() => 0),
-  );
+  const [selectedVariantIndexes, setSelectedVariantIndexes] = useState<
+    number[]
+  >(() => variantGroups.map(() => 0));
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
     const variantSummary = variantGroups
-      .map((variant, index) => variant.options[selectedVariantIndexes[index] ?? 0] ? `${variant.name}: ${variant.options[selectedVariantIndexes[index] ?? 0]}` : "")
+      .map((variant, index) =>
+        variant.options[selectedVariantIndexes[index] ?? 0]
+          ? `${variant.name}: ${variant.options[selectedVariantIndexes[index] ?? 0]}`
+          : "",
+      )
       .filter(Boolean)
       .join(", ");
-    toast.success(`Added ${quantity}x "${localizedProduct.title}"${variantSummary ? ` (${variantSummary})` : ""} to your cart!`);
+    toast.success(
+      `Added ${quantity}x "${localizedProduct.title}"${variantSummary ? ` (${variantSummary})` : ""} to your cart!`,
+    );
   };
 
   const copyProductLink = async (url: string) => {
@@ -110,7 +111,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       </div>
 
       {/* Product Title */}
-      <h1 className={`title text-2xl font-bold tracking-tight text-gray-900 md:text-3xl lg:text-4xl ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+      <h1
+        className={`title text-2xl font-bold tracking-tight text-gray-900 md:text-3xl lg:text-4xl ${usesStoredGujarati ? "notranslate" : ""}`}
+        translate={usesStoredGujarati ? "no" : undefined}
+        lang={usesStoredGujarati ? "gu" : undefined}
+      >
         {localizedProduct.title}
       </h1>
 
@@ -123,16 +128,31 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Dynamic Variant Selectors */}
       {variantGroups.map((variant, variantIndex) => (
-        <div key={`${variant.name}-${variantIndex}`} className={`mt-6 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+        <div
+          key={`${variant.name}-${variantIndex}`}
+          className={`mt-6 ${usesStoredGujarati ? "notranslate" : ""}`}
+          translate={usesStoredGujarati ? "no" : undefined}
+          lang={usesStoredGujarati ? "gu" : undefined}
+        >
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            {usesStoredGujarati ? `${variant.name} પસંદ કરો` : `Select ${variant.name}`}
+            {usesStoredGujarati
+              ? `${variant.name} પસંદ કરો`
+              : `Select ${variant.name}`}
           </p>
           <div className="mt-2.5 flex flex-wrap gap-2.5">
             {variant.options.map((option, optionIndex) => (
               <button
                 key={option}
                 type="button"
-                onClick={() => setSelectedVariantIndexes((current) => Array.from({ length: variantGroups.length }, (_, index) => index === variantIndex ? optionIndex : current[index] ?? 0))}
+                onClick={() =>
+                  setSelectedVariantIndexes((current) =>
+                    Array.from({ length: variantGroups.length }, (_, index) =>
+                      index === variantIndex
+                        ? optionIndex
+                        : (current[index] ?? 0),
+                    ),
+                  )
+                }
                 className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                   (selectedVariantIndexes[variantIndex] ?? 0) === optionIndex
                     ? "border-orange-600 bg-orange-50/70 text-orange-700 shadow-sm ring-1 ring-orange-600"
@@ -148,7 +168,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Description Snippet */}
       {localizedProduct.description && (
-        <p className={`description mt-5 text-sm leading-relaxed text-gray-600 line-clamp-3 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+        <p
+          className={`description mt-5 text-sm leading-relaxed text-gray-600 line-clamp-3 ${usesStoredGujarati ? "notranslate" : ""}`}
+          translate={usesStoredGujarati ? "no" : undefined}
+          lang={usesStoredGujarati ? "gu" : undefined}
+        >
           {localizedProduct.description}
         </p>
       )}
@@ -183,9 +207,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <ShoppingCart size={18} />
           <span>Add to Cart</span>
         </button>
-
       </div>
-
     </div>
   );
 }

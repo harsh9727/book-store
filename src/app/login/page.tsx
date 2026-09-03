@@ -11,7 +11,9 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.info("Customer account portal will be enabled in upcoming release. For quick orders, please connect via WhatsApp or phone!");
+    toast.info(
+      "Customer account portal will be enabled in upcoming release. For quick orders, please connect via WhatsApp or phone!",
+    );
   };
 
   return (
@@ -80,13 +82,19 @@ export default function LoginPage() {
 
             <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-600">
               <span>Don&apos;t have an account yet? </span>
-              <Link href="/register" className="font-semibold text-orange-600 hover:underline">
+              <Link
+                href="/register"
+                className="font-semibold text-orange-600 hover:underline"
+              >
                 Create Account
               </Link>
             </div>
 
             <div className="mt-4 text-center">
-              <Link href="/admin/login" className="text-[11px] text-gray-400 hover:text-gray-600 inline-flex items-center gap-1">
+              <Link
+                href="/admin/login"
+                className="text-[11px] text-gray-400 hover:text-gray-600 inline-flex items-center gap-1"
+              >
                 <Shield size={12} />
                 <span>Store Administrator Login</span>
               </Link>

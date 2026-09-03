@@ -38,7 +38,8 @@ function AllProductsContent({
   // Filters: Category, Price Range, Collections
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [priceRange, setPriceRange] = useState("all");
-  const [selectedCollection, setSelectedCollection] = useState(initialCollection);
+  const [selectedCollection, setSelectedCollection] =
+    useState(initialCollection);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [products, setProducts] = useState<Product[]>([]);
@@ -51,17 +52,29 @@ function AllProductsContent({
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/content/catalog", { signal: controller.signal, cache: "no-store" })
+    fetch("/api/content/catalog", {
+      signal: controller.signal,
+      cache: "no-store",
+    })
       .then(async (response) => {
-        const result = (await response.json()) as { products?: Product[]; categories?: Category[]; message?: string };
-        if (!response.ok || !result.products || !result.categories) throw new Error(result.message || "Catalog could not be loaded.");
+        const result = (await response.json()) as {
+          products?: Product[];
+          categories?: Category[];
+          message?: string;
+        };
+        if (!response.ok || !result.products || !result.categories)
+          throw new Error(result.message || "Catalog could not be loaded.");
         setProducts(result.products);
         setCategories(result.categories);
         setCatalogLoading(false);
       })
       .catch((fetchError) => {
         if ((fetchError as Error).name !== "AbortError") {
-          setCatalogError(fetchError instanceof Error ? fetchError.message : "Catalog could not be loaded.");
+          setCatalogError(
+            fetchError instanceof Error
+              ? fetchError.message
+              : "Catalog could not be loaded.",
+          );
           setCatalogLoading(false);
         }
       });
@@ -106,7 +119,7 @@ function AllProductsContent({
     const allCount = products.length;
     const list = categories.map((cat) => {
       const count = products.filter(
-        (p) => p.category.toLowerCase() === cat.slug.toLowerCase()
+        (p) => p.category.toLowerCase() === cat.slug.toLowerCase(),
       ).length;
       return { ...cat, count };
     });
@@ -157,7 +170,9 @@ function AllProductsContent({
       // Search Query
       const matchesSearch =
         searchQuery.trim() === "" ||
-        localizedProduct.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        localizedProduct.title
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesCat && matchesPrice && matchesCollection && matchesSearch;
@@ -210,8 +225,22 @@ function AllProductsContent({
     <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 md:py-10">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
-      {catalogLoading && <p role="status" className="mb-5 rounded-xl bg-orange-50 px-4 py-3 text-sm text-orange-800">Loading the latest catalog...</p>}
-      {catalogError && <p role="alert" className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{catalogError}</p>}
+      {catalogLoading && (
+        <p
+          role="status"
+          className="mb-5 rounded-xl bg-orange-50 px-4 py-3 text-sm text-orange-800"
+        >
+          Loading the latest catalog...
+        </p>
+      )}
+      {catalogError && (
+        <p
+          role="alert"
+          className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {catalogError}
+        </p>
+      )}
 
       {/* Header Banner */}
       <div className="mb-6 sm:mb-10 text-center max-w-2xl mx-auto px-2">
@@ -223,7 +252,8 @@ function AllProductsContent({
           All Books & Literature
         </h1>
         <p className="description mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-gray-600">
-          Discover our full collection across every genre, from bestselling fiction and spiritual devotionals to personal development and finance.
+          Discover our full collection across every genre, from bestselling
+          fiction and spiritual devotionals to personal development and finance.
         </p>
       </div>
 
@@ -384,7 +414,7 @@ function AllProductsContent({
                   { id: "bestseller", label: "Best Sellers" },
                   { id: "new", label: "New Releases" },
                   { id: "trending", label: "Trending Products" },
-                  { id: "accessories", label: "Accessories"}
+                  { id: "accessories", label: "Accessories" },
                 ].map((item) => (
                   <label
                     key={item.id}
@@ -481,7 +511,14 @@ function AllProductsContent({
 
               {selectedCollection !== "all" && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Collection: {selectedCollection === "new" ? "New Releases" : selectedCollection === "bestseller" ? "Best Sellers" : selectedCollection === "accessories" ? "Accessories" : "Trending Products"}
+                  Collection:{" "}
+                  {selectedCollection === "new"
+                    ? "New Releases"
+                    : selectedCollection === "bestseller"
+                      ? "Best Sellers"
+                      : selectedCollection === "accessories"
+                        ? "Accessories"
+                        : "Trending Products"}
                   <button
                     type="button"
                     onClick={() => selectCollection("all")}
@@ -523,7 +560,8 @@ function AllProductsContent({
                 No books match your filters
               </h3>
               <p className="description text-xs sm:text-sm text-gray-500 mt-1 max-w-sm mx-auto">
-                Try selecting a different category or clearing your active filters to browse the full catalog.
+                Try selecting a different category or clearing your active
+                filters to browse the full catalog.
               </p>
               <button
                 type="button"
@@ -548,9 +586,13 @@ function AllProductsContent({
                     <span>
                       Showing{" "}
                       <strong>
-                        {Math.min(visibleCount, filteredAndSortedProducts.length)}
+                        {Math.min(
+                          visibleCount,
+                          filteredAndSortedProducts.length,
+                        )}
                       </strong>{" "}
-                      of <strong>{filteredAndSortedProducts.length}</strong> books
+                      of <strong>{filteredAndSortedProducts.length}</strong>{" "}
+                      books
                     </span>
                     <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
                       <div
@@ -558,7 +600,8 @@ function AllProductsContent({
                         style={{
                           width: `${Math.min(
                             100,
-                            (visibleCount / filteredAndSortedProducts.length) * 100
+                            (visibleCount / filteredAndSortedProducts.length) *
+                              100,
                           )}%`,
                         }}
                       />
@@ -580,7 +623,8 @@ function AllProductsContent({
               ) : filteredAndSortedProducts.length > 8 ? (
                 <div className="pt-6 border-t border-gray-100 text-center">
                   <p className="text-xs text-gray-400 description tracking-wide">
-                    You have viewed all {filteredAndSortedProducts.length} books in this collection.
+                    You have viewed all {filteredAndSortedProducts.length} books
+                    in this collection.
                   </p>
                 </div>
               ) : null}

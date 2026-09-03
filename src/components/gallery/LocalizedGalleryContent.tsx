@@ -30,7 +30,11 @@ export function LocalizedGalleryText({
   );
 }
 
-export function LocalizedGalleryBreadcrumb({ gallery }: { gallery: GalleryItem }) {
+export function LocalizedGalleryBreadcrumb({
+  gallery,
+}: {
+  gallery: GalleryItem;
+}) {
   const { language } = useLanguage();
   const localizedGallery = localizeGallery(gallery, language);
   const usesStoredGujarati = language === "gu" && Boolean(gallery.gujarati);
@@ -43,7 +47,10 @@ export function LocalizedGalleryBreadcrumb({ gallery }: { gallery: GalleryItem }
       <Breadcrumb
         items={[
           { label: usesStoredGujarati ? "મુખ્ય પૃષ્ઠ" : "Home", href: "/" },
-          { label: usesStoredGujarati ? "ગેલેરી" : "Gallery", href: "/gallery" },
+          {
+            label: usesStoredGujarati ? "ગેલેરી" : "Gallery",
+            href: "/gallery",
+          },
           { label: localizedGallery.title },
         ]}
       />
@@ -51,7 +58,11 @@ export function LocalizedGalleryBreadcrumb({ gallery }: { gallery: GalleryItem }
   );
 }
 
-export function LocalizedGalleryOrganizer({ gallery }: { gallery: GalleryItem }) {
+export function LocalizedGalleryOrganizer({
+  gallery,
+}: {
+  gallery: GalleryItem;
+}) {
   const { language } = useLanguage();
   const localizedGallery = localizeGallery(gallery, language);
   const usesStoredGujarati = language === "gu" && Boolean(gallery.gujarati);
@@ -61,9 +72,14 @@ export function LocalizedGalleryOrganizer({ gallery }: { gallery: GalleryItem })
   return (
     <p className="mt-3 flex items-center gap-1.5 text-sm description tracking-wide text-gray-500">
       <User size={16} className="text-orange-600" />
-      <span className={usesStoredGujarati ? "notranslate" : undefined} translate={usesStoredGujarati ? "no" : undefined}>
+      <span
+        className={usesStoredGujarati ? "notranslate" : undefined}
+        translate={usesStoredGujarati ? "no" : undefined}
+      >
         {usesStoredGujarati ? "આયોજક" : "Organized by"}{" "}
-        <strong className="ml-1 text-gray-800">{localizedGallery.organizer}</strong>
+        <strong className="ml-1 text-gray-800">
+          {localizedGallery.organizer}
+        </strong>
       </span>
     </p>
   );

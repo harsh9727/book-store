@@ -4,7 +4,9 @@ export function hasInitializedCatalog(
   >,
 ) {
   const storedProducts = Array.isArray(stored.products) ? stored.products : [];
-  const storedCategories = Array.isArray(stored.categories) ? stored.categories : [];
+  const storedCategories = Array.isArray(stored.categories)
+    ? stored.categories
+    : [];
   return (
     stored.catalogInitialized === true ||
     storedProducts.length > 0 ||

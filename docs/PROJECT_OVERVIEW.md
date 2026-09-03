@@ -29,14 +29,14 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 
 ## Routes and current state
 
-| Area | Routes | Current state |
-| --- | --- | --- |
-| Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository |
-| Content | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact` | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs |
-| Shopping | `/cart`, `/wishlist`, `/checkout` | Responsive empty states and ordering assistance UI with direct WhatsApp inquiry integration |
-| Customer | `/login`, `/register`, `/profile` | Responsive customer UI with admin gateway link; persistent identity backend pending |
-| Policies | Privacy, terms, and shipping routes | Content implemented |
-| Admin | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
+| Area       | Routes                                                                                                                                            | Current state                                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]`                                                                                                     | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository                                                                                                             |
+| Content    | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact`                                                                                     | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs                                                                                                                  |
+| Shopping   | `/cart`, `/wishlist`, `/checkout`                                                                                                                 | Responsive empty states and ordering assistance UI with direct WhatsApp inquiry integration                                                                                                                         |
+| Customer   | `/login`, `/register`, `/profile`                                                                                                                 | Responsive customer UI with admin gateway link; persistent identity backend pending                                                                                                                                 |
+| Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
+| Admin      | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
 
 The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script.
 
@@ -67,19 +67,19 @@ npm run build
 
 ## Environment variables
 
-| Variable | Purpose | Exposure |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical URL and SEO | Public |
-| `GOOGLE_SITE_VERIFICATION` | Search Console verification | Server config |
-| `NEXT_PUBLIC_EMAILJS_*` | Contact-form EmailJS configuration | Public/browser |
-| `UPLOADTHING_TOKEN` | Authenticates server-side blog/gallery/product/team image uploads | Server only |
-| `ADMIN_EMAIL` | Admin identity | Server only |
-| `ADMIN_PASSWORD_HASH` | Generated scrypt password verifier; required in production | Server only |
-| `ADMIN_SESSION_SECRET` | HMAC signing secret | Server only |
-| `ADMIN_SESSION_VERSION` | Increment to invalidate every active admin session | Server only |
-| `ADMIN_REQUIRE_MFA` | Must be `true` in production | Server only |
-| `ADMIN_TOTP_SECRET` | Base32 authenticator secret | Server only |
-| `ADMIN_TRUST_PROXY` | Trust deployment-provided client IP headers for rate-limit keys | Server only |
+| Variable                   | Purpose                                                           | Exposure       |
+| -------------------------- | ----------------------------------------------------------------- | -------------- |
+| `NEXT_PUBLIC_SITE_URL`     | Canonical URL and SEO                                             | Public         |
+| `GOOGLE_SITE_VERIFICATION` | Search Console verification                                       | Server config  |
+| `NEXT_PUBLIC_EMAILJS_*`    | Contact-form EmailJS configuration                                | Public/browser |
+| `UPLOADTHING_TOKEN`        | Authenticates server-side blog/gallery/product/team image uploads | Server only    |
+| `ADMIN_EMAIL`              | Admin identity                                                    | Server only    |
+| `ADMIN_PASSWORD_HASH`      | Generated scrypt password verifier; required in production        | Server only    |
+| `ADMIN_SESSION_SECRET`     | HMAC signing secret                                               | Server only    |
+| `ADMIN_SESSION_VERSION`    | Increment to invalidate every active admin session                | Server only    |
+| `ADMIN_REQUIRE_MFA`        | Must be `true` in production                                      | Server only    |
+| `ADMIN_TOTP_SECRET`        | Base32 authenticator secret                                       | Server only    |
+| `ADMIN_TRUST_PROXY`        | Trust deployment-provided client IP headers for rate-limit keys   | Server only    |
 
 `ADMIN_PASSWORD` remains a local-development migration fallback only and is rejected in production. Do not deploy it.
 

@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   const description = truncateDescription(
     product.description ||
-      `Buy ${product.title} from Gujarat Tract Book Store.`
+      `Buy ${product.title} from Gujarat Tract Book Store.`,
   );
 
   return {
@@ -52,7 +52,10 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const [product, products] = await Promise.all([getProduct(id), getProducts()]);
+  const [product, products] = await Promise.all([
+    getProduct(id),
+    getProducts(),
+  ]);
 
   if (!product) {
     notFound();
@@ -92,36 +95,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     <>
       <JsonLd data={productStructuredData} />
       <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Breadcrumbs */}
-      <LocalizedProductBreadcrumb product={product} />
+        {/* Breadcrumbs */}
+        <LocalizedProductBreadcrumb product={product} />
 
-      {/* Main Product Hero Grid */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
-        {/* Left Gallery */}
-        <div className="lg:col-span-5">
-          <ProductImages
-            mainImage={product.image}
-            images={detailImageUrls}
-            title={product.title}
-            badge={product.badge}
-          />
+        {/* Main Product Hero Grid */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
+          {/* Left Gallery */}
+          <div className="lg:col-span-5">
+            <ProductImages
+              mainImage={product.image}
+              images={detailImageUrls}
+              title={product.title}
+              badge={product.badge}
+            />
+          </div>
+
+          {/* Right Info & Purchase Actions */}
+          <div className="lg:col-span-7">
+            <ProductInfo product={product} />
+          </div>
         </div>
 
-        {/* Right Info & Purchase Actions */}
-        <div className="lg:col-span-7">
-          <ProductInfo product={product} />
-        </div>
-      </div>
+        {/* Product Information Tabs */}
+        <ProductTabs product={product} />
 
-      {/* Product Information Tabs */}
-      <ProductTabs product={product} />
-
-      {/* Related Products Carousel / Grid */}
-      <RelatedProducts
-        currentProductId={product.id}
-        category={product.category}
-        allProducts={products}
-      />
+        {/* Related Products Carousel / Grid */}
+        <RelatedProducts
+          currentProductId={product.id}
+          category={product.category}
+          allProducts={products}
+        />
       </div>
     </>
   );

@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ShoppingBag, ArrowRight, BookOpen, Heart, ShieldCheck, Truck } from "lucide-react";
+import {
+  ShoppingBag,
+  ArrowRight,
+  BookOpen,
+  Heart,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
@@ -35,7 +42,9 @@ export default function CartPage() {
           </h2>
 
           <p className="description text-sm sm:text-base text-gray-600 leading-relaxed max-w-md mx-auto mb-8">
-            Looks like you haven&apos;t added any books or resources yet. Explore our curated Christian literature, Bibles, and devotionals to get started.
+            Looks like you haven&apos;t added any books or resources yet.
+            Explore our curated Christian literature, Bibles, and devotionals to
+            get started.
           </p>
 
           {/* Action Buttons */}
@@ -62,24 +71,39 @@ export default function CartPage() {
             <div className="flex items-start gap-3">
               <Truck size={18} className="text-orange-600 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-xs font-bold text-gray-900">Doorstep Delivery</h4>
-                <p className="text-[11px] text-gray-500 mt-0.5">Reliable shipping across Gujarat & India</p>
+                <h4 className="text-xs font-bold text-gray-900">
+                  Doorstep Delivery
+                </h4>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Reliable shipping across Gujarat & India
+                </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <ShieldCheck size={18} className="text-orange-600 shrink-0 mt-0.5" />
+              <ShieldCheck
+                size={18}
+                className="text-orange-600 shrink-0 mt-0.5"
+              />
               <div>
-                <h4 className="text-xs font-bold text-gray-900">100% Authentic</h4>
-                <p className="text-[11px] text-gray-500 mt-0.5">Direct from certified Christian publishers</p>
+                <h4 className="text-xs font-bold text-gray-900">
+                  100% Authentic
+                </h4>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Direct from certified Christian publishers
+                </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <BookOpen size={18} className="text-orange-600 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-xs font-bold text-gray-900">Curated Faith Books</h4>
-                <p className="text-[11px] text-gray-500 mt-0.5">Bibles, study guides & devotionals</p>
+                <h4 className="text-xs font-bold text-gray-900">
+                  Curated Faith Books
+                </h4>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Bibles, study guides & devotionals
+                </p>
               </div>
             </div>
           </div>

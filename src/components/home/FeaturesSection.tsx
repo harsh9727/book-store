@@ -1,9 +1,4 @@
-import {
-  BookOpen,
-  Truck,
-  ShoppingCart,
-  WalletCards,
-} from "lucide-react";
+import { BookOpen, Truck, ShoppingCart, WalletCards } from "lucide-react";
 
 const features = [
   {
@@ -37,42 +32,42 @@ const FeaturesSection = () => {
     <section className="py-6">
       <div className="container px-3 lg:px-6">
         <div className="overflow-hidden bg-[#fffaf0] rounded-2xl p-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
 
-            return (
-              <div
-                key={index}
-                className={`
+              return (
+                <div
+                  key={index}
+                  className={`
                   group h-full px-5 py-6
                   sm:px-6
                   lg:px-7 lg:py-1
                   ${index > 0 ? "lg:border-l lg:border-gray-200" : ""}
                 `}
-              >
-                {/* Icon */}
-                <div className="mb-5">
-                  <Icon
-                    size={38}
-                    strokeWidth={1.4}
-                    className="text-orange-500 transition-transform duration-300 group-hover:-translate-y-1"
-                  />
+                >
+                  {/* Icon */}
+                  <div className="mb-5">
+                    <Icon
+                      size={38}
+                      strokeWidth={1.4}
+                      className="text-orange-500 transition-transform duration-300 group-hover:-translate-y-1"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="title text-[21px] font-medium leading-tight text-gray-900">
+                    {feature.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="description mt-2 text-[15px] leading-[1.55] text-gray-600">
+                    {feature.description}
+                  </p>
                 </div>
-
-                {/* Title */}
-                <h3 className="title text-[21px] font-medium leading-tight text-gray-900">
-                  {feature.title}
-                </h3>
-
-                {/* Description */}
-                <p className="description mt-2 text-[15px] leading-[1.55] text-gray-600">
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

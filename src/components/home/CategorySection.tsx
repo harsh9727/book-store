@@ -28,7 +28,10 @@ const categoryIconMap: Record<string, LucideIcon> = {
 };
 
 const CategorySection = async () => {
-  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const [categories, products] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
       <div className="container px-3 lg:px-6 mx-auto">
@@ -44,7 +47,8 @@ const CategorySection = async () => {
           </h2>
 
           <p className="description mt-3 text-sm sm:text-base leading-relaxed text-gray-600">
-            Find the right books, study resources, and faith-inspired titles from our carefully organized collections.
+            Find the right books, study resources, and faith-inspired titles
+            from our carefully organized collections.
           </p>
         </div>
 
@@ -53,7 +57,7 @@ const CategorySection = async () => {
           {categories.map((category) => {
             const Icon = categoryIconMap[category.slug] || Bookmark;
             const bookCount = products.filter(
-              (p) => p.category.toLowerCase() === category.slug.toLowerCase()
+              (p) => p.category.toLowerCase() === category.slug.toLowerCase(),
             ).length;
 
             return (
@@ -85,7 +89,6 @@ const CategorySection = async () => {
                   <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
                     {category.name}
                   </h3>
-
                 </div>
 
                 {/* Bottom Action Row */}

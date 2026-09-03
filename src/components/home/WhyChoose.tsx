@@ -49,7 +49,6 @@ const WhyChoose = () => {
     <section className="bg-white py-12">
       <div className="container px-3 lg:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-
           {/* Image */}
           <div className="overflow-hidden rounded-2xl">
             <Image
@@ -63,20 +62,17 @@ const WhyChoose = () => {
 
           {/* Content */}
           <div>
-
             {/* Main Heading */}
             <h2 className="title text-3xl font-semibold leading-tight text-gray-900 sm:text-4xl">
               Why Choose Our{" "}
-              <span className="text-orange-600">
-                Christian Bookstore?
-              </span>
+              <span className="text-orange-600">Christian Bookstore?</span>
             </h2>
 
             {/* Description */}
             <p className="description mt-4 max-w-xl text-sm leading-6 text-gray-500 sm:text-[15px]">
-              We are committed to providing quality Christian books,
-              helpful resources, affordable prices, and a trusted shopping
-              experience for every reader.
+              We are committed to providing quality Christian books, helpful
+              resources, affordable prices, and a trusted shopping experience
+              for every reader.
             </p>
 
             {/* Benefits */}
@@ -85,10 +81,7 @@ const WhyChoose = () => {
                 const Icon = benefit.icon;
 
                 return (
-                  <div
-                    key={benefit.title}
-                    className="group flex gap-4"
-                  >
+                  <div key={benefit.title} className="group flex gap-4">
                     {/* Icon */}
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white">
                       <Icon size={19} strokeWidth={1.8} />
@@ -109,7 +102,6 @@ const WhyChoose = () => {
               })}
             </div>
           </div>
-
         </div>
       </div>
     </section>

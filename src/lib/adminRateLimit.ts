@@ -21,9 +21,10 @@ const globalWithRateLimit = globalThis as typeof globalThis & {
   gtbsAdminLoginRateLimit?: RateLimitStore;
 };
 
-const store =
-  globalWithRateLimit.gtbsAdminLoginRateLimit ||
-  { records: new Map<string, AttemptRecord>(), lastCleanupAt: 0 };
+const store = globalWithRateLimit.gtbsAdminLoginRateLimit || {
+  records: new Map<string, AttemptRecord>(),
+  lastCleanupAt: 0,
+};
 globalWithRateLimit.gtbsAdminLoginRateLimit = store;
 
 function digest(value: string) {
@@ -39,10 +40,14 @@ function keys(clientIdentifier: string, email: string) {
 }
 
 function cleanup(now: number) {
-  if (now - store.lastCleanupAt < WINDOW_MS && store.records.size < MAX_ENTRIES) return;
+  if (now - store.lastCleanupAt < WINDOW_MS && store.records.size < MAX_ENTRIES)
+    return;
 
   for (const [key, record] of store.records) {
-    if (record.lockedUntil <= now && now - record.windowStartedAt >= WINDOW_MS) {
+    if (
+      record.lockedUntil <= now &&
+      now - record.windowStartedAt >= WINDOW_MS
+    ) {
       store.records.delete(key);
     }
   }
@@ -60,24 +65,36 @@ function getActiveRecord(key: string, now: number) {
   return record;
 }
 
-export function getAdminLoginLimit(clientIdentifier: string, email: string, now = Date.now()) {
+export function getAdminLoginLimit(
+  clientIdentifier: string,
+  email: string,
+  now = Date.now(),
+) {
   cleanup(now);
   const loginKeys = keys(clientIdentifier, email);
   const records = [
     getActiveRecord(loginKeys.client, now),
     getActiveRecord(loginKeys.pair, now),
   ].filter((record): record is AttemptRecord => Boolean(record));
-  const lockedUntil = Math.max(0, ...records.map((record) => record.lockedUntil));
+  const lockedUntil = Math.max(
+    0,
+    ...records.map((record) => record.lockedUntil),
+  );
 
   return {
     allowed: lockedUntil <= now,
-    retryAfterSeconds: lockedUntil > now ? Math.ceil((lockedUntil - now) / 1_000) : 0,
+    retryAfterSeconds:
+      lockedUntil > now ? Math.ceil((lockedUntil - now) / 1_000) : 0,
   };
 }
 
 function addFailure(key: string, threshold: number, now: number) {
   const existing = getActiveRecord(key, now);
-  const record = existing || { failures: 0, lockedUntil: 0, windowStartedAt: now };
+  const record = existing || {
+    failures: 0,
+    lockedUntil: 0,
+    windowStartedAt: now,
+  };
   record.failures += 1;
   if (record.failures >= threshold) record.lockedUntil = now + LOCKOUT_MS;
   store.records.set(key, record);
@@ -86,7 +103,7 @@ function addFailure(key: string, threshold: number, now: number) {
 export function recordAdminLoginFailure(
   clientIdentifier: string,
   email: string,
-  now = Date.now()
+  now = Date.now(),
 ) {
   cleanup(now);
   const loginKeys = keys(clientIdentifier, email);
@@ -95,7 +112,10 @@ export function recordAdminLoginFailure(
   return getAdminLoginLimit(clientIdentifier, email, now);
 }
 
-export function clearAdminLoginFailures(clientIdentifier: string, email: string) {
+export function clearAdminLoginFailures(
+  clientIdentifier: string,
+  email: string,
+) {
   const loginKeys = keys(clientIdentifier, email);
   store.records.delete(loginKeys.client);
   store.records.delete(loginKeys.pair);

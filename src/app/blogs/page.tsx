@@ -3,12 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  CalendarDays,
-  ArrowRight,
-  BookOpen,
-  ChevronDown,
-} from "lucide-react";
+import { CalendarDays, ArrowRight, BookOpen, ChevronDown } from "lucide-react";
 import type { BlogPost } from "@/types/blog";
 import { blogsFaqs } from "@/data/faqs";
 import Faq from "@/components/common/Faq";
@@ -47,7 +42,7 @@ export default function BlogsPage() {
 
   const categories = useMemo(
     () => ["All", ...new Set(blogItems.map((blog) => blog.category))],
-    [blogItems]
+    [blogItems],
   );
 
   const filteredBlogs = blogItems.filter((blog) => {
@@ -59,7 +54,7 @@ export default function BlogsPage() {
       localizedBlog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       localizedBlog.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (blog.tags ?? []).some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     return matchesCategory && matchesSearch;
   });
@@ -76,7 +71,8 @@ export default function BlogsPage() {
           Stories, Ideas & Book Wisdom
         </h1>
         <p className="description mt-3 text-sm md:text-base text-gray-600">
-          Curated reading guides, author perspectives, book reviews, and mindful reading tips.
+          Curated reading guides, author perspectives, book reviews, and mindful
+          reading tips.
         </p>
       </div>
 
@@ -101,23 +97,25 @@ export default function BlogsPage() {
                   blogItems.find((blog) => blog.category === cat)?.gujarati,
                 ));
             return (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => selectCategory(cat)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium description tracking-wide transition-all ${
-                selectedCategory === cat
-                  ? "bg-orange-600 text-white shadow-sm font-semibold"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <span
-                className={categoryHasStoredGujarati ? "notranslate" : undefined}
-                translate={categoryHasStoredGujarati ? "no" : undefined}
+              <button
+                key={cat}
+                type="button"
+                onClick={() => selectCategory(cat)}
+                className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium description tracking-wide transition-all ${
+                  selectedCategory === cat
+                    ? "bg-orange-600 text-white shadow-sm font-semibold"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                {categoryLabel}
-              </span>
-            </button>
+                <span
+                  className={
+                    categoryHasStoredGujarati ? "notranslate" : undefined
+                  }
+                  translate={categoryHasStoredGujarati ? "no" : undefined}
+                >
+                  {categoryLabel}
+                </span>
+              </button>
             );
           })}
         </div>
@@ -152,70 +150,79 @@ export default function BlogsPage() {
                   ? { className: "notranslate", translate: "no" as const }
                   : {};
               return (
-              <article
-                key={blog.id}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10"
-              >
-                {/* Cover Image */}
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  className="relative block aspect-[16/10] overflow-hidden bg-gray-100"
+                <article
+                  key={blog.id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10"
                 >
-                  <Image
-                    src={blog.image}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                  <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold description tracking-wide text-orange-600 shadow-sm backdrop-blur-sm">
-                    <span {...localizedAttributes}>{blog.category}</span>
-                  </span>
-                </Link>
-
-                {/* Card Body */}
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="mb-2.5 flex items-center gap-4 text-xs text-gray-500 description tracking-wide">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays size={13} className="text-orange-600" />
-                      <span>{blog.date}</span>
-                    </div>
-                  </div>
-
-                  <Link href={`/blogs/${blog.slug}`}>
-                    <h3 className={`${localizedAttributes.className ?? ""} line-clamp-2 title text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-600`} translate={localizedAttributes.translate}>
-                      {blog.title}
-                    </h3>
+                  {/* Cover Image */}
+                  <Link
+                    href={`/blogs/${blog.slug}`}
+                    className="relative block aspect-[16/10] overflow-hidden bg-gray-100"
+                  >
+                    <Image
+                      src={blog.image}
+                      alt={blog.title}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                    <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold description tracking-wide text-orange-600 shadow-sm backdrop-blur-sm">
+                      <span {...localizedAttributes}>{blog.category}</span>
+                    </span>
                   </Link>
 
-                  <p className={`${localizedAttributes.className ?? ""} description mt-2 text-sm tracking-wide text-gray-600 line-clamp-2`} translate={localizedAttributes.translate}>
-                    {blog.summary}
-                  </p>
-
-                  {/* Author footer */}
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3.5 mt-3.5">
-                    <div className="flex items-center gap-2.5">
-                      <Image
-                        src={blog.author.avatar}
-                        alt={blog.author.name}
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                      <span className={`${localizedAttributes.className ?? ""} text-xs font-semibold description tracking-wide text-gray-800`} translate={localizedAttributes.translate}>
-                        {blog.author.name}
-                      </span>
+                  {/* Card Body */}
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="mb-2.5 flex items-center gap-4 text-xs text-gray-500 description tracking-wide">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarDays size={13} className="text-orange-600" />
+                        <span>{blog.date}</span>
+                      </div>
                     </div>
 
-                    <Link
-                      href={`/blogs/${blog.slug}`}
-                      className="flex items-center gap-1 text-xs font-semibold tracking-wide description text-orange-600 hover:text-orange-700"
-                    >
-                      <span>Read</span>
-                      <ArrowRight size={14} />
+                    <Link href={`/blogs/${blog.slug}`}>
+                      <h3
+                        className={`${localizedAttributes.className ?? ""} line-clamp-2 title text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-600`}
+                        translate={localizedAttributes.translate}
+                      >
+                        {blog.title}
+                      </h3>
                     </Link>
+
+                    <p
+                      className={`${localizedAttributes.className ?? ""} description mt-2 text-sm tracking-wide text-gray-600 line-clamp-2`}
+                      translate={localizedAttributes.translate}
+                    >
+                      {blog.summary}
+                    </p>
+
+                    {/* Author footer */}
+                    <div className="flex items-center justify-between border-t border-gray-100 pt-3.5 mt-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <Image
+                          src={blog.author.avatar}
+                          alt={blog.author.name}
+                          width={32}
+                          height={32}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                        <span
+                          className={`${localizedAttributes.className ?? ""} text-xs font-semibold description tracking-wide text-gray-800`}
+                          translate={localizedAttributes.translate}
+                        >
+                          {blog.author.name}
+                        </span>
+                      </div>
+
+                      <Link
+                        href={`/blogs/${blog.slug}`}
+                        className="flex items-center gap-1 text-xs font-semibold tracking-wide description text-orange-600 hover:text-orange-700"
+                      >
+                        <span>Read</span>
+                        <ArrowRight size={14} />
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
               );
             })}
           </div>
@@ -226,7 +233,9 @@ export default function BlogsPage() {
               <div className="flex items-center gap-2.5 text-xs text-gray-500 description tracking-wide">
                 <span>
                   Showing{" "}
-                  <strong>{Math.min(visibleCount, filteredBlogs.length)}</strong>{" "}
+                  <strong>
+                    {Math.min(visibleCount, filteredBlogs.length)}
+                  </strong>{" "}
                   of <strong>{filteredBlogs.length}</strong> articles
                 </span>
                 <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
@@ -235,7 +244,7 @@ export default function BlogsPage() {
                     style={{
                       width: `${Math.min(
                         100,
-                        (visibleCount / filteredBlogs.length) * 100
+                        (visibleCount / filteredBlogs.length) * 100,
                       )}%`,
                     }}
                   />
@@ -257,7 +266,8 @@ export default function BlogsPage() {
           ) : filteredBlogs.length > 6 ? (
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 description tracking-wide">
-                You have viewed all {filteredBlogs.length} articles in this collection.
+                You have viewed all {filteredBlogs.length} articles in this
+                collection.
               </p>
             </div>
           ) : null}

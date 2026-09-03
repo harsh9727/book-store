@@ -144,7 +144,10 @@ export default function AdminTestimonialManager({
             <tbody className="divide-y divide-slate-100">
               {pageItems.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={4}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     {items.length === 0
                       ? "No testimonials found. Use Add testimonial to create the first one."
                       : "No testimonials match the current search."}

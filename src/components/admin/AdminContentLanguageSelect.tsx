@@ -18,13 +18,19 @@ export default function AdminContentLanguageSelect({
       <select
         aria-label="Content language"
         value={value}
-        onChange={(event) => onChange(event.target.value as AdminContentLanguage)}
+        onChange={(event) =>
+          onChange(event.target.value as AdminContentLanguage)
+        }
         className="h-full w-full cursor-pointer appearance-none rounded-xl bg-transparent pl-10 pr-8 outline-none"
       >
         <option value="en">English</option>
         <option value="gu">ગુજરાતી</option>
       </select>
-      <ChevronDown aria-hidden="true" size={15} className="pointer-events-none absolute right-3" />
+      <ChevronDown
+        aria-hidden="true"
+        size={15}
+        className="pointer-events-none absolute right-3"
+      />
     </label>
   );
 }

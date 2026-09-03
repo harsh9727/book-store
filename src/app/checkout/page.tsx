@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { CreditCard, MapPin, ArrowRight, ShieldCheck, Truck, HelpCircle } from "lucide-react";
+import {
+  CreditCard,
+  MapPin,
+  ArrowRight,
+  ShieldCheck,
+  Truck,
+  HelpCircle,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { createPageMetadata } from "@/lib/seo";
 
@@ -12,7 +19,7 @@ export const metadata = createPageMetadata({
 
 export default function CheckoutPage() {
   const whatsappUrl = `https://wa.me/917490028867?text=${encodeURIComponent(
-    "Hello GTBS! I would like to place an order or inquire about checkout."
+    "Hello GTBS! I would like to place an order or inquire about checkout.",
   )}`;
 
   return (
@@ -37,7 +44,9 @@ export default function CheckoutPage() {
                 Direct Bookstore Ordering
               </h2>
               <p className="description text-sm text-gray-600 leading-relaxed mb-6">
-                To guarantee availability and fast delivery for Bibles, bulk copies, and specialized literature, we process orders directly with personalized customer care.
+                To guarantee availability and fast delivery for Bibles, bulk
+                copies, and specialized literature, we process orders directly
+                with personalized customer care.
               </p>
 
               <div className="space-y-3 text-sm">
@@ -79,11 +88,17 @@ export default function CheckoutPage() {
               </Link>
 
               <div className="mt-4 pt-4 border-t border-orange-200/60 w-full flex items-center justify-center gap-4 text-xs text-gray-600">
-                <Link href="tel:+919265429338" className="hover:text-orange-600 transition-colors">
+                <Link
+                  href="tel:+919265429338"
+                  className="hover:text-orange-600 transition-colors"
+                >
                   +91 9265429338
                 </Link>
                 <span>|</span>
-                <Link href="tel:+917490028867" className="hover:text-orange-600 transition-colors">
+                <Link
+                  href="tel:+917490028867"
+                  className="hover:text-orange-600 transition-colors"
+                >
                   +91 7490028867
                 </Link>
               </div>

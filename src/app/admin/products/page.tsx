@@ -12,7 +12,19 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
-  return <AdminContentShell active="products" title="Product management" description="Create, edit, and remove storefront products."><AdminProductManager initialItems={products} categories={categories} /></AdminContentShell>;
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ]);
+  return (
+    <AdminContentShell
+      active="products"
+      title="Product management"
+      description="Create, edit, and remove storefront products."
+    >
+      <AdminProductManager initialItems={products} categories={categories} />
+    </AdminContentShell>
+  );
 }

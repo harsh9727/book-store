@@ -161,8 +161,8 @@ export default function TermsAndConditionsPage() {
             Terms &amp; Conditions
           </h1>
           <p className="description mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
-            The terms governing your use of Gujarat Tract Book Store and purchases
-            made through our online store.
+            The terms governing your use of Gujarat Tract Book Store and
+            purchases made through our online store.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
             Effective date: August 29, 2026
@@ -173,33 +173,33 @@ export default function TermsAndConditionsPage() {
       <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12 lg:px-6">
         <div className="description border-b border-gray-200 pb-8 text-sm leading-7 text-gray-600 sm:text-base sm:leading-8">
           <p>
-            Welcome to Gujarat Tract Book Store. These Terms &amp; Conditions govern
-            your use of our website and the purchase of products through our online
-            store.
+            Welcome to Gujarat Tract Book Store. These Terms &amp; Conditions
+            govern your use of our website and the purchase of products through
+            our online store.
           </p>
           <p className="mt-3 font-medium text-gray-800">
-            By accessing or using our website, you agree to comply with these terms.
-            If you do not agree with any part of these Terms &amp; Conditions, please
-            discontinue using our website.
+            By accessing or using our website, you agree to comply with these
+            terms. If you do not agree with any part of these Terms &amp;
+            Conditions, please discontinue using our website.
           </p>
         </div>
 
         <TermsSection number={1} title="About Gujarat Tract Book Store">
           <p>
-            Gujarat Tract Book Store is an online bookstore dedicated to providing
-            Christian books, Holy Bibles, devotionals, children&apos;s books,
-            educational resources, magazines, gifts, and faith-inspired products.
-            Our goal is to offer authentic publications and a seamless shopping
-            experience for readers, families, churches, ministries, and educational
-            institutions.
+            Gujarat Tract Book Store is an online bookstore dedicated to
+            providing Christian books, Holy Bibles, devotionals, children&apos;s
+            books, educational resources, magazines, gifts, and faith-inspired
+            products. Our goal is to offer authentic publications and a seamless
+            shopping experience for readers, families, churches, ministries, and
+            educational institutions.
           </p>
         </TermsSection>
 
         <TermsSection number={2} title="Acceptance of Terms">
           <p>
-            By visiting our website, creating an account, placing an order, or using
-            any of our services, you acknowledge that you have read, understood, and
-            accepted these Terms &amp; Conditions.
+            By visiting our website, creating an account, placing an order, or
+            using any of our services, you acknowledge that you have read,
+            understood, and accepted these Terms &amp; Conditions.
           </p>
         </TermsSection>
 
@@ -209,14 +209,17 @@ export default function TermsAndConditionsPage() {
         </TermsSection>
 
         <TermsSection number={4} title="Products & Availability">
-          <p>We strive to keep all product information accurate and up to date. However:</p>
+          <p>
+            We strive to keep all product information accurate and up to date.
+            However:
+          </p>
           <BulletList items={productConditions} />
         </TermsSection>
 
         <TermsSection number={5} title="Pricing">
           <p>
-            All prices displayed on our website are in Indian Rupees (INR). Prices
-            may change without prior notice due to:
+            All prices displayed on our website are in Indian Rupees (INR).
+            Prices may change without prior notice due to:
           </p>
           <BulletList items={priceFactors} />
           <p className="mt-4">
@@ -228,8 +231,8 @@ export default function TermsAndConditionsPage() {
           <p>After placing an order:</p>
           <BulletList items={orderConditions} />
           <p className="mt-4">
-            If an order is cancelled after payment, the applicable refund will be
-            processed according to our Refund Policy.
+            If an order is cancelled after payment, the applicable refund will
+            be processed according to our Refund Policy.
           </p>
         </TermsSection>
 
@@ -251,19 +254,21 @@ export default function TermsAndConditionsPage() {
           </p>
           <BulletList items={delayReasons} />
           <p className="mt-4">
-            Customers are responsible for providing accurate shipping information.
+            Customers are responsible for providing accurate shipping
+            information.
           </p>
         </TermsSection>
 
         <TermsSection number={9} title="Returns & Refunds">
           <p>
-            Returns and refunds are subject to our Return &amp; Refund Policy. Returned
-            products must generally:
+            Returns and refunds are subject to our Return &amp; Refund Policy.
+            Returned products must generally:
           </p>
           <BulletList items={returnConditions} />
           <p className="mt-4">
-            Digital products, downloadable content, or items damaged after delivery
-            may not qualify for returns unless required by applicable law.
+            Digital products, downloadable content, or items damaged after
+            delivery may not qualify for returns unless required by applicable
+            law.
           </p>
         </TermsSection>
 
@@ -271,12 +276,16 @@ export default function TermsAndConditionsPage() {
           <p>When creating an account, you agree to:</p>
           <BulletList items={accountResponsibilities} />
           <p className="mt-4">
-            You are responsible for all activities performed through your account.
+            You are responsible for all activities performed through your
+            account.
           </p>
         </TermsSection>
 
         <TermsSection number={11} title="Intellectual Property">
-          <p>All content available on this website includes, but is not limited to:</p>
+          <p>
+            All content available on this website includes, but is not limited
+            to:
+          </p>
           <BulletList items={protectedContent} />
           <p className="mt-4">
             This content is the property of Gujarat Tract Book Store or its
@@ -290,7 +299,8 @@ export default function TermsAndConditionsPage() {
           <p>You agree not to:</p>
           <BulletList items={prohibitedUses} />
           <p className="mt-4">
-            Violation of these terms may result in suspension or termination of access.
+            Violation of these terms may result in suspension or termination of
+            access.
           </p>
         </TermsSection>
 
@@ -307,13 +317,13 @@ export default function TermsAndConditionsPage() {
 
         <TermsSection number={14} title="Limitation of Liability">
           <p>
-            To the maximum extent permitted by law, Gujarat Tract Book Store shall
-            not be liable for:
+            To the maximum extent permitted by law, Gujarat Tract Book Store
+            shall not be liable for:
           </p>
           <BulletList items={liabilityLimitations} />
           <p className="mt-4">
-            Our total liability shall not exceed the value of the order placed by
-            the customer.
+            Our total liability shall not exceed the value of the order placed
+            by the customer.
           </p>
         </TermsSection>
 
@@ -326,35 +336,39 @@ export default function TermsAndConditionsPage() {
             >
               Privacy Policy
             </Link>
-            , which explains how we collect, use, and protect your personal information.
+            , which explains how we collect, use, and protect your personal
+            information.
           </p>
         </TermsSection>
 
         <TermsSection number={16} title="Changes to Terms">
           <p>
-            We reserve the right to modify these Terms &amp; Conditions at any time.
-            Updated versions will be published on this page with a revised Effective
-            Date. Continued use of the website after changes are posted constitutes
-            acceptance of the updated Terms.
+            We reserve the right to modify these Terms &amp; Conditions at any
+            time. Updated versions will be published on this page with a revised
+            Effective Date. Continued use of the website after changes are
+            posted constitutes acceptance of the updated Terms.
           </p>
         </TermsSection>
 
         <TermsSection number={17} title="Governing Law">
           <p>
             These Terms &amp; Conditions shall be governed by and interpreted in
-            accordance with the laws of India. Any disputes arising from the use of
-            this website shall be subject to the jurisdiction of the competent
-            courts in the city where Gujarat Tract Book Store operates.
+            accordance with the laws of India. Any disputes arising from the use
+            of this website shall be subject to the jurisdiction of the
+            competent courts in the city where Gujarat Tract Book Store
+            operates.
           </p>
         </TermsSection>
 
         <TermsSection number={18} title="Contact Us">
           <p>
-            If you have any questions regarding these Terms &amp; Conditions, please
-            contact us.
+            If you have any questions regarding these Terms &amp; Conditions,
+            please contact us.
           </p>
           <div className="mt-5 border-l-2 border-orange-500 pl-5">
-            <p className="font-semibold text-gray-900">Gujarat Tract Book Store</p>
+            <p className="font-semibold text-gray-900">
+              Gujarat Tract Book Store
+            </p>
             <div className="mt-3 flex flex-col gap-3">
               <Link
                 href="mailto:gtbs-1852@yahoo.in"

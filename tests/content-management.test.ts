@@ -13,7 +13,11 @@ import {
   testimonialDraftSchema,
   teamMemberDraftSchema,
 } from "../src/lib/contentValidation.ts";
-import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
+import {
+  MAX_GALLERY_PHOTOS,
+  MAX_IMAGE_BYTES,
+  validateImageSelection,
+} from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { localizeProduct } from "../src/lib/localizedProduct.ts";
@@ -158,21 +162,29 @@ test("accepts valid category and product drafts", () => {
 
 test("requires Gujarati Product content and selects it without changing shared fields", () => {
   assert.equal(
-    productDraftSchema.safeParse({ ...productDraft, gujarati: undefined }).success,
+    productDraftSchema.safeParse({ ...productDraft, gujarati: undefined })
+      .success,
     false,
   );
 
   const localized = localizeProduct(productDraft as Product, "gu");
   assert.equal(localized.title, "દૈનિક ભક્તિ");
-  assert.deepEqual(localized.specifications, [{ name: "સામગ્રી", value: "કાગળ" }]);
-  assert.deepEqual(localized.variants, [{ name: "આવૃત્તિ", options: ["પ્રમાણભૂત", "ભેટ"] }]);
+  assert.deepEqual(localized.specifications, [
+    { name: "સામગ્રી", value: "કાગળ" },
+  ]);
+  assert.deepEqual(localized.variants, [
+    { name: "આવૃત્તિ", options: ["પ્રમાણભૂત", "ભેટ"] },
+  ]);
   assert.equal(localized.price, productDraft.price);
   assert.equal(localized.image, productDraft.image);
   assert.equal(localized.category, productDraft.category);
 });
 
 test("validates bilingual Testimonial drafts and selects stored Gujarati content", () => {
-  assert.equal(testimonialDraftSchema.safeParse(testimonialDraft).success, true);
+  assert.equal(
+    testimonialDraftSchema.safeParse(testimonialDraft).success,
+    true,
+  );
   assert.equal(
     testimonialDraftSchema.safeParse({
       ...testimonialDraft,
@@ -181,7 +193,8 @@ test("validates bilingual Testimonial drafts and selects stored Gujarati content
     false,
   );
   assert.equal(
-    testimonialDraftSchema.safeParse({ ...testimonialDraft, rating: 6 }).success,
+    testimonialDraftSchema.safeParse({ ...testimonialDraft, rating: 6 })
+      .success,
     false,
   );
 
@@ -192,7 +205,10 @@ test("validates bilingual Testimonial drafts and selects stored Gujarati content
   const localized = localizeTestimonial(storedTestimonial, "gu");
   assert.equal(localized.name, "ગ્રેસ પી.");
   assert.equal(localized.role, "ચકાસાયેલ ખરીદદાર");
-  assert.equal(localized.review, "પુસ્તકો ઝડપથી અને ખૂબ સારી સ્થિતિમાં મળ્યાં.");
+  assert.equal(
+    localized.review,
+    "પુસ્તકો ઝડપથી અને ખૂબ સારી સ્થિતિમાં મળ્યાં.",
+  );
   assert.equal(localized.rating, testimonialDraft.rating);
   assert.equal(localizeTestimonial(storedTestimonial, "en"), storedTestimonial);
 });
@@ -244,14 +260,51 @@ test("accepts the seeded bilingual Team in the persisted store schema", () => {
 });
 
 test("rejects malformed catalog fields", () => {
-  assert.equal(categoryDraftSchema.safeParse({ ...categoryDraft, slug: "Bad Category" }).success, false);
-  assert.equal(categoryDraftSchema.safeParse({ ...categoryDraft, description: "Removed field" }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, price: -1 }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, originalPrice: 599 }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, badge: "Custom badge" }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, author: "Removed field" }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, authorBio: "Removed field" }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, images: ["/images/legacy.jpg"] }).success, false);
+  assert.equal(
+    categoryDraftSchema.safeParse({ ...categoryDraft, slug: "Bad Category" })
+      .success,
+    false,
+  );
+  assert.equal(
+    categoryDraftSchema.safeParse({
+      ...categoryDraft,
+      description: "Removed field",
+    }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, price: -1 }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, originalPrice: 599 })
+      .success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, badge: "Custom badge" })
+      .success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, author: "Removed field" })
+      .success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({
+      ...productDraft,
+      authorBio: "Removed field",
+    }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({
+      ...productDraft,
+      images: ["/images/legacy.jpg"],
+    }).success,
+    false,
+  );
   assert.equal(
     productDraftSchema.safeParse({
       ...productDraft,
@@ -263,17 +316,44 @@ test("rejects malformed catalog fields", () => {
     }).success,
     false,
   );
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, stockCount: 10 }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, rating: 5 }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, format: ["Paperback"] }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, variants: [{ name: "Size", options: [] }] }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, category: "Bad Category" }).success, false);
-  assert.equal(productDraftSchema.safeParse({ ...productDraft, image: "https://example.com/book.jpg" }).success, false);
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, stockCount: 10 }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, rating: 5 }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, format: ["Paperback"] })
+      .success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({
+      ...productDraft,
+      variants: [{ name: "Size", options: [] }],
+    }).success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, category: "Bad Category" })
+      .success,
+    false,
+  );
+  assert.equal(
+    productDraftSchema.safeParse({
+      ...productDraft,
+      image: "https://example.com/book.jpg",
+    }).success,
+    false,
+  );
 });
 
 test("requires Gujarati Gallery content and rejects the removed Subtitle field", () => {
   assert.equal(
-    galleryDraftSchema.safeParse({ ...galleryDraft, gujarati: undefined }).success,
+    galleryDraftSchema.safeParse({ ...galleryDraft, gujarati: undefined })
+      .success,
     false,
   );
   assert.equal(
@@ -334,8 +414,7 @@ test("allows the bounded bilingual Blog body above the default JSON limit", asyn
 
   await assert.rejects(
     () => readBoundedJson(makeRequest()),
-    (error: unknown) =>
-      error instanceof JsonBodyError && error.status === 413,
+    (error: unknown) => error instanceof JsonBodyError && error.status === 413,
   );
   assert.deepEqual(
     await readBoundedJson(makeRequest(), MAX_BLOG_DRAFT_BODY_BYTES),
@@ -443,7 +522,10 @@ test("accepts blog drafts without explicit summary or author avatar", () => {
     },
   };
 
-  assert.equal(blogDraftSchema.safeParse(draftWithoutSummaryOrAvatar).success, true);
+  assert.equal(
+    blogDraftSchema.safeParse(draftWithoutSummaryOrAvatar).success,
+    true,
+  );
 });
 
 test("accepts blank summary and avatar strings and normalizes them to defaults", () => {
@@ -465,7 +547,11 @@ test("accepts blank summary and avatar strings and normalizes them to defaults",
 });
 
 test("accepts an empty editorial store without any committed fallback data", () => {
-  const parsed = contentStoreSchema.safeParse({ version: 1, blogs: [], galleries: [] });
+  const parsed = contentStoreSchema.safeParse({
+    version: 1,
+    blogs: [],
+    galleries: [],
+  });
   assert.equal(parsed.success, true);
   if (parsed.success) {
     assert.equal(parsed.data.catalogInitialized, false);
@@ -478,22 +564,40 @@ test("accepts an empty editorial store without any committed fallback data", () 
 
 test("distinguishes legacy empty catalogs from intentionally initialized empty catalogs", () => {
   assert.equal(
-    hasInitializedCatalog({ catalogInitialized: false, products: [], categories: [] }),
+    hasInitializedCatalog({
+      catalogInitialized: false,
+      products: [],
+      categories: [],
+    }),
     false,
   );
   assert.equal(
-    hasInitializedCatalog({ catalogInitialized: true, products: [], categories: [] }),
+    hasInitializedCatalog({
+      catalogInitialized: true,
+      products: [],
+      categories: [],
+    }),
     true,
   );
   assert.equal(
-    hasInitializedCatalog({ catalogInitialized: false, products: [productDraft], categories: [] }),
+    hasInitializedCatalog({
+      catalogInitialized: false,
+      products: [productDraft],
+      categories: [],
+    }),
     true,
   );
 });
 
 test("rejects invalid slugs and dates", () => {
-  assert.equal(blogDraftSchema.safeParse({ ...blogDraft, slug: "Bad Slug" }).success, false);
-  assert.equal(blogDraftSchema.safeParse({ ...blogDraft, date: "not-a-date" }).success, false);
+  assert.equal(
+    blogDraftSchema.safeParse({ ...blogDraft, slug: "Bad Slug" }).success,
+    false,
+  );
+  assert.equal(
+    blogDraftSchema.safeParse({ ...blogDraft, date: "not-a-date" }).success,
+    false,
+  );
 });
 
 test("rejects more than twelve gallery photos", () => {
@@ -502,20 +606,29 @@ test("rejects more than twelve gallery photos", () => {
     url: `https://example.com/${index}.webp`,
     title: `Photo ${index}`,
   }));
-  assert.equal(galleryDraftSchema.safeParse({ ...galleryDraft, photos }).success, false);
+  assert.equal(
+    galleryDraftSchema.safeParse({ ...galleryDraft, photos }).success,
+    false,
+  );
 });
 
 test("enforces image type and 500 KB selection limit", () => {
   assert.equal(
-    validateImageSelection({ type: "image/jpeg", size: MAX_IMAGE_BYTES } as File),
-    null
+    validateImageSelection({
+      type: "image/jpeg",
+      size: MAX_IMAGE_BYTES,
+    } as File),
+    null,
   );
   assert.match(
-    validateImageSelection({ type: "image/jpeg", size: MAX_IMAGE_BYTES + 1 } as File) || "",
-    /500 KB/u
+    validateImageSelection({
+      type: "image/jpeg",
+      size: MAX_IMAGE_BYTES + 1,
+    } as File) || "",
+    /500 KB/u,
   );
   assert.match(
     validateImageSelection({ type: "image/svg+xml", size: 100 } as File) || "",
-    /Only JPG/u
+    /Only JPG/u,
   );
 });

@@ -44,7 +44,9 @@ export default function AdminLogoutButton() {
         className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-60 sm:w-auto sm:px-4"
       >
         <LogOut size={16} />
-        <span className="hidden sm:inline">{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+        <span className="hidden sm:inline">
+          {isLoggingOut ? "Signing out..." : "Sign out"}
+        </span>
       </button>
       {logoutError && (
         <p id="admin-logout-error" role="alert" className="sr-only">

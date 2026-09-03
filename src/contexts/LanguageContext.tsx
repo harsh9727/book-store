@@ -26,7 +26,7 @@ interface GoogleTranslateWindow extends Window {
           includedLanguages: string;
           autoDisplay: boolean;
         },
-        elementId: string
+        elementId: string,
       ) => unknown;
     };
   };
@@ -94,7 +94,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const language = useSyncExternalStore(
     subscribeToLanguageChange,
     getLanguageSnapshot,
-    (): AppLanguage => "en"
+    (): AppLanguage => "en",
   );
 
   const setLanguage = useCallback((nextLanguage: AppLanguage) => {
@@ -130,7 +130,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     const initializeTranslateElement = () => {
       if (!active) return;
-      const TranslateElement = translateWindow.google?.translate?.TranslateElement;
+      const TranslateElement =
+        translateWindow.google?.translate?.TranslateElement;
       const container = document.getElementById("google_translate_element");
 
       if (TranslateElement && container && !container.hasChildNodes()) {
@@ -140,7 +141,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             includedLanguages: "en,gu",
             autoDisplay: false,
           },
-          "google_translate_element"
+          "google_translate_element",
         );
       }
 
@@ -167,7 +168,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
       if (applyTimer !== undefined) window.clearTimeout(applyTimer);
-      if (translateWindow.googleTranslateElementInit === initializeTranslateElement) {
+      if (
+        translateWindow.googleTranslateElementInit ===
+        initializeTranslateElement
+      ) {
         translateWindow.googleTranslateElementInit = () => undefined;
       }
     };

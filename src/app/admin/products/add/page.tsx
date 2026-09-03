@@ -11,6 +11,15 @@ export const metadata: Metadata = { title: "Add Product" };
 
 export default async function AddProductPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
-  return <AdminContentShell active="products" title="Add product" description="Create a new storefront product."><AdminProductForm categories={await getCategories()} /></AdminContentShell>;
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
+  return (
+    <AdminContentShell
+      active="products"
+      title="Add product"
+      description="Create a new storefront product."
+    >
+      <AdminProductForm categories={await getCategories()} />
+    </AdminContentShell>
+  );
 }

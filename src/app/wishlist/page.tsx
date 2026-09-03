@@ -35,7 +35,8 @@ export default function WishlistPage() {
           </h2>
 
           <p className="description text-sm sm:text-base text-gray-600 leading-relaxed max-w-md mx-auto mb-8">
-            Keep track of inspiring books and study guides you want to read next. Click the heart icon on any book to save it here.
+            Keep track of inspiring books and study guides you want to read
+            next. Click the heart icon on any book to save it here.
           </p>
 
           {/* Action Buttons */}

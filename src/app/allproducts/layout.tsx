@@ -8,6 +8,10 @@ export const metadata = createPageMetadata({
   path: "/shop",
 });
 
-export default function AllProductsLayout({ children }: { children: ReactNode }) {
+export default function AllProductsLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return children;
 }

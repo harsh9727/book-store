@@ -85,8 +85,8 @@ export default function SearchBar({
     size === "sm"
       ? "h-10 text-xs"
       : size === "lg"
-      ? "h-12 text-sm"
-      : "h-11 text-sm";
+        ? "h-12 text-sm"
+        : "h-11 text-sm";
 
   const btnSize =
     size === "sm" ? "h-8 w-8" : size === "lg" ? "h-10 w-10" : "h-9 w-9";

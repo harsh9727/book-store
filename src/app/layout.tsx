@@ -104,9 +104,7 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased">
         <JsonLd data={storeStructuredData} />
-        <SiteChrome>
-          {children}
-        </SiteChrome>
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

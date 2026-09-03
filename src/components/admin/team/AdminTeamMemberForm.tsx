@@ -28,8 +28,7 @@ export default function AdminTeamMemberForm({
   initialItem,
 }: AdminTeamMemberFormProps) {
   const router = useRouter();
-  const [formLanguage, setFormLanguage] =
-    useState<AdminContentLanguage>("en");
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageError, setImageError] = useState("");
   const [error, setError] = useState("");
@@ -57,7 +56,9 @@ export default function AdminTeamMemberForm({
     const values = new FormData(event.currentTarget);
     setError("");
 
-    if (["name", "role"].some((field) => !String(values.get(field) || "").trim())) {
+    if (
+      ["name", "role"].some((field) => !String(values.get(field) || "").trim())
+    ) {
       setFormLanguage("en");
       setError("Complete all required English content fields before saving.");
       return;
@@ -123,7 +124,9 @@ export default function AdminTeamMemberForm({
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
           <div>
             <h2 className="text-lg font-bold">
-              {initialItem ? "Edit team member details" : "Add a new team member"}
+              {initialItem
+                ? "Edit team member details"
+                : "Add a new team member"}
             </h2>
             <p className="text-xs text-slate-500">
               Add the member&apos;s image and bilingual profile details.
@@ -169,12 +172,11 @@ export default function AdminTeamMemberForm({
               accept="image/jpeg,image/png,image/webp"
               required={!initialItem?.image}
               aria-invalid={Boolean(imageError)}
-              aria-describedby={imageError ? "team-member-image-error" : undefined}
+              aria-describedby={
+                imageError ? "team-member-image-error" : undefined
+              }
               onChange={(event) =>
-                chooseImage(
-                  event.currentTarget.files?.[0],
-                  event.currentTarget,
-                )
+                chooseImage(event.currentTarget.files?.[0], event.currentTarget)
               }
               className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${imageError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
             />
@@ -247,7 +249,8 @@ export default function AdminTeamMemberForm({
             Gujarati content
           </legend>
           <p className="text-xs text-slate-600 sm:col-span-2">
-            This saved content is shown when the storefront language is Gujarati.
+            This saved content is shown when the storefront language is
+            Gujarati.
           </p>
           <label className="text-sm font-semibold">
             Gujarati member name

@@ -2,18 +2,18 @@
 
 ## Status
 
-| Area | Status | Notes |
-| --- | --- | --- |
-| Public storefront | In progress | Main pages exist; catalog and editorial content are file-backed |
-| Product catalog | Dynamic filesystem baseline | Admin CRUD, category relation, storefront feeds, and product detail UI |
-| Cart/wishlist | Placeholder | Static empty-state routes; no state or persistence layer |
-| Checkout/payments | UI only | No persistent payment/order workflow |
-| Customer auth | UI only | No documented production identity backend |
-| Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
-| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
-| SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
-| Documentation | Active | Must evolve with every change |
-| Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
+| Area              | Status                              | Notes                                                                                                                |
+| ----------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Public storefront | In progress                         | Main pages exist; catalog and editorial content are file-backed                                                      |
+| Product catalog   | Dynamic filesystem baseline         | Admin CRUD, category relation, storefront feeds, and product detail UI                                               |
+| Cart/wishlist     | Placeholder                         | Static empty-state routes; no state or persistence layer                                                             |
+| Checkout/payments | UI only                             | No persistent payment/order workflow                                                                                 |
+| Customer auth     | UI only                             | No documented production identity backend                                                                            |
+| Admin auth        | Production-hardened baseline        | Single environment-backed admin, scrypt + TOTP, signed cookie                                                        |
+| Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
+| SEO               | Baseline implemented                | Metadata, structured data, robots, sitemap, manifest                                                                 |
+| Documentation     | Active                              | Must evolve with every change                                                                                        |
+| Automated quality | Healthy baseline                    | Full ESLint and TypeScript checks pass; admin auth has focused coverage                                              |
 
 ## Current priorities
 

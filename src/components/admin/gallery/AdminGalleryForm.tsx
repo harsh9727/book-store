@@ -15,7 +15,9 @@ import {
   validateClientImages,
 } from "@/lib/adminContentClient";
 import { MAX_GALLERY_PHOTOS } from "@/lib/imageRules";
-import AdminContentLanguageSelect, { type AdminContentLanguage } from "@/components/admin/AdminContentLanguageSelect";
+import AdminContentLanguageSelect, {
+  type AdminContentLanguage,
+} from "@/components/admin/AdminContentLanguageSelect";
 
 interface AdminGalleryFormProps {
   initialItem?: GalleryItem;
@@ -27,16 +29,22 @@ interface NewPhotoPreview {
   previewUrl: string;
 }
 
-const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
-const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
+const inputClass =
+  "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
+const textareaClass =
+  "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 
-export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps) {
+export default function AdminGalleryForm({
+  initialItem,
+}: AdminGalleryFormProps) {
   const router = useRouter();
   const previewUrlsRef = useRef(new Set<string>());
   const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [newPhotos, setNewPhotos] = useState<NewPhotoPreview[]>([]);
-  const [retainedPhotos, setRetainedPhotos] = useState<GalleryPhoto[]>(initialItem?.photos || []);
+  const [retainedPhotos, setRetainedPhotos] = useState<GalleryPhoto[]>(
+    initialItem?.photos || [],
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [coverError, setCoverError] = useState("");
@@ -70,8 +78,13 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       input.value = "";
       return;
     }
-    if (retainedPhotos.length + newPhotos.length + files.length > MAX_GALLERY_PHOTOS) {
-      setPhotosError(`A gallery can contain at most ${MAX_GALLERY_PHOTOS} extra images.`);
+    if (
+      retainedPhotos.length + newPhotos.length + files.length >
+      MAX_GALLERY_PHOTOS
+    ) {
+      setPhotosError(
+        `A gallery can contain at most ${MAX_GALLERY_PHOTOS} extra images.`,
+      );
       input.value = "";
       return;
     }
@@ -97,7 +110,9 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
     const values = new FormData(event.currentTarget);
     setError("");
     const englishFields = ["title", "category", "location", "description"];
-    if (englishFields.some((field) => !String(values.get(field) || "").trim())) {
+    if (
+      englishFields.some((field) => !String(values.get(field) || "").trim())
+    ) {
       setFormLanguage("en");
       setError("Complete all required English content fields before saving.");
       return;
@@ -108,7 +123,9 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       "gujaratiLocation",
       "gujaratiDescription",
     ];
-    if (gujaratiFields.some((field) => !String(values.get(field) || "").trim())) {
+    if (
+      gujaratiFields.some((field) => !String(values.get(field) || "").trim())
+    ) {
       setFormLanguage("gu");
       setError("Complete all required Gujarati content fields before saving.");
       return;
@@ -118,14 +135,20 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
       let coverImage = initialItem?.coverImage || "";
       let coverImageKey = initialItem?.coverImageKey;
       if (coverFile) {
-        const [uploadedCover] = await uploadAdminImages("gallery-cover", [coverFile]);
+        const [uploadedCover] = await uploadAdminImages("gallery-cover", [
+          coverFile,
+        ]);
         coverImage = uploadedCover.url;
         coverImageKey = uploadedCover.key;
       }
-      if (!coverImage) throw new Error("Choose a gallery cover image before saving.");
+      if (!coverImage)
+        throw new Error("Choose a gallery cover image before saving.");
 
       const uploadedPhotos = newPhotos.length
-        ? await uploadAdminImages("gallery-photos", newPhotos.map((photo) => photo.file))
+        ? await uploadAdminImages(
+            "gallery-photos",
+            newPhotos.map((photo) => photo.file),
+          )
         : [];
       const photos: GalleryPhoto[] = [
         ...retainedPhotos,
@@ -162,11 +185,18 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
         ? `/api/admin/content/galleries/${encodeURIComponent(String(initialItem.id))}`
         : "/api/admin/content/galleries";
       await adminJsonRequest(url, initialItem ? "PUT" : "POST", payload);
-      toast.success(initialItem ? "Gallery updated successfully." : "Gallery created successfully.");
+      toast.success(
+        initialItem
+          ? "Gallery updated successfully."
+          : "Gallery created successfully.",
+      );
       router.push("/admin/galleries");
       router.refresh();
     } catch (saveError) {
-      const errorMessage = saveError instanceof Error ? saveError.message : "Gallery could not be saved.";
+      const errorMessage =
+        saveError instanceof Error
+          ? saveError.message
+          : "Gallery could not be saved.";
       setError(errorMessage);
       toast.error(errorMessage);
       setBusy(false);
@@ -186,7 +216,10 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <AdminContentLanguageSelect value={formLanguage} onChange={setFormLanguage} />
+            <AdminContentLanguageSelect
+              value={formLanguage}
+              onChange={setFormLanguage}
+            />
             <Link
               href="/admin/galleries"
               className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
@@ -237,7 +270,9 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           </label>
         </fieldset>
 
-        <fieldset className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
+        <fieldset
+          className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}
+        >
           <legend className="px-2 text-base font-bold text-slate-800">
             English content
           </legend>
@@ -246,32 +281,62 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           </p>
           <label className="sm:col-span-2 text-sm font-semibold">
             Title
-            <input name="title" required={formLanguage === "en"} maxLength={220} defaultValue={initialItem?.title} className={inputClass} />
+            <input
+              name="title"
+              required={formLanguage === "en"}
+              maxLength={220}
+              defaultValue={initialItem?.title}
+              className={inputClass}
+            />
           </label>
           <label className="text-sm font-semibold">
             Category
-            <input name="category" required={formLanguage === "en"} defaultValue={initialItem?.category} className={inputClass} />
+            <input
+              name="category"
+              required={formLanguage === "en"}
+              defaultValue={initialItem?.category}
+              className={inputClass}
+            />
           </label>
           <label className="text-sm font-semibold">
             Location
-            <input name="location" required={formLanguage === "en"} defaultValue={initialItem?.location} className={inputClass} />
+            <input
+              name="location"
+              required={formLanguage === "en"}
+              defaultValue={initialItem?.location}
+              className={inputClass}
+            />
           </label>
           <label className="sm:col-span-2 text-sm font-semibold">
             Description
-            <textarea name="description" required={formLanguage === "en"} maxLength={20000} rows={5} defaultValue={initialItem?.description} className={textareaClass} />
+            <textarea
+              name="description"
+              required={formLanguage === "en"}
+              maxLength={20000}
+              rows={5}
+              defaultValue={initialItem?.description}
+              className={textareaClass}
+            />
           </label>
           <label className="sm:col-span-2 text-sm font-semibold">
             Organizer
-            <input name="organizer" defaultValue={initialItem?.organizer} className={inputClass} />
+            <input
+              name="organizer"
+              defaultValue={initialItem?.organizer}
+              className={inputClass}
+            />
           </label>
         </fieldset>
 
-        <fieldset className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
+        <fieldset
+          className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}
+        >
           <legend className="px-2 text-base font-bold text-orange-700">
             Gujarati content
           </legend>
           <p className="sm:col-span-2 text-xs text-slate-600">
-            This saved content is shown when the storefront language is Gujarati.
+            This saved content is shown when the storefront language is
+            Gujarati.
           </p>
           <label className="sm:col-span-2 text-sm font-semibold">
             Gujarati title
@@ -373,7 +438,9 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
               multiple
               accept="image/jpeg,image/png,image/webp"
               aria-invalid={Boolean(photosError)}
-              aria-describedby={photosError ? "gallery-photos-error" : undefined}
+              aria-describedby={
+                photosError ? "gallery-photos-error" : undefined
+              }
               onChange={(event) =>
                 selectPhotos(
                   Array.from(event.currentTarget.files || []),
@@ -383,7 +450,8 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
               className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${photosError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
             />
             <span className="mt-1 block text-xs font-normal text-slate-500">
-              {retainedPhotos.length + newPhotos.length} / {MAX_GALLERY_PHOTOS} selected
+              {retainedPhotos.length + newPhotos.length} / {MAX_GALLERY_PHOTOS}{" "}
+              selected
             </span>
             {photosError && (
               <span
@@ -398,8 +466,17 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           {(retainedPhotos.length > 0 || newPhotos.length > 0) && (
             <div className="grid grid-cols-3 gap-2 sm:col-span-2 sm:grid-cols-4 md:grid-cols-6">
               {retainedPhotos.map((photo) => (
-                <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100">
-                  <Image src={photo.url} alt={photo.title} fill className="object-cover" sizes="160px" />
+                <div
+                  key={photo.id}
+                  className="relative aspect-square overflow-hidden rounded-lg bg-slate-100"
+                >
+                  <Image
+                    src={photo.url}
+                    alt={photo.title}
+                    fill
+                    className="object-cover"
+                    sizes="160px"
+                  />
                   <button
                     type="button"
                     onClick={() => {
@@ -416,8 +493,18 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
                 </div>
               ))}
               {newPhotos.map((photo) => (
-                <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-100 ring-2 ring-orange-400/70">
-                  <Image src={photo.previewUrl} alt={`Selected preview: ${photo.file.name}`} fill unoptimized className="object-cover" sizes="160px" />
+                <div
+                  key={photo.id}
+                  className="relative aspect-square overflow-hidden rounded-lg bg-slate-100 ring-2 ring-orange-400/70"
+                >
+                  <Image
+                    src={photo.previewUrl}
+                    alt={`Selected preview: ${photo.file.name}`}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                    sizes="160px"
+                  />
                   <span className="absolute bottom-1 left-1 rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                     New
                   </span>
@@ -448,7 +535,11 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
           >
             <Save size={17} />
-            {busy ? "Saving..." : initialItem ? "Update gallery" : "Create gallery"}
+            {busy
+              ? "Saving..."
+              : initialItem
+                ? "Update gallery"
+                : "Create gallery"}
           </button>
         </div>
       </form>

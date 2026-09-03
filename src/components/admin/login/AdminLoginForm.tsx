@@ -18,7 +18,11 @@ import { useEffect, useRef, useState } from "react";
 
 const REMEMBERED_EMAIL_KEY = "gtbs-admin-email";
 
-export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }) {
+export default function AdminLoginForm({
+  mfaRequired,
+}: {
+  mfaRequired: boolean;
+}) {
   const router = useRouter();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const rememberMeInputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +55,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
-    const oneTimeCode = String(formData.get("oneTimeCode") || "").replace(/\s+/g, "");
+    const oneTimeCode = String(formData.get("oneTimeCode") || "").replace(
+      /\s+/g,
+      "",
+    );
     const rememberMe = formData.get("rememberMe") === "on";
     const nextErrors: { email?: string; password?: string } = {};
 
@@ -69,7 +76,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
 
     setFieldErrors(nextErrors);
 
-    if (Object.keys(nextErrors).length > 0 || (mfaRequired && !/^\d{6}$/.test(oneTimeCode))) {
+    if (
+      Object.keys(nextErrors).length > 0 ||
+      (mfaRequired && !/^\d{6}$/.test(oneTimeCode))
+    ) {
       return;
     }
 
@@ -82,12 +92,19 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
           "Content-Type": "application/json",
           "X-GTBS-Admin-Request": "1",
         },
-        body: JSON.stringify({ email, password, oneTimeCode: oneTimeCode || undefined, rememberMe }),
+        body: JSON.stringify({
+          email,
+          password,
+          oneTimeCode: oneTimeCode || undefined,
+          rememberMe,
+        }),
       });
       const result = (await response.json()) as { message?: string };
 
       if (!response.ok) {
-        setServerError(result.message || "Unable to sign in. Please try again.");
+        setServerError(
+          result.message || "Unable to sign in. Please try again.",
+        );
         return;
       }
 
@@ -111,7 +128,7 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
     const email = String(formData.get("recoveryEmail") || "").trim();
     const subject = encodeURIComponent("Admin password recovery request");
     const body = encodeURIComponent(
-      `Please help me reset access to the GTBS admin account associated with ${email}.`
+      `Please help me reset access to the GTBS admin account associated with ${email}.`,
     );
 
     window.location.href = `mailto:gtbs-1852@yahoo.in?subject=${subject}&body=${body}`;
@@ -139,7 +156,8 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
                 Secure bookstore management access
               </h1>
               <p className="description mt-4 max-w-sm text-sm leading-7 text-gray-300">
-                Sign in to manage catalog content, orders, customers, and bookstore operations.
+                Sign in to manage catalog content, orders, customers, and
+                bookstore operations.
               </p>
             </div>
             <div className="flex items-center gap-2 border-t border-white/10 pt-6 text-xs text-gray-400">
@@ -161,7 +179,9 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
                 <LockKeyhole size={21} />
               </span>
-              <h2 className="title mt-5 text-3xl font-bold text-gray-900">Admin login</h2>
+              <h2 className="title mt-5 text-3xl font-bold text-gray-900">
+                Admin login
+              </h2>
               <p className="description mt-2 text-sm leading-6 text-gray-600">
                 Enter your administrator credentials to continue.
               </p>
@@ -178,7 +198,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
               )}
 
               <div>
-                <label htmlFor="admin-email" className="text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="admin-email"
+                  className="text-sm font-semibold text-gray-800"
+                >
                   Email address
                 </label>
                 <div className="relative mt-2">
@@ -193,13 +216,18 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
                     type="email"
                     autoComplete="username"
                     aria-invalid={Boolean(fieldErrors.email)}
-                    aria-describedby={fieldErrors.email ? "admin-email-error" : undefined}
+                    aria-describedby={
+                      fieldErrors.email ? "admin-email-error" : undefined
+                    }
                     className="h-12 w-full rounded-lg border border-gray-300 bg-white pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                     placeholder="admin@example.com"
                   />
                 </div>
                 {fieldErrors.email && (
-                  <p id="admin-email-error" className="mt-1.5 text-xs text-red-600">
+                  <p
+                    id="admin-email-error"
+                    className="mt-1.5 text-xs text-red-600"
+                  >
                     {fieldErrors.email}
                   </p>
                 )}
@@ -207,7 +235,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
 
               <div>
                 <div className="flex items-center justify-between gap-4">
-                  <label htmlFor="admin-password" className="text-sm font-semibold text-gray-800">
+                  <label
+                    htmlFor="admin-password"
+                    className="text-sm font-semibold text-gray-800"
+                  >
                     Password
                   </label>
                   <button
@@ -232,7 +263,9 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     aria-invalid={Boolean(fieldErrors.password)}
-                    aria-describedby={fieldErrors.password ? "admin-password-error" : undefined}
+                    aria-describedby={
+                      fieldErrors.password ? "admin-password-error" : undefined
+                    }
                     className="h-12 w-full rounded-lg border border-gray-300 bg-white pl-11 pr-12 text-sm text-gray-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                     placeholder="Enter your password"
                   />
@@ -240,14 +273,19 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
                     type="button"
                     onClick={() => setShowPassword((visible) => !visible)}
                     className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {fieldErrors.password && (
-                  <p id="admin-password-error" className="mt-1.5 text-xs text-red-600">
+                  <p
+                    id="admin-password-error"
+                    className="mt-1.5 text-xs text-red-600"
+                  >
                     {fieldErrors.password}
                   </p>
                 )}
@@ -255,7 +293,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
 
               {mfaRequired && (
                 <div>
-                  <label htmlFor="admin-one-time-code" className="text-sm font-semibold text-gray-800">
+                  <label
+                    htmlFor="admin-one-time-code"
+                    className="text-sm font-semibold text-gray-800"
+                  >
                     Authenticator code
                   </label>
                   <div className="relative mt-2">
@@ -324,7 +365,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 id="forgot-password-title" className="title text-xl font-bold text-gray-900">
+                <h2
+                  id="forgot-password-title"
+                  className="title text-xl font-bold text-gray-900"
+                >
                   Forgot password?
                 </h2>
                 <p className="description mt-2 text-sm leading-6 text-gray-600">
@@ -343,7 +387,10 @@ export default function AdminLoginForm({ mfaRequired }: { mfaRequired: boolean }
             </div>
 
             <form onSubmit={handleRecoveryRequest} className="mt-6">
-              <label htmlFor="recovery-email" className="text-sm font-semibold text-gray-800">
+              <label
+                htmlFor="recovery-email"
+                className="text-sm font-semibold text-gray-800"
+              >
                 Admin email address
               </label>
               <input

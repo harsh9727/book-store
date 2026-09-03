@@ -11,29 +11,37 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
 
 interface ProductCardProps {
-  product: Product | {
-    id: string | number;
-    title: string;
-    price: number;
-    originalPrice?: number;
-    image?: ImageProps["src"];
-    cover?: ImageProps["src"];
-    category?: string;
-    badge?: string | null;
-  };
+  product:
+    | Product
+    | {
+        id: string | number;
+        title: string;
+        price: number;
+        originalPrice?: number;
+        image?: ImageProps["src"];
+        cover?: ImageProps["src"];
+        category?: string;
+        badge?: string | null;
+      };
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { language } = useLanguage();
   const localizedProduct = localizeProduct(product as Product, language);
-  const usesStoredGujarati = language === "gu" && "gujarati" in product && Boolean(product.gujarati);
+  const usesStoredGujarati =
+    language === "gu" && "gujarati" in product && Boolean(product.gujarati);
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toast.success(`Added "${localizedProduct.title}" to your cart!`);
   };
 
-  const coverSrc = "image" in product && product.image ? product.image : "cover" in product ? product.cover : null;
+  const coverSrc =
+    "image" in product && product.image
+      ? product.image
+      : "cover" in product
+        ? product.cover
+        : null;
   const productId =
     typeof product.id === "string" && isNaN(Number(product.id))
       ? product.id
@@ -46,12 +54,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const productUrl = new URL(productHref, window.location.origin).toString();
     const message = encodeURIComponent(
-      `Hello GTBS Book Store, I am interested in "${localizedProduct.title}". Product link: ${productUrl}`
+      `Hello GTBS Book Store, I am interested in "${localizedProduct.title}". Product link: ${productUrl}`,
     );
     window.open(
       `https://wa.me/917490028867?text=${message}`,
       "_blank",
-      "noopener,noreferrer"
+      "noopener,noreferrer",
     );
   };
 
@@ -78,7 +86,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           )}
         </Link>
-
       </div>
 
       {/* Product Metadata */}
@@ -88,7 +95,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         </span>
 
         <Link href={productHref}>
-          <h3 className={`line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+          <h3
+            className={`line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`}
+            translate={usesStoredGujarati ? "no" : undefined}
+            lang={usesStoredGujarati ? "gu" : undefined}
+          >
             {localizedProduct.title}
           </h3>
         </Link>

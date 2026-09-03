@@ -62,8 +62,12 @@ async function readStore(): Promise<ContentStore> {
   try {
     const raw = await readFile(storagePath, "utf8");
     const stored = JSON.parse(raw) as Record<string, unknown>;
-    const storedProducts = Array.isArray(stored.products) ? stored.products : [];
-    const storedCategories = Array.isArray(stored.categories) ? stored.categories : [];
+    const storedProducts = Array.isArray(stored.products)
+      ? stored.products
+      : [];
+    const storedCategories = Array.isArray(stored.categories)
+      ? stored.categories
+      : [];
     const storedTestimonials = Array.isArray(stored.testimonials)
       ? stored.testimonials
       : seededTestimonials;
@@ -80,17 +84,25 @@ async function readStore(): Promise<ContentStore> {
       teamMembers: storedTeamMembers,
     }) as ContentStore;
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return seededStore();
+    if ((error as NodeJS.ErrnoException).code === "ENOENT")
+      return seededStore();
     throw error;
   }
 }
 
 async function writeStore(store: ContentStore) {
   await mkdir(storageDirectory, { recursive: true });
-  const temporaryPath = path.join(storageDirectory, `content-${randomUUID()}.tmp`);
+  const temporaryPath = path.join(
+    storageDirectory,
+    `content-${randomUUID()}.tmp`,
+  );
 
   try {
-    await writeFile(temporaryPath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+    await writeFile(
+      temporaryPath,
+      `${JSON.stringify(store, null, 2)}\n`,
+      "utf8",
+    );
     await rename(temporaryPath, storagePath);
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
@@ -98,7 +110,9 @@ async function writeStore(store: ContentStore) {
   }
 }
 
-function mutateStore<T>(mutation: (store: ContentStore) => Promise<T> | T): Promise<T> {
+function mutateStore<T>(
+  mutation: (store: ContentStore) => Promise<T> | T,
+): Promise<T> {
   const operation = mutationQueue.then(async () => {
     const store = await readStore();
     const result = await mutation(store);
@@ -109,7 +123,11 @@ function mutateStore<T>(mutation: (store: ContentStore) => Promise<T> | T): Prom
   return operation;
 }
 
-function blogFromDraft(id: string, draft: BlogDraft, previous?: BlogPost): BlogPost {
+function blogFromDraft(
+  id: string,
+  draft: BlogDraft,
+  previous?: BlogPost,
+): BlogPost {
   const parsed = blogDraftSchema.parse(draft);
   const paragraphs = parsed.contentText
     .split(/\n\s*\n/gu)
@@ -163,7 +181,7 @@ export async function getBlogs() {
 
 export async function getBlog(identifier: string) {
   return (await getBlogs()).find(
-    (blog) => String(blog.id) === identifier || blog.slug === identifier
+    (blog) => String(blog.id) === identifier || blog.slug === identifier,
   );
 }
 
@@ -182,10 +200,18 @@ export function updateBlog(id: string, draft: BlogDraft) {
   return mutateStore((store) => {
     const index = store.blogs.findIndex((blog) => String(blog.id) === id);
     if (index < 0) return null;
-    if (store.blogs.some((blog, itemIndex) => itemIndex !== index && blog.slug === draft.slug)) {
+    if (
+      store.blogs.some(
+        (blog, itemIndex) => itemIndex !== index && blog.slug === draft.slug,
+      )
+    ) {
       throw new Error("A blog with this slug already exists.");
     }
-    const blog = blogFromDraft(String(store.blogs[index].id), draft, store.blogs[index]);
+    const blog = blogFromDraft(
+      String(store.blogs[index].id),
+      draft,
+      store.blogs[index],
+    );
     store.blogs[index] = blog;
     return blog;
   });
@@ -205,7 +231,8 @@ export async function getGalleries() {
 
 export async function getGallery(identifier: string) {
   return (await getGalleries()).find(
-    (gallery) => String(gallery.id) === identifier || gallery.slug === identifier
+    (gallery) =>
+      String(gallery.id) === identifier || gallery.slug === identifier,
   );
 }
 
@@ -223,17 +250,23 @@ export function createGallery(draft: GalleryDraft) {
 
 export function updateGallery(id: string, draft: GalleryDraft) {
   return mutateStore((store) => {
-    const index = store.galleries.findIndex((gallery) => String(gallery.id) === id);
+    const index = store.galleries.findIndex(
+      (gallery) => String(gallery.id) === id,
+    );
     if (index < 0) return null;
     const parsed = galleryDraftSchema.parse(draft);
     if (
       store.galleries.some(
-        (gallery, itemIndex) => itemIndex !== index && gallery.slug === parsed.slug
+        (gallery, itemIndex) =>
+          itemIndex !== index && gallery.slug === parsed.slug,
       )
     ) {
       throw new Error("A gallery with this slug already exists.");
     }
-    const gallery: GalleryItem = { ...parsed, id: String(store.galleries[index].id) };
+    const gallery: GalleryItem = {
+      ...parsed,
+      id: String(store.galleries[index].id),
+    };
     store.galleries[index] = gallery;
     return gallery;
   });
@@ -241,7 +274,9 @@ export function updateGallery(id: string, draft: GalleryDraft) {
 
 export function deleteGallery(id: string) {
   return mutateStore((store) => {
-    const index = store.galleries.findIndex((gallery) => String(gallery.id) === id);
+    const index = store.galleries.findIndex(
+      (gallery) => String(gallery.id) === id,
+    );
     if (index < 0) return null;
     return store.galleries.splice(index, 1)[0];
   });
@@ -266,10 +301,15 @@ export function createTestimonial(draft: TestimonialDraft) {
 
 export function updateTestimonial(id: string, draft: TestimonialDraft) {
   return mutateStore((store) => {
-    const index = store.testimonials.findIndex((testimonial) => testimonial.id === id);
+    const index = store.testimonials.findIndex(
+      (testimonial) => testimonial.id === id,
+    );
     if (index < 0) return null;
     const parsed = testimonialDraftSchema.parse(draft);
-    const testimonial: Testimonial = { ...parsed, id: store.testimonials[index].id };
+    const testimonial: Testimonial = {
+      ...parsed,
+      id: store.testimonials[index].id,
+    };
     store.testimonials[index] = testimonial;
     return testimonial;
   });
@@ -277,7 +317,9 @@ export function updateTestimonial(id: string, draft: TestimonialDraft) {
 
 export function deleteTestimonial(id: string) {
   return mutateStore((store) => {
-    const index = store.testimonials.findIndex((testimonial) => testimonial.id === id);
+    const index = store.testimonials.findIndex(
+      (testimonial) => testimonial.id === id,
+    );
     if (index < 0) return null;
     return store.testimonials.splice(index, 1)[0];
   });
@@ -338,7 +380,9 @@ export function createProduct(draft: ProductDraft) {
     if (store.products.some((product) => product.id === parsed.id)) {
       throw new Error("A product with this slug already exists.");
     }
-    if (!store.categories.some((category) => category.slug === parsed.category)) {
+    if (
+      !store.categories.some((category) => category.slug === parsed.category)
+    ) {
       throw new Error("Choose an existing category.");
     }
     const product = productFromDraft(parsed);
@@ -352,14 +396,23 @@ export function updateProduct(id: string, draft: ProductDraft) {
     const index = store.products.findIndex((product) => product.id === id);
     if (index < 0) return null;
     const parsed = productDraftSchema.parse(draft);
-    if (store.products.some((product, itemIndex) => itemIndex !== index && product.id === parsed.id)) {
+    if (
+      store.products.some(
+        (product, itemIndex) => itemIndex !== index && product.id === parsed.id,
+      )
+    ) {
       throw new Error("A product with this slug already exists.");
     }
-    if (!store.categories.some((category) => category.slug === parsed.category)) {
+    if (
+      !store.categories.some((category) => category.slug === parsed.category)
+    ) {
       throw new Error("Choose an existing category.");
     }
     const product = productFromDraft(parsed);
-    store.products[index] = { ...product, reviews: store.products[index].reviews };
+    store.products[index] = {
+      ...product,
+      reviews: store.products[index].reviews,
+    };
     return store.products[index];
   });
 }
@@ -394,7 +447,12 @@ export function updateCategory(id: string, draft: CategoryDraft) {
     const index = store.categories.findIndex((category) => category.id === id);
     if (index < 0) return null;
     const parsed = categoryDraftSchema.parse(draft);
-    if (store.categories.some((category, itemIndex) => itemIndex !== index && category.slug === parsed.slug)) {
+    if (
+      store.categories.some(
+        (category, itemIndex) =>
+          itemIndex !== index && category.slug === parsed.slug,
+      )
+    ) {
       throw new Error("A category with this slug already exists.");
     }
     const previousSlug = store.categories[index].slug;
@@ -402,7 +460,9 @@ export function updateCategory(id: string, draft: CategoryDraft) {
     store.categories[index] = category;
     if (previousSlug !== parsed.slug) {
       store.products = store.products.map((product) =>
-        product.category === previousSlug ? { ...product, category: parsed.slug } : product,
+        product.category === previousSlug
+          ? { ...product, category: parsed.slug }
+          : product,
       );
     }
     store.categories.sort((left, right) => left.name.localeCompare(right.name));

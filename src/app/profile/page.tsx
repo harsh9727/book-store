@@ -32,8 +32,12 @@ export default function ProfilePage() {
                 <User size={30} />
               </div>
               <div>
-                <h3 className="title text-xl font-bold text-gray-900">Guest Reader</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Welcome to Gujarat Tract & Book Society</p>
+                <h3 className="title text-xl font-bold text-gray-900">
+                  Guest Reader
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Welcome to Gujarat Tract & Book Society
+                </p>
               </div>
             </div>
 
@@ -48,11 +52,16 @@ export default function ProfilePage() {
                     <Heart size={18} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900">Saved Wishlist</h4>
+                    <h4 className="text-sm font-semibold text-gray-900">
+                      Saved Wishlist
+                    </h4>
                     <p className="text-xs text-gray-500">Books to read</p>
                   </div>
                 </div>
-                <ArrowRight size={16} className="text-gray-400 group-hover:text-orange-600 transition-colors" />
+                <ArrowRight
+                  size={16}
+                  className="text-gray-400 group-hover:text-orange-600 transition-colors"
+                />
               </Link>
 
               <Link
@@ -64,11 +73,16 @@ export default function ProfilePage() {
                     <ShoppingBag size={18} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900">Reading Bag</h4>
+                    <h4 className="text-sm font-semibold text-gray-900">
+                      Reading Bag
+                    </h4>
                     <p className="text-xs text-gray-500">Cart items</p>
                   </div>
                 </div>
-                <ArrowRight size={16} className="text-gray-400 group-hover:text-orange-600 transition-colors" />
+                <ArrowRight
+                  size={16}
+                  className="text-gray-400 group-hover:text-orange-600 transition-colors"
+                />
               </Link>
             </div>
 

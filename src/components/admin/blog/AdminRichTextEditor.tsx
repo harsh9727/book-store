@@ -115,10 +115,8 @@ export default function AdminRichTextEditor({
       italic: currentEditor?.isActive("italic") ?? false,
       underline: currentEditor?.isActive("underline") ?? false,
       strike: currentEditor?.isActive("strike") ?? false,
-      heading2:
-        currentEditor?.isActive("heading", { level: 2 }) ?? false,
-      heading3:
-        currentEditor?.isActive("heading", { level: 3 }) ?? false,
+      heading2: currentEditor?.isActive("heading", { level: 2 }) ?? false,
+      heading3: currentEditor?.isActive("heading", { level: 3 }) ?? false,
       bulletList: currentEditor?.isActive("bulletList") ?? false,
       orderedList: currentEditor?.isActive("orderedList") ?? false,
       blockquote: currentEditor?.isActive("blockquote") ?? false,
@@ -171,7 +169,9 @@ export default function AdminRichTextEditor({
     <div>
       <div
         className={`overflow-hidden rounded-xl border bg-white ${
-          error ? "border-red-400" : "border-slate-200 focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/10"
+          error
+            ? "border-red-400"
+            : "border-slate-200 focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/10"
         }`}
       >
         <div
@@ -179,23 +179,134 @@ export default function AdminRichTextEditor({
           aria-label="Article formatting"
           className="flex flex-wrap gap-1 border-b border-slate-200 bg-slate-50/80 p-2"
         >
-          <ToolbarButton label="Bold" active={toolbarState?.bold} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleBold().run()}><Bold size={17} /></ToolbarButton>
-          <ToolbarButton label="Italic" active={toolbarState?.italic} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleItalic().run()}><Italic size={17} /></ToolbarButton>
-          <ToolbarButton label="Underline" active={toolbarState?.underline} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleUnderline().run()}><Underline size={17} /></ToolbarButton>
-          <ToolbarButton label="Strikethrough" active={toolbarState?.strike} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleStrike().run()}><Strikethrough size={17} /></ToolbarButton>
-          <span className="mx-1 hidden w-px self-stretch bg-slate-200 sm:block" aria-hidden="true" />
-          <ToolbarButton label="Heading 2" active={toolbarState?.heading2} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}><Heading2 size={18} /></ToolbarButton>
-          <ToolbarButton label="Heading 3" active={toolbarState?.heading3} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}><Heading3 size={18} /></ToolbarButton>
-          <ToolbarButton label="Bullet list" active={toolbarState?.bulletList} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleBulletList().run()}><List size={18} /></ToolbarButton>
-          <ToolbarButton label="Numbered list" active={toolbarState?.orderedList} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleOrderedList().run()}><ListOrdered size={18} /></ToolbarButton>
-          <ToolbarButton label="Block quote" active={toolbarState?.blockquote} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleBlockquote().run()}><Quote size={18} /></ToolbarButton>
-          <ToolbarButton label="Code block" active={toolbarState?.codeBlock} disabled={isUnavailable} onClick={() => editor?.chain().focus().toggleCodeBlock().run()}><Code2 size={18} /></ToolbarButton>
-          <ToolbarButton label="Horizontal rule" disabled={isUnavailable} onClick={() => editor?.chain().focus().setHorizontalRule().run()}><Minus size={18} /></ToolbarButton>
-          <span className="mx-1 hidden w-px self-stretch bg-slate-200 sm:block" aria-hidden="true" />
-          <ToolbarButton label="Add or edit link" active={toolbarState?.link} disabled={isUnavailable} onClick={updateLink}><Link2 size={17} /></ToolbarButton>
-          <ToolbarButton label="Remove link" disabled={isUnavailable || !toolbarState?.link} onClick={() => editor?.chain().focus().unsetLink().run()}><Unlink size={17} /></ToolbarButton>
-          <ToolbarButton label="Undo" disabled={isUnavailable || !toolbarState?.canUndo} onClick={() => editor?.chain().focus().undo().run()}><Undo2 size={17} /></ToolbarButton>
-          <ToolbarButton label="Redo" disabled={isUnavailable || !toolbarState?.canRedo} onClick={() => editor?.chain().focus().redo().run()}><Redo2 size={17} /></ToolbarButton>
+          <ToolbarButton
+            label="Bold"
+            active={toolbarState?.bold}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleBold().run()}
+          >
+            <Bold size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Italic"
+            active={toolbarState?.italic}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleItalic().run()}
+          >
+            <Italic size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Underline"
+            active={toolbarState?.underline}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleUnderline().run()}
+          >
+            <Underline size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Strikethrough"
+            active={toolbarState?.strike}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleStrike().run()}
+          >
+            <Strikethrough size={17} />
+          </ToolbarButton>
+          <span
+            className="mx-1 hidden w-px self-stretch bg-slate-200 sm:block"
+            aria-hidden="true"
+          />
+          <ToolbarButton
+            label="Heading 2"
+            active={toolbarState?.heading2}
+            disabled={isUnavailable}
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+          >
+            <Heading2 size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Heading 3"
+            active={toolbarState?.heading3}
+            disabled={isUnavailable}
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+          >
+            <Heading3 size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Bullet list"
+            active={toolbarState?.bulletList}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+          >
+            <List size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Numbered list"
+            active={toolbarState?.orderedList}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+          >
+            <ListOrdered size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Block quote"
+            active={toolbarState?.blockquote}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+          >
+            <Quote size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Code block"
+            active={toolbarState?.codeBlock}
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+          >
+            <Code2 size={18} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Horizontal rule"
+            disabled={isUnavailable}
+            onClick={() => editor?.chain().focus().setHorizontalRule().run()}
+          >
+            <Minus size={18} />
+          </ToolbarButton>
+          <span
+            className="mx-1 hidden w-px self-stretch bg-slate-200 sm:block"
+            aria-hidden="true"
+          />
+          <ToolbarButton
+            label="Add or edit link"
+            active={toolbarState?.link}
+            disabled={isUnavailable}
+            onClick={updateLink}
+          >
+            <Link2 size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Remove link"
+            disabled={isUnavailable || !toolbarState?.link}
+            onClick={() => editor?.chain().focus().unsetLink().run()}
+          >
+            <Unlink size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Undo"
+            disabled={isUnavailable || !toolbarState?.canUndo}
+            onClick={() => editor?.chain().focus().undo().run()}
+          >
+            <Undo2 size={17} />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Redo"
+            disabled={isUnavailable || !toolbarState?.canRedo}
+            onClick={() => editor?.chain().focus().redo().run()}
+          >
+            <Redo2 size={17} />
+          </ToolbarButton>
         </div>
 
         <EditorContent

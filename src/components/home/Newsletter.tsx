@@ -26,16 +26,13 @@ const Newsletter = ({ title, description }: NewsletterProps) => {
     <section className="bg-white py-10 md:py-12">
       <div className="container px-3 lg:px-6">
         <div className="relative overflow-hidden rounded-2xl bg-orange-50 px-6 py-8 sm:px-8 md:px-10">
-
           {/* Decorative Circle */}
           <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-600/5" />
           <div className="absolute -bottom-20 left-1/3 h-40 w-40 rounded-full bg-orange-600/5" />
 
           <div className="relative flex flex-col items-center gap-7 lg:flex-row lg:justify-between">
-
             {/* Left Content */}
             <div className="flex items-center gap-4 text-center sm:text-left">
-
               {/* Mail Icon */}
               <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white text-orange-600 shadow-sm sm:flex">
                 <Mail size={25} strokeWidth={1.7} />

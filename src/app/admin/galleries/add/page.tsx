@@ -10,10 +10,15 @@ export const metadata: Metadata = { title: "Add Gallery" };
 
 export default async function AddGalleryPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
 
   return (
-    <AdminContentShell active="galleries" title="Add gallery" description="Create a new public gallery album.">
+    <AdminContentShell
+      active="galleries"
+      title="Add gallery"
+      description="Create a new public gallery album."
+    >
       <AdminGalleryForm />
     </AdminContentShell>
   );

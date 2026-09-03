@@ -25,8 +25,7 @@ export default function AdminTestimonialForm({
   initialItem,
 }: AdminTestimonialFormProps) {
   const router = useRouter();
-  const [formLanguage, setFormLanguage] =
-    useState<AdminContentLanguage>("en");
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,7 +93,9 @@ export default function AdminTestimonialForm({
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
           <div>
             <h2 className="text-lg font-bold">
-              {initialItem ? "Edit testimonial details" : "Add a new testimonial"}
+              {initialItem
+                ? "Edit testimonial details"
+                : "Add a new testimonial"}
             </h2>
             <p className="text-xs text-slate-500">
               Add the customer&apos;s English and Gujarati testimonial content.
@@ -200,7 +201,8 @@ export default function AdminTestimonialForm({
             Gujarati content
           </legend>
           <p className="text-xs text-slate-600 sm:col-span-2">
-            This saved content is shown when the storefront language is Gujarati.
+            This saved content is shown when the storefront language is
+            Gujarati.
           </p>
           <label className="text-sm font-semibold">
             Gujarati customer name

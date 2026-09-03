@@ -10,10 +10,15 @@ export const metadata: Metadata = { title: "Add Blog" };
 
 export default async function AddBlogPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
 
   return (
-    <AdminContentShell active="blogs" title="Add blog" description="Create a new public journal article.">
+    <AdminContentShell
+      active="blogs"
+      title="Add blog"
+      description="Create a new public journal article."
+    >
       <AdminBlogForm />
     </AdminContentShell>
   );

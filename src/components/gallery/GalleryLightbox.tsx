@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { X, ChevronDown, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import {
+  X,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+} from "lucide-react";
 import { GalleryPhoto } from "@/types/gallery";
 
 interface GalleryLightboxProps {
@@ -12,7 +18,9 @@ interface GalleryLightboxProps {
 const PHOTO_BATCH_SIZE = 8;
 
 export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
-  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(
+    null,
+  );
   const [visibleCount, setVisibleCount] = useState(PHOTO_BATCH_SIZE);
   const visiblePhotos = photos.slice(0, visibleCount);
   const hasMorePhotos = visibleCount < photos.length;
@@ -30,12 +38,18 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
 
       if (event.key === "ArrowRight") {
         event.preventDefault();
-        setSelectedPhotoIndex((current) => current === null ? null : (current + 1) % visiblePhotos.length);
+        setSelectedPhotoIndex((current) =>
+          current === null ? null : (current + 1) % visiblePhotos.length,
+        );
       }
 
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        setSelectedPhotoIndex((current) => current === null ? null : (current - 1 + visiblePhotos.length) % visiblePhotos.length);
+        setSelectedPhotoIndex((current) =>
+          current === null
+            ? null
+            : (current - 1 + visiblePhotos.length) % visiblePhotos.length,
+        );
       }
     };
 
@@ -61,7 +75,9 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
   const prevPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (selectedPhotoIndex !== null) {
-      setSelectedPhotoIndex((selectedPhotoIndex - 1 + visiblePhotos.length) % visiblePhotos.length);
+      setSelectedPhotoIndex(
+        (selectedPhotoIndex - 1 + visiblePhotos.length) % visiblePhotos.length,
+      );
     }
   };
 
@@ -109,13 +125,19 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
         <div className="mt-8 flex flex-col items-center gap-2">
           <button
             type="button"
-            onClick={() => setVisibleCount((current) => Math.min(current + PHOTO_BATCH_SIZE, photos.length))}
+            onClick={() =>
+              setVisibleCount((current) =>
+                Math.min(current + PHOTO_BATCH_SIZE, photos.length),
+              )
+            }
             className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-6 text-sm font-semibold text-orange-700 transition-colors hover:border-orange-300 hover:bg-orange-100"
           >
             View more photos
             <ChevronDown size={17} />
           </button>
-          <span className="text-xs text-gray-500">Showing {visiblePhotos.length} of {photos.length}</span>
+          <span className="text-xs text-gray-500">
+            Showing {visiblePhotos.length} of {photos.length}
+          </span>
         </div>
       )}
 

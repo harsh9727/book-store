@@ -132,10 +132,7 @@ export default function PrivacyPolicyPage() {
     <div className="bg-white">
       <div className="container mx-auto max-w-4xl px-4 pt-8 lg:px-6">
         <Breadcrumb
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Privacy Policy" },
-          ]}
+          items={[{ label: "Home", href: "/" }, { label: "Privacy Policy" }]}
           className="mb-0"
         />
       </div>
@@ -163,9 +160,9 @@ export default function PrivacyPolicyPage() {
         <div className="description border-b border-gray-200 pb-8 text-sm leading-7 text-gray-600 sm:text-base sm:leading-8">
           <p>
             At Gujarat Tract Book Store, we value your privacy and are committed
-            to protecting your personal information. This Privacy Policy explains
-            how we collect, use, store, and safeguard your information when you
-            visit our website, create an account, or make a purchase.
+            to protecting your personal information. This Privacy Policy
+            explains how we collect, use, store, and safeguard your information
+            when you visit our website, create an account, or make a purchase.
           </p>
           <p className="mt-3 font-medium text-gray-800">
             By using our website, you agree to the practices described in this
@@ -174,7 +171,10 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <PolicySection number={1} title="Information We Collect">
-          <p>To provide our services effectively, we may collect the following information:</p>
+          <p>
+            To provide our services effectively, we may collect the following
+            information:
+          </p>
           <div className="mt-5 grid gap-6 md:grid-cols-3">
             {informationGroups.map((group) => (
               <div key={group.title}>
@@ -213,16 +213,16 @@ export default function PrivacyPolicyPage() {
           />
           <p className="mt-4">
             The storefront does not currently use analytics, advertising, or
-            personalization cookies. Disabling cookies may prevent admin login or
-            Gujarati translation from working correctly.
+            personalization cookies. Disabling cookies may prevent admin login
+            or Gujarati translation from working correctly.
           </p>
         </PolicySection>
 
         <PolicySection number={5} title="Information Sharing">
           <p>
             We respect your privacy and do not sell or rent your personal
-            information to third parties. We may share your information only when
-            necessary with:
+            information to third parties. We may share your information only
+            when necessary with:
           </p>
           <BulletList items={sharingPartners} />
           <p className="mt-4">
@@ -233,9 +233,10 @@ export default function PrivacyPolicyPage() {
 
         <PolicySection number={6} title="Data Security">
           <p>
-            We implement reasonable administrative, technical, and organizational
-            security measures to protect your personal information against
-            unauthorized access, misuse, alteration, or disclosure.
+            We implement reasonable administrative, technical, and
+            organizational security measures to protect your personal
+            information against unauthorized access, misuse, alteration, or
+            disclosure.
           </p>
           <p className="mt-3">
             While we strive to protect your information, no method of internet
@@ -247,8 +248,8 @@ export default function PrivacyPolicyPage() {
           <p>You have the right to:</p>
           <BulletList items={rights} />
           <p className="mt-4">
-            To exercise these rights, please contact us using the details provided
-            below.
+            To exercise these rights, please contact us using the details
+            provided below.
           </p>
         </PolicySection>
 
@@ -256,33 +257,38 @@ export default function PrivacyPolicyPage() {
           <p>If you subscribe to our newsletter, we may send you:</p>
           <BulletList items={marketingContent} />
           <p className="mt-4">
-            You may unsubscribe at any time by clicking the &quot;Unsubscribe&quot;
-            link included in our emails or by contacting us directly.
+            You may unsubscribe at any time by clicking the
+            &quot;Unsubscribe&quot; link included in our emails or by contacting
+            us directly.
           </p>
         </PolicySection>
 
         <PolicySection number={9} title="Third-Party Services">
           <p>
             Our website may contain links to third-party websites or use
-            third-party services such as payment processors, analytics providers,
-            or shipping partners. We are not responsible for the privacy practices
-            or content of third-party websites. We encourage you to review their
-            privacy policies before sharing personal information.
+            third-party services such as payment processors, analytics
+            providers, or shipping partners. We are not responsible for the
+            privacy practices or content of third-party websites. We encourage
+            you to review their privacy policies before sharing personal
+            information.
           </p>
         </PolicySection>
 
         <PolicySection number={10} title="Children's Privacy">
           <p>
             Our website is intended for general audiences. We do not knowingly
-            collect personal information from children under the age of 13 without
-            parental or guardian consent. If you believe that a child has provided
-            personal information, please contact us so we can take appropriate
-            action.
+            collect personal information from children under the age of 13
+            without parental or guardian consent. If you believe that a child
+            has provided personal information, please contact us so we can take
+            appropriate action.
           </p>
         </PolicySection>
 
         <PolicySection number={11} title="Data Retention">
-          <p>We retain your personal information only for as long as necessary to:</p>
+          <p>
+            We retain your personal information only for as long as necessary
+            to:
+          </p>
           <BulletList items={retentionReasons} />
           <p className="mt-4">
             When information is no longer required, it is securely deleted or
@@ -292,10 +298,10 @@ export default function PrivacyPolicyPage() {
 
         <PolicySection number={12} title="Policy Updates">
           <p>
-            We may update this Privacy Policy from time to time to reflect changes
-            in our services, legal requirements, or business practices. Any
-            updates will be published on this page with a revised Effective Date.
-            We encourage you to review this page periodically.
+            We may update this Privacy Policy from time to time to reflect
+            changes in our services, legal requirements, or business practices.
+            Any updates will be published on this page with a revised Effective
+            Date. We encourage you to review this page periodically.
           </p>
         </PolicySection>
 
@@ -305,7 +311,9 @@ export default function PrivacyPolicyPage() {
             information is handled, please contact us.
           </p>
           <div className="mt-5 border-l-2 border-orange-500 pl-5">
-            <p className="font-semibold text-gray-900">Gujarat Tract Book Store</p>
+            <p className="font-semibold text-gray-900">
+              Gujarat Tract Book Store
+            </p>
             <div className="mt-3 flex flex-col gap-3">
               <Link
                 href="mailto:gtbs-1852@yahoo.in"

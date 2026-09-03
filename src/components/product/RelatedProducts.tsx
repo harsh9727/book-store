@@ -16,7 +16,7 @@ export default function RelatedProducts({
     .filter((p) => p.id !== currentProductId)
     .sort(
       (a, b) =>
-        Number(b.category === category) - Number(a.category === category)
+        Number(b.category === category) - Number(a.category === category),
     )
     .slice(0, 4);
 

@@ -13,7 +13,6 @@ const VisionMission = () => {
       <div className="container mx-auto px-4 lg:px-6">
         <div className="overflow-hidden rounded-[18px] bg-orange-50 p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] md:p-7 lg:p-8">
           <div className="grid items-stretch gap-6 md:grid-cols-3 lg:gap-8">
-
             {/* ================= VISION ================= */}
             <article className="flex h-full flex-col rounded-xl bg-white p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-orange-600 md:text-xs">
@@ -30,9 +29,9 @@ const VisionMission = () => {
 
               <p className="description mt-5 text-[13px] leading-6 text-gray-600 md:text-sm md:leading-6">
                 Our vision is to make reading an inspiring and meaningful part
-                of everyday life. We want every reader to easily discover
-                books that spark imagination, encourage learning, and create
-                lasting connections with stories.
+                of everyday life. We want every reader to easily discover books
+                that spark imagination, encourage learning, and create lasting
+                connections with stories.
               </p>
 
               <div className="mt-6 space-y-3">
@@ -100,8 +99,8 @@ const VisionMission = () => {
               <p className="description mt-5 text-[13px] leading-6 text-gray-600 md:text-sm md:leading-6">
                 We are more than just an online bookstore. Our mission is to
                 help readers discover quality books through carefully curated
-                collections, an easy shopping experience, and dependable
-                service from book discovery to delivery.
+                collections, an easy shopping experience, and dependable service
+                from book discovery to delivery.
               </p>
 
               <div className="mt-6 space-y-3">
@@ -142,7 +141,6 @@ const VisionMission = () => {
                 </div>
               </div>
             </article>
-
           </div>
         </div>
       </div>

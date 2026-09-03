@@ -6,10 +6,7 @@ import {
   MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
 } from "./blogRichText.ts";
 import { PRODUCT_BADGES } from "../types/product.ts";
-import type {
-  BlogRichTextDocument,
-  BlogRichTextNode,
-} from "@/types/blog";
+import type { BlogRichTextDocument, BlogRichTextNode } from "@/types/blog";
 
 export const MAX_BLOG_DRAFT_BODY_BYTES = 256 * 1024;
 export const MAX_CATALOG_DRAFT_BODY_BYTES = 64 * 1024;
@@ -42,13 +39,19 @@ const productGalleryImageSchema = imageReferenceSchema.refine((value) => {
   if (value.startsWith("/")) return true;
   try {
     const hostname = new URL(value).hostname;
-    return hostname === "utfs.io" || hostname.endsWith(".ufs.sh") || hostname === "images.unsplash.com" || hostname === "plus.unsplash.com";
+    return (
+      hostname === "utfs.io" ||
+      hostname.endsWith(".ufs.sh") ||
+      hostname === "images.unsplash.com" ||
+      hostname === "plus.unsplash.com"
+    );
   } catch {
     return false;
   }
 }, "Product images must use a configured image host.");
 
-const optionalText = (maximum: number) => z.string().trim().max(maximum).optional();
+const optionalText = (maximum: number) =>
+  z.string().trim().max(maximum).optional();
 const dateTextSchema = z
   .string()
   .trim()
@@ -76,7 +79,8 @@ const richTextMarkSchema = z
     if (typeof href !== "string" || !isSafeRichTextHref(href)) {
       context.addIssue({
         code: "custom",
-        message: "Rich-text links must use a safe web, email, phone, or local URL.",
+        message:
+          "Rich-text links must use a safe web, email, phone, or local URL.",
         path: ["attrs", "href"],
       });
     }
@@ -111,8 +115,7 @@ const blogRichTextDocumentSchema = richTextNodeSchema
     "Rich-text content must be a Tiptap document.",
   )
   .refine(
-    (node) =>
-      JSON.stringify(node).length <= MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
+    (node) => JSON.stringify(node).length <= MAX_BLOG_RICH_TEXT_JSON_CHARACTERS,
     "Rich-text content is too large.",
   );
 
@@ -120,13 +123,11 @@ const blogAuthorSchema = z
   .object({
     name: z.string().trim().min(1).max(120),
     role: z.string().trim().min(1).max(160),
-    avatar: z.preprocess(
-      (value) => {
-        if (typeof value === "string" && value.trim() === "") return "/images/logo/logo.webp";
-        return value;
-      },
-      imageReferenceSchema.optional().default("/images/logo/logo.webp")
-    ),
+    avatar: z.preprocess((value) => {
+      if (typeof value === "string" && value.trim() === "")
+        return "/images/logo/logo.webp";
+      return value;
+    }, imageReferenceSchema.optional().default("/images/logo/logo.webp")),
     bio: z.string().trim().max(1_500).optional(),
   })
   .strict();
@@ -142,7 +143,7 @@ const blogContentSectionSchema = z
             subheading: z.string().trim().min(1).max(240),
             body: z.string().trim().min(1).max(10_000),
           })
-          .strict()
+          .strict(),
       )
       .max(20)
       .optional(),
@@ -191,11 +192,7 @@ const blogLocalizedDraftSchema = z
     title: z.string().trim().min(1).max(220),
     category: z.string().trim().min(1).max(100),
     author: blogLocalizedAuthorSchema,
-    contentText: z
-      .string()
-      .trim()
-      .min(1)
-      .max(MAX_BLOG_CONTENT_CHARACTERS),
+    contentText: z.string().trim().min(1).max(MAX_BLOG_CONTENT_CHARACTERS),
     richContent: blogRichTextDocumentSchema.optional(),
   })
   .strict();
@@ -204,17 +201,25 @@ const blogPostSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
     title: z.string().trim().min(1).max(220),
-    slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
+      .max(220),
     category: z.string().trim().min(1).max(100),
     date: dateTextSchema,
     image: imageReferenceSchema,
     imageKey: z.string().trim().min(1).max(500).optional(),
     summary: z.preprocess(
       (value) => normalizeBlankString(value),
-      z.string().trim().max(2_000).optional().default("")
+      z.string().trim().max(2_000).optional().default(""),
     ),
     author: blogAuthorSchema,
-    tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
+    tags: z
+      .array(z.string().trim().min(1).max(100))
+      .max(20)
+      .optional()
+      .default([]),
     richContent: blogRichTextDocumentSchema.optional(),
     content: z.array(blogContentSectionSchema).min(1).max(50),
     gujarati: blogLocalizedContentSchema.optional(),
@@ -225,22 +230,26 @@ const blogPostSchema = z
 export const blogDraftSchema = z
   .object({
     title: z.string().trim().min(1).max(220),
-    slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
+      .max(220),
     category: z.string().trim().min(1).max(100),
     date: dateTextSchema,
     image: imageReferenceSchema,
     imageKey: z.string().trim().min(1).max(500).optional(),
     summary: z.preprocess(
       (value) => normalizeBlankString(value),
-      z.string().trim().max(2_000).optional().default("")
+      z.string().trim().max(2_000).optional().default(""),
     ),
     author: blogAuthorSchema,
-    tags: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
-    contentText: z
-      .string()
-      .trim()
-      .min(1)
-      .max(MAX_BLOG_CONTENT_CHARACTERS),
+    tags: z
+      .array(z.string().trim().min(1).max(100))
+      .max(20)
+      .optional()
+      .default([]),
+    contentText: z.string().trim().min(1).max(MAX_BLOG_CONTENT_CHARACTERS),
     richContent: blogRichTextDocumentSchema.optional(),
     gujarati: blogLocalizedDraftSchema,
   })
@@ -269,7 +278,11 @@ const galleryLocalizedContentSchema = z
 const galleryItemSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
-    slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
+      .max(220),
     title: z.string().trim().min(1).max(220),
     subtitle: optionalText(500),
     category: z.string().trim().min(1).max(100),
@@ -303,7 +316,10 @@ const categorySchema = z
   })
   .strict();
 
-export const categoryDraftSchema = categorySchema.omit({ id: true, description: true });
+export const categoryDraftSchema = categorySchema.omit({
+  id: true,
+  description: true,
+});
 
 const productReviewSchema = z
   .object({
@@ -371,7 +387,10 @@ const productSchema = z
     badge: optionalText(80),
     specifications: z.array(productSpecificationSchema).max(50).optional(),
     variants: z.array(productVariantSchema).max(20).optional(),
-    format: z.array(z.enum(["Hardcover", "Paperback", "E-Book", "Audiobook"])).max(4).optional(),
+    format: z
+      .array(z.enum(["Hardcover", "Paperback", "E-Book", "Audiobook"]))
+      .max(4)
+      .optional(),
     pages: z.number().int().positive().max(100_000).optional(),
     publisher: optionalText(240),
     publishedDate: optionalText(120),

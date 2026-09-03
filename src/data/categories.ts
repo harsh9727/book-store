@@ -5,7 +5,8 @@ export const categories: Category[] = [
     id: "bible-books",
     name: "Holy Bibles",
     slug: "bible-books",
-    description: "Study Bibles, devotional editions, and scripture translations",
+    description:
+      "Study Bibles, devotional editions, and scripture translations",
   },
   {
     id: "christian-living",
@@ -17,7 +18,8 @@ export const categories: Category[] = [
     id: "devotionals",
     name: "Devotionals",
     slug: "devotionals",
-    description: "Daily morning & evening prayers, reflections, and meditations",
+    description:
+      "Daily morning & evening prayers, reflections, and meditations",
   },
   {
     id: "magazines",
@@ -53,7 +55,8 @@ export const categories: Category[] = [
     id: "novels",
     name: "Christian Literature & Novels",
     slug: "novels",
-    description: "Inspiring fiction, timeless classics, and allegorical stories",
+    description:
+      "Inspiring fiction, timeless classics, and allegorical stories",
   },
   {
     id: "romance",

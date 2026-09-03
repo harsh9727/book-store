@@ -34,12 +34,7 @@ export default function AdminTeamManager({
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredItems = items.filter((member) =>
-    [
-      member.name,
-      member.role,
-      member.gujarati?.name,
-      member.gujarati?.role,
-    ]
+    [member.name, member.role, member.gujarati?.name, member.gujarati?.role]
       .filter(Boolean)
       .join(" ")
       .toLowerCase()
@@ -140,7 +135,10 @@ export default function AdminTeamManager({
             <tbody className="divide-y divide-slate-100">
               {pageItems.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td
+                    colSpan={4}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     {items.length === 0
                       ? "No team members found. Use Add team member to create the first one."
                       : "No team members match the current search."}
@@ -161,7 +159,9 @@ export default function AdminTeamManager({
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="font-semibold text-slate-900">{member.name}</p>
+                      <p className="font-semibold text-slate-900">
+                        {member.name}
+                      </p>
                       {member.gujarati?.name ? (
                         <p className="mt-0.5 text-xs text-slate-500" lang="gu">
                           {member.gujarati.name}

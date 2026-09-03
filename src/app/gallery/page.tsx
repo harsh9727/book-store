@@ -49,7 +49,7 @@ export default function GalleryPage() {
 
   const categories = useMemo(
     () => ["All", ...new Set(galleryItems.map((gallery) => gallery.category))],
-    [galleryItems]
+    [galleryItems],
   );
 
   const filteredGalleries = galleryItems.filter((item) => {
@@ -59,7 +59,9 @@ export default function GalleryPage() {
     const matchesSearch =
       searchQuery.trim() === "" ||
       localizedItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      localizedItem.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      localizedItem.description
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       localizedItem.location.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
@@ -76,7 +78,8 @@ export default function GalleryPage() {
           Photo Gallery & Events
         </h1>
         <p className="description mt-3 text-sm md:text-base text-gray-600">
-          Step inside our bookstore events, author meetups, community story sessions, and literary exhibitions.
+          Step inside our bookstore events, author meetups, community story
+          sessions, and literary exhibitions.
         </p>
       </div>
 
@@ -85,11 +88,12 @@ export default function GalleryPage() {
         {/* Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
           {categories.map((cat) => {
-            const categorySource = galleryItems.find(
-              (gallery) =>
-                gallery.category === cat &&
-                (language !== "gu" || gallery.gujarati),
-            ) ?? galleryItems.find((gallery) => gallery.category === cat);
+            const categorySource =
+              galleryItems.find(
+                (gallery) =>
+                  gallery.category === cat &&
+                  (language !== "gu" || gallery.gujarati),
+              ) ?? galleryItems.find((gallery) => gallery.category === cat);
             const categoryLabel =
               cat === "All"
                 ? language === "gu"
@@ -97,26 +101,27 @@ export default function GalleryPage() {
                   : cat
                 : localizeGallery(categorySource!, language).category;
             const usesStoredGujarati =
-              language === "gu" && (cat === "All" || Boolean(categorySource?.gujarati));
+              language === "gu" &&
+              (cat === "All" || Boolean(categorySource?.gujarati));
 
             return (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => selectCategory(cat)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium description tracking-wide transition-all ${
-                selectedCategory === cat
-                  ? "bg-orange-600 text-white shadow-sm font-semibold"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <span
-                className={usesStoredGujarati ? "notranslate" : undefined}
-                translate={usesStoredGujarati ? "no" : undefined}
+              <button
+                key={cat}
+                type="button"
+                onClick={() => selectCategory(cat)}
+                className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium description tracking-wide transition-all ${
+                  selectedCategory === cat
+                    ? "bg-orange-600 text-white shadow-sm font-semibold"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                {categoryLabel}
-              </span>
-            </button>
+                <span
+                  className={usesStoredGujarati ? "notranslate" : undefined}
+                  translate={usesStoredGujarati ? "no" : undefined}
+                >
+                  {categoryLabel}
+                </span>
+              </button>
             );
           })}
         </div>
@@ -152,82 +157,84 @@ export default function GalleryPage() {
                   : {};
 
               return (
-              <article
-                key={album.id}
-                className="group flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
-              >
-                {/* Cover Image & Badges */}
-                <Link
-                  href={`/gallery/${album.slug}`}
-                  className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100"
+                <article
+                  key={album.id}
+                  className="group flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
                 >
-                  <Image
-                    src={album.coverImage}
-                    alt={album.title}
-                    fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  {/* Cover Image & Badges */}
+                  <Link
+                    href={`/gallery/${album.slug}`}
+                    className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100"
+                  >
+                    <Image
+                      src={album.coverImage}
+                      alt={album.title}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                  <span className="absolute left-4 top-4 rounded-full bg-orange-600 px-3.5 py-1 pb-1.5 text-xs font-semibold tracking-wide text-white shadow-sm description">
-                    <span {...localizedAttributes}>{album.category}</span>
-                  </span>
+                    <span className="absolute left-4 top-4 rounded-full bg-orange-600 px-3.5 py-1 pb-1.5 text-xs font-semibold tracking-wide text-white shadow-sm description">
+                      <span {...localizedAttributes}>{album.category}</span>
+                    </span>
 
-                  <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 pt-1 pb-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-sm shadow-sm description">
-                    <Camera size={14} />
-                    <span>{album.photos.length} Photos</span>
-                  </span>
-                </Link>
-
-                {/* Album Content */}
-                <div className="flex flex-1 flex-col p-6 sm:p-7">
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-3">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays size={14} className="text-orange-600" />
-                      <p className="text-xs description tracking-wide">{album.date}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin size={14} className="text-orange-600" />
-                      <p
-                        className={`${localizedAttributes.className ?? ""} text-xs description tracking-wide`}
-                        translate={localizedAttributes.translate}
-                      >
-                        {album.location}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Link href={`/gallery/${album.slug}`}>
-                    <h2
-                      className={`${localizedAttributes.className ?? ""} title text-xl sm:text-2xl font-bold text-gray-900 transition-colors group-hover:text-orange-600`}
-                      translate={localizedAttributes.translate}
-                    >
-                      {album.title}
-                    </h2>
+                    <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 pt-1 pb-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-sm shadow-sm description">
+                      <Camera size={14} />
+                      <span>{album.photos.length} Photos</span>
+                    </span>
                   </Link>
 
-                  <p
-                    className={`${localizedAttributes.className ?? ""} description mt-2.5 tracking-wide text-sm text-gray-600 line-clamp-2 leading-relaxed`}
-                    translate={localizedAttributes.translate}
-                  >
-                    {album.description}
-                  </p>
+                  {/* Album Content */}
+                  <div className="flex flex-1 flex-col p-6 sm:p-7">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-3">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarDays size={14} className="text-orange-600" />
+                        <p className="text-xs description tracking-wide">
+                          {album.date}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <MapPin size={14} className="text-orange-600" />
+                        <p
+                          className={`${localizedAttributes.className ?? ""} text-xs description tracking-wide`}
+                          translate={localizedAttributes.translate}
+                        >
+                          {album.location}
+                        </p>
+                      </div>
+                    </div>
 
-                  {/* Action Button */}
-                  <div className="mt-auto pt-5 border-t border-gray-100">
-                    <Link
-                      href={`/gallery/${album.slug}`}
-                      className="flex items-center justify-between description tracking-wide font-semibold text-xs sm:text-sm text-orange-600 group-hover:text-orange-700"
-                    >
-                      <span>View Full Photo Collection</span>
-                      <ArrowRight
-                        size={16}
-                        className="transition-transform group-hover:translate-x-1"
-                      />
+                    <Link href={`/gallery/${album.slug}`}>
+                      <h2
+                        className={`${localizedAttributes.className ?? ""} title text-xl sm:text-2xl font-bold text-gray-900 transition-colors group-hover:text-orange-600`}
+                        translate={localizedAttributes.translate}
+                      >
+                        {album.title}
+                      </h2>
                     </Link>
+
+                    <p
+                      className={`${localizedAttributes.className ?? ""} description mt-2.5 tracking-wide text-sm text-gray-600 line-clamp-2 leading-relaxed`}
+                      translate={localizedAttributes.translate}
+                    >
+                      {album.description}
+                    </p>
+
+                    {/* Action Button */}
+                    <div className="mt-auto pt-5 border-t border-gray-100">
+                      <Link
+                        href={`/gallery/${album.slug}`}
+                        className="flex items-center justify-between description tracking-wide font-semibold text-xs sm:text-sm text-orange-600 group-hover:text-orange-700"
+                      >
+                        <span>View Full Photo Collection</span>
+                        <ArrowRight
+                          size={16}
+                          className="transition-transform group-hover:translate-x-1"
+                        />
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
               );
             })}
           </div>
@@ -238,7 +245,9 @@ export default function GalleryPage() {
               <div className="flex items-center gap-2.5 text-xs text-gray-500 description tracking-wide">
                 <span>
                   Showing{" "}
-                  <strong>{Math.min(visibleCount, filteredGalleries.length)}</strong>{" "}
+                  <strong>
+                    {Math.min(visibleCount, filteredGalleries.length)}
+                  </strong>{" "}
                   of <strong>{filteredGalleries.length}</strong> photo albums
                 </span>
                 <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
@@ -247,7 +256,7 @@ export default function GalleryPage() {
                     style={{
                       width: `${Math.min(
                         100,
-                        (visibleCount / filteredGalleries.length) * 100
+                        (visibleCount / filteredGalleries.length) * 100,
                       )}%`,
                     }}
                   />
@@ -269,7 +278,8 @@ export default function GalleryPage() {
           ) : filteredGalleries.length > 6 ? (
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 description tracking-wide">
-                You have viewed all {filteredGalleries.length} photo albums in this collection.
+                You have viewed all {filteredGalleries.length} photo albums in
+                this collection.
               </p>
             </div>
           ) : null}

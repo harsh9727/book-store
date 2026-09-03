@@ -26,12 +26,12 @@ export default async function About() {
       <OurStory />
       <VisionMission />
       <WhyChooseUs />
-      <Newsletter 
+      <Newsletter
         title="Join our community"
         description="Stay updated with our latest releases and exclusive offers."
       />
       <Team members={teamMembers} />
-      
+
       {/* FAQ Section */}
       <section className="py-12">
         <div className="container mx-auto px-4 lg:px-6">

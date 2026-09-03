@@ -137,7 +137,8 @@ export default function ShippingAndDeliveryPolicyPage() {
             Shipping &amp; Delivery Policy
           </h1>
           <p className="description mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
-            How we process, ship, track, and deliver your Gujarat Tract Book Store orders.
+            How we process, ship, track, and deliver your Gujarat Tract Book
+            Store orders.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
             Effective date: August 29, 2026
@@ -148,10 +149,10 @@ export default function ShippingAndDeliveryPolicyPage() {
       <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12 lg:px-6">
         <div className="description border-b border-gray-200 pb-8 text-sm leading-7 text-gray-600 sm:text-base sm:leading-8">
           <p>
-            Thank you for shopping with Gujarat Tract Book Store. We are committed
-            to delivering your books and faith-inspired products safely and on time.
-            This Shipping &amp; Delivery Policy explains how we process, ship, and
-            deliver your orders.
+            Thank you for shopping with Gujarat Tract Book Store. We are
+            committed to delivering your books and faith-inspired products
+            safely and on time. This Shipping &amp; Delivery Policy explains how
+            we process, ship, and deliver your orders.
           </p>
         </div>
 
@@ -162,7 +163,8 @@ export default function ShippingAndDeliveryPolicyPage() {
           </p>
           <BulletList items={processingDetails} />
           <p className="mt-4">
-            You will receive an email or SMS confirmation once your order has been processed.
+            You will receive an email or SMS confirmation once your order has
+            been processed.
           </p>
         </ShippingSection>
 
@@ -177,28 +179,38 @@ export default function ShippingAndDeliveryPolicyPage() {
               <thead className="bg-gray-900 text-white">
                 <tr>
                   <th className="px-4 py-3 font-semibold sm:px-5">Location</th>
-                  <th className="px-4 py-3 font-semibold sm:px-5">Estimated delivery time</th>
+                  <th className="px-4 py-3 font-semibold sm:px-5">
+                    Estimated delivery time
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 <tr>
                   <td className="px-4 py-3 sm:px-5">Metro cities</td>
-                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">1-2 business days</td>
+                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">
+                    1-2 business days
+                  </td>
                 </tr>
                 <tr className="bg-gray-50/70">
                   <td className="px-4 py-3 sm:px-5">Other cities</td>
-                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">2-3 business days</td>
+                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">
+                    2-3 business days
+                  </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 sm:px-5">Rural &amp; remote areas</td>
-                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">3-5 business days</td>
+                  <td className="px-4 py-3 sm:px-5">
+                    Rural &amp; remote areas
+                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-800 sm:px-5">
+                    3-5 business days
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p className="mt-4">
-            These are estimated timelines and may vary due to courier operations or
-            unforeseen circumstances.
+            These are estimated timelines and may vary due to courier operations
+            or unforeseen circumstances.
           </p>
         </ShippingSection>
 
@@ -217,49 +229,53 @@ export default function ShippingAndDeliveryPolicyPage() {
 
         <ShippingSection number={6} title="Order Tracking">
           <p>
-            Once your order has been shipped, you will receive a shipping confirmation
-            email or SMS. You can use the tracking information to monitor the status
-            of your delivery.
+            Once your order has been shipped, you will receive a shipping
+            confirmation email or SMS. You can use the tracking information to
+            monitor the status of your delivery.
           </p>
         </ShippingSection>
 
         <ShippingSection number={7} title="Delivery Attempts">
           <p>
-            Our courier partners will make one or more delivery attempts. Delivery
-            may be unsuccessful due to:
+            Our courier partners will make one or more delivery attempts.
+            Delivery may be unsuccessful due to:
           </p>
           <BulletList items={failedDeliveryReasons} />
           <p className="mt-4">
-            The package may be returned to us. Additional shipping charges may apply
-            if re-delivery is requested.
+            The package may be returned to us. Additional shipping charges may
+            apply if re-delivery is requested.
           </p>
         </ShippingSection>
 
         <ShippingSection number={8} title="Packaging">
           <p>
-            Every order is carefully packed to help protect books and other products
-            during transit. Our goal is to ensure that your purchase arrives in
-            excellent condition.
+            Every order is carefully packed to help protect books and other
+            products during transit. Our goal is to ensure that your purchase
+            arrives in excellent condition.
           </p>
         </ShippingSection>
 
         <ShippingSection number={9} title="Damaged or Missing Items">
           <p>
-            If your order arrives damaged, incomplete, or contains the wrong product:
+            If your order arrives damaged, incomplete, or contains the wrong
+            product:
           </p>
           <BulletList items={damageRequirements} />
           <p className="mt-4">
-            Our team will review your request and provide an appropriate resolution.
+            Our team will review your request and provide an appropriate
+            resolution.
           </p>
         </ShippingSection>
 
         <ShippingSection number={10} title="Delivery Delays">
           <p>
-            While we aim to deliver every order on time, delays may occasionally occur due to:
+            While we aim to deliver every order on time, delays may occasionally
+            occur due to:
           </p>
           <BulletList items={delayReasons} />
           <p className="mt-4">
-            We appreciate your patience in such situations and will keep you informed whenever possible.
+            We appreciate your patience in such situations and will keep you
+            informed whenever possible.
           </p>
         </ShippingSection>
 
@@ -273,10 +289,13 @@ export default function ShippingAndDeliveryPolicyPage() {
 
         <ShippingSection number={13} title="Contact Us">
           <p>
-            If you have any questions regarding shipping or delivery, please contact us.
+            If you have any questions regarding shipping or delivery, please
+            contact us.
           </p>
           <div className="mt-5 border-l-2 border-orange-500 pl-5">
-            <p className="font-semibold text-gray-900">Gujarat Tract Book Store</p>
+            <p className="font-semibold text-gray-900">
+              Gujarat Tract Book Store
+            </p>
             <div className="mt-3 flex flex-col gap-3">
               <Link
                 href="mailto:gtbs-1852@yahoo.in"
@@ -303,13 +322,19 @@ export default function ShippingAndDeliveryPolicyPage() {
         <section className="mt-10 border-y border-orange-200 bg-orange-50/70 px-5 py-8 sm:px-8">
           <div className="mb-6 flex items-center gap-3">
             <PackageCheck className="text-orange-600" size={24} />
-            <h2 className="title text-2xl font-bold text-gray-900">Shipping Summary</h2>
+            <h2 className="title text-2xl font-bold text-gray-900">
+              Shipping Summary
+            </h2>
           </div>
           <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
             {shippingSummary.map(([label, value]) => (
               <div key={label} className="border-b border-orange-200/70 pb-3">
-                <dt className="description text-xs font-semibold uppercase text-gray-500">{label}</dt>
-                <dd className="description mt-1 text-sm font-medium text-gray-900 sm:text-base">{value}</dd>
+                <dt className="description text-xs font-semibold uppercase text-gray-500">
+                  {label}
+                </dt>
+                <dd className="description mt-1 text-sm font-medium text-gray-900 sm:text-base">
+                  {value}
+                </dd>
               </div>
             ))}
           </dl>

@@ -18,17 +18,17 @@ Browser
 
 ## Directory responsibilities
 
-| Path | Responsibility |
-| --- | --- |
-| `src/app/` | Routes, layouts, metadata, pages, and route handlers |
-| `src/components/` | Reusable UI organized by feature |
-| `src/contexts/` | Cross-tree client providers |
-| `src/data/` | Typed first-run/backward-compatible seeds and remaining static content |
-| `src/lib/` | Utilities, SEO, constants, and auth |
-| `src/types/` | Shared domain types |
-| `public/images/` | Static image assets |
+| Path                   | Responsibility                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/app/`             | Routes, layouts, metadata, pages, and route handlers                                               |
+| `src/components/`      | Reusable UI organized by feature                                                                   |
+| `src/contexts/`        | Cross-tree client providers                                                                        |
+| `src/data/`            | Typed first-run/backward-compatible seeds and remaining static content                             |
+| `src/lib/`             | Utilities, SEO, constants, and auth                                                                |
+| `src/types/`           | Shared domain types                                                                                |
+| `public/images/`       | Static image assets                                                                                |
 | `storage/content.json` | Ignored runtime product/category/blog/gallery/testimonial/team metadata, created on first mutation |
-| `docs/` | Maintained project knowledge |
+| `docs/`                | Maintained project knowledge                                                                       |
 
 ## Rendering boundaries
 

@@ -90,7 +90,7 @@ function Header() {
 
   const handleSmoothScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
-    sectionId: string | null
+    sectionId: string | null,
   ) => {
     if (pathname === "/" && sectionId) {
       e.preventDefault();
@@ -144,7 +144,7 @@ function Header() {
   };
 
   const isCategoryActive = categories.some((category) =>
-    isActive(category.href)
+    isActive(category.href),
   );
 
   /* =========================================================
@@ -577,9 +577,7 @@ function Header() {
 
             <button
               type="button"
-              onClick={() =>
-                setIsMobileCategoriesOpen(!isMobileCategoriesOpen)
-              }
+              onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
               className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                 isCategoryActive
                   ? "bg-orange-500 text-white"

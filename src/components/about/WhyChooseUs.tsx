@@ -1,18 +1,12 @@
 "use client";
 
-import {
-  BookOpen,
-  Tag,
-  Truck,
-  Headphones,
-} from "lucide-react";
+import { BookOpen, Tag, Truck, Headphones } from "lucide-react";
 
 const benefits = [
   {
     icon: BookOpen,
     title: "Wide Selection",
-    description:
-      "Thousands of books across every genre and category.",
+    description: "Thousands of books across every genre and category.",
   },
   {
     icon: Tag,
@@ -29,19 +23,14 @@ const benefits = [
   {
     icon: Headphones,
     title: "24/7 Support",
-    description:
-      "We're here to help whenever you need assistance.",
+    description: "We're here to help whenever you need assistance.",
   },
 ];
 
 const WhyChooseUs = () => {
   return (
-    <section
-      aria-labelledby="why-choose-us-heading"
-      className="bg-white py-10"
-    >
+    <section aria-labelledby="why-choose-us-heading" className="bg-white py-10">
       <div className="container mx-auto px-4 lg:px-6">
-
         {/* ================= SECTION HEADING ================= */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-orange-600 md:text-xs">
@@ -52,10 +41,7 @@ const WhyChooseUs = () => {
             id="why-choose-us-heading"
             className="title mt-3 text-[30px] font-bold leading-tight tracking-tight text-gray-900 sm:text-[34px] md:text-[40px]"
           >
-            Built for{" "}
-            <span className="text-orange-600">
-              Book Lovers
-            </span>
+            Built for <span className="text-orange-600">Book Lovers</span>
           </h2>
         </div>
 

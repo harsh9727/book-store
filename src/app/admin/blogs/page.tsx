@@ -12,6 +12,15 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminBlogsPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
-  return <AdminContentShell active="blogs" title="Blog management" description="Create, edit, and remove public journal articles."><AdminBlogManager initialItems={await getBlogs()} /></AdminContentShell>;
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
+  return (
+    <AdminContentShell
+      active="blogs"
+      title="Blog management"
+      description="Create, edit, and remove public journal articles."
+    >
+      <AdminBlogManager initialItems={await getBlogs()} />
+    </AdminContentShell>
+  );
 }

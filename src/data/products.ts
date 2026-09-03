@@ -3,10 +3,11 @@ import { Product } from "@/types/product";
 export const products: Product[] = [
   {
     id: "atomic-habits",
-    title: "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+    title:
+      "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
     author: "James Clear",
     price: 18.99,
-    originalPrice: 27.00,
+    originalPrice: 27.0,
     discount: 30,
     image: "/images/products/atomic-habits.jpg",
     images: [
@@ -46,7 +47,8 @@ export const products: Product[] = [
         rating: 5,
         date: "May 12, 2024",
         title: "A truly life-changing masterpiece",
-        comment: "This book completely transformed my daily routine and workflow. The two-minute rule alone saved me hours every week.",
+        comment:
+          "This book completely transformed my daily routine and workflow. The two-minute rule alone saved me hours every week.",
         verifiedPurchase: true,
       },
       {
@@ -55,7 +57,8 @@ export const products: Product[] = [
         rating: 5,
         date: "April 28, 2024",
         title: "Practical, no-fluff wisdom",
-        comment: "Unlike most self-help books filled with filler, every single page of Atomic Habits has direct practical value.",
+        comment:
+          "Unlike most self-help books filled with filler, every single page of Atomic Habits has direct practical value.",
         verifiedPurchase: true,
       },
     ],
@@ -65,7 +68,7 @@ export const products: Product[] = [
     title: "The Midnight Library: A Novel",
     author: "Matt Haig",
     price: 16.99,
-    originalPrice: 24.00,
+    originalPrice: 24.0,
     discount: 29,
     image: "/images/products/midnight-library.jpg",
     images: [
@@ -104,7 +107,8 @@ export const products: Product[] = [
         rating: 5,
         date: "June 2, 2024",
         title: "Comforting and deeply resonant",
-        comment: "Read it in two sittings. A warm hug of a book that makes you appreciate the life you already have.",
+        comment:
+          "Read it in two sittings. A warm hug of a book that makes you appreciate the life you already have.",
         verifiedPurchase: true,
       },
     ],
@@ -114,7 +118,7 @@ export const products: Product[] = [
     title: "It Ends With Us: A Novel",
     author: "Colleen Hoover",
     price: 15.99,
-    originalPrice: 20.00,
+    originalPrice: 20.0,
     discount: 20,
     image: "/images/products/it-ends-with-us.jpg",
     images: [
@@ -152,7 +156,8 @@ export const products: Product[] = [
         rating: 5,
         date: "May 19, 2024",
         title: "Emotional rollercoaster in the best way",
-        comment: "Have your tissues ready. An unforgettable story that stays with you forever.",
+        comment:
+          "Have your tissues ready. An unforgettable story that stays with you forever.",
         verifiedPurchase: true,
       },
     ],
@@ -200,7 +205,8 @@ export const products: Product[] = [
         rating: 5,
         date: "May 2, 2024",
         title: "I did NOT see that coming!",
-        comment: "The twist blew my mind. Absolutely brilliant pacing and character psychology.",
+        comment:
+          "The twist blew my mind. Absolutely brilliant pacing and character psychology.",
         verifiedPurchase: true,
       },
     ],
@@ -213,9 +219,7 @@ export const products: Product[] = [
     originalPrice: 18.99,
     discount: 21,
     image: "/images/products/rich-dad-poor-dad.jpg",
-    images: [
-      "/images/products/rich-dad-poor-dad.jpg",
-    ],
+    images: ["/images/products/rich-dad-poor-dad.jpg"],
     category: "business",
     rating: 4.8,
     reviewsCount: 3100,
@@ -246,12 +250,10 @@ export const products: Product[] = [
     title: "Think and Grow Rich: The Landmark Bestseller",
     author: "Napoleon Hill",
     price: 12.99,
-    originalPrice: 16.00,
+    originalPrice: 16.0,
     discount: 19,
     image: "/images/products/think-and-grow-rich.jpg",
-    images: [
-      "/images/products/think-and-grow-rich.jpg",
-    ],
+    images: ["/images/products/think-and-grow-rich.jpg"],
     category: "self-help",
     rating: 4.7,
     reviewsCount: 1890,

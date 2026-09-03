@@ -20,7 +20,6 @@ const Reviews = ({ testimonials }: { testimonials: Testimonial[] }) => {
   return (
     <section className="bg-white py-14 md:py-16">
       <div className="container px-3 lg:px-6">
-
         {/* Section Header */}
         <div className="mb-9 text-center">
           <p className="description mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">
@@ -32,16 +31,14 @@ const Reviews = ({ testimonials }: { testimonials: Testimonial[] }) => {
           </h2>
 
           <p className="description mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-500 sm:text-[15px]">
-            Discover what our readers and customers say about their
-            experience with GTBS Book Store.
+            Discover what our readers and customers say about their experience
+            with GTBS Book Store.
           </p>
         </div>
 
         {/* Reviews Slider */}
         <div className="relative">
-
           <Swiper
-            
             modules={[Autoplay]}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
@@ -67,7 +64,10 @@ const Reviews = ({ testimonials }: { testimonials: Testimonial[] }) => {
             }}
           >
             {testimonials.map((sourceTestimonial) => {
-              const testimonial = localizeTestimonial(sourceTestimonial, language);
+              const testimonial = localizeTestimonial(
+                sourceTestimonial,
+                language,
+              );
               const usesStoredGujarati =
                 language === "gu" && Boolean(sourceTestimonial.gujarati);
 
@@ -78,53 +78,55 @@ const Reviews = ({ testimonials }: { testimonials: Testimonial[] }) => {
                     translate={usesStoredGujarati ? "no" : undefined}
                     lang={usesStoredGujarati ? "gu" : undefined}
                   >
+                    {/* Stars */}
+                    <div
+                      className="flex items-center gap-1"
+                      role="img"
+                      aria-label={`${testimonial.rating} out of 5 stars`}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={17}
+                          strokeWidth={star <= testimonial.rating ? 0 : 1.5}
+                          className={
+                            star <= testimonial.rating
+                              ? "fill-orange-500 text-orange-500"
+                              : "text-gray-300"
+                          }
+                        />
+                      ))}
+                    </div>
 
-                  {/* Stars */}
-                  <div
-                    className="flex items-center gap-1"
-                    role="img"
-                    aria-label={`${testimonial.rating} out of 5 stars`}
-                  >
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={17}
-                        strokeWidth={star <= testimonial.rating ? 0 : 1.5}
-                        className={star <= testimonial.rating ? "fill-orange-500 text-orange-500" : "text-gray-300"}
+                    {/* Review Text */}
+                    <p className="description mt-5 text-sm leading-6 text-gray-600">
+                      &quot;{testimonial.review}&quot;
+                    </p>
+
+                    {/* Customer */}
+                    <div className="mt-auto flex items-center gap-3 border-t border-gray-100 pt-5">
+                      {/* Avatar */}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-semibold text-orange-600">
+                        {testimonial.name.charAt(0)}
+                      </div>
+
+                      <div>
+                        <h3 className="title text-[15px] font-semibold text-gray-900">
+                          {testimonial.name}
+                        </h3>
+
+                        <p className="description mt-0.5 text-xs text-gray-400">
+                          {testimonial.role}
+                        </p>
+                      </div>
+
+                      {/* Quote */}
+                      <Quote
+                        size={27}
+                        strokeWidth={1.5}
+                        className="ml-auto text-orange-100 transition-colors duration-300 group-hover:text-orange-200"
                       />
-                    ))}
-                  </div>
-
-                  {/* Review Text */}
-                  <p className="description mt-5 text-sm leading-6 text-gray-600">
-                    &quot;{testimonial.review}&quot;
-                  </p>
-
-                  {/* Customer */}
-                  <div className="mt-auto flex items-center gap-3 border-t border-gray-100 pt-5">
-
-                    {/* Avatar */}
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-semibold text-orange-600">
-                      {testimonial.name.charAt(0)}
                     </div>
-
-                    <div>
-                      <h3 className="title text-[15px] font-semibold text-gray-900">
-                        {testimonial.name}
-                      </h3>
-
-                      <p className="description mt-0.5 text-xs text-gray-400">
-                        {testimonial.role}
-                      </p>
-                    </div>
-
-                    {/* Quote */}
-                    <Quote
-                      size={27}
-                      strokeWidth={1.5}
-                      className="ml-auto text-orange-100 transition-colors duration-300 group-hover:text-orange-200"
-                    />
-                  </div>
                   </div>
                 </SwiperSlide>
               );
@@ -172,7 +174,6 @@ const Reviews = ({ testimonials }: { testimonials: Testimonial[] }) => {
             <ChevronRight size={17} />
           </button>
         </div>
-
       </div>
     </section>
   );

@@ -15,12 +15,8 @@ const Team = ({ members }: TeamProps) => {
   if (members.length === 0) return null;
 
   return (
-    <section
-      aria-labelledby="team-heading"
-      className="bg-white py-10"
-    >
+    <section aria-labelledby="team-heading" className="bg-white py-10">
       <div className="container mx-auto px-4 lg:px-6">
-
         {/* ================= HEADING ================= */}
         <div className="mx-auto max-w-2xl text-center">
           <h2
@@ -59,7 +55,9 @@ const Team = ({ members }: TeamProps) => {
                 </div>
 
                 <div
-                  className={usesStoredGujarati ? "notranslate px-5 py-5" : "px-5 py-5"}
+                  className={
+                    usesStoredGujarati ? "notranslate px-5 py-5" : "px-5 py-5"
+                  }
                   translate={usesStoredGujarati ? "no" : undefined}
                   lang={usesStoredGujarati ? "gu" : undefined}
                 >
@@ -75,7 +73,6 @@ const Team = ({ members }: TeamProps) => {
             );
           })}
         </div>
-
       </div>
     </section>
   );

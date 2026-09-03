@@ -7,7 +7,9 @@ import { ArrowLeft, ImageUp, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import AdminRichTextEditor from "@/components/admin/blog/AdminRichTextEditor";
-import AdminContentLanguageSelect, { type AdminContentLanguage } from "@/components/admin/AdminContentLanguageSelect";
+import AdminContentLanguageSelect, {
+  type AdminContentLanguage,
+} from "@/components/admin/AdminContentLanguageSelect";
 import type { BlogPost } from "@/types/blog";
 import {
   blogRichTextToPlainText,
@@ -85,7 +87,9 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     const values = new FormData(event.currentTarget);
     setError("");
     const englishFields = ["title", "category", "authorName", "authorRole"];
-    if (englishFields.some((field) => !String(values.get(field) || "").trim())) {
+    if (
+      englishFields.some((field) => !String(values.get(field) || "").trim())
+    ) {
       setFormLanguage("en");
       setError("Complete all required English content fields before saving.");
       return;
@@ -96,15 +100,16 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       "gujaratiAuthorName",
       "gujaratiAuthorRole",
     ];
-    if (gujaratiFields.some((field) => !String(values.get(field) || "").trim())) {
+    if (
+      gujaratiFields.some((field) => !String(values.get(field) || "").trim())
+    ) {
       setFormLanguage("gu");
       setError("Complete all required Gujarati content fields before saving.");
       return;
     }
     const contentText = blogRichTextToPlainText(richContent).trim();
-    const gujaratiContentText = blogRichTextToPlainText(
-      gujaratiRichContent,
-    ).trim();
+    const gujaratiContentText =
+      blogRichTextToPlainText(gujaratiRichContent).trim();
     if (!contentText) {
       setFormLanguage("en");
       setArticleError("Add article content before saving.");
@@ -126,8 +131,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
     }
     if (
       contentText.length > MAX_BLOG_CONTENT_CHARACTERS ||
-      JSON.stringify(richContent).length >
-        MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
+      JSON.stringify(richContent).length > MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
     ) {
       setFormLanguage("en");
       setArticleError("Article content is too long.");
@@ -219,7 +223,10 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <AdminContentLanguageSelect value={formLanguage} onChange={setFormLanguage} />
+            <AdminContentLanguageSelect
+              value={formLanguage}
+              onChange={setFormLanguage}
+            />
             <Link
               href="/admin/blogs"
               className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
@@ -278,7 +285,10 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               aria-invalid={Boolean(bannerError)}
               aria-describedby={bannerError ? "blog-banner-error" : undefined}
               onChange={(event) =>
-                chooseBanner(event.currentTarget.files?.[0], event.currentTarget)
+                chooseBanner(
+                  event.currentTarget.files?.[0],
+                  event.currentTarget,
+                )
               }
               className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${bannerError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
             />
@@ -307,7 +317,10 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               aria-invalid={Boolean(avatarError)}
               aria-describedby={avatarError ? "blog-avatar-error" : undefined}
               onChange={(event) =>
-                chooseAvatar(event.currentTarget.files?.[0], event.currentTarget)
+                chooseAvatar(
+                  event.currentTarget.files?.[0],
+                  event.currentTarget,
+                )
               }
               className={`mt-1.5 block w-full rounded-xl border border-dashed p-3 text-sm ${avatarError ? "border-red-400 bg-red-50/40" : "border-slate-300"}`}
             />
@@ -329,7 +342,9 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             )}
           </label>
         </fieldset>
-        <fieldset className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
+        <fieldset
+          className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}
+        >
           <legend className="px-2 text-base font-bold text-slate-800">
             English content
           </legend>
@@ -386,12 +401,15 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             />
           </div>
         </fieldset>
-        <fieldset className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
+        <fieldset
+          className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}
+        >
           <legend className="px-2 text-base font-bold text-orange-700">
             Gujarati content
           </legend>
           <p className="sm:col-span-2 text-xs text-slate-600">
-            This saved content is shown when the storefront language is Gujarati.
+            This saved content is shown when the storefront language is
+            Gujarati.
           </p>
           <label className="sm:col-span-2 text-sm font-semibold">
             Gujarati title
@@ -438,7 +456,9 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             />
           </label>
           <div className="sm:col-span-2" lang="gu">
-            <p className="mb-1.5 text-sm font-semibold">Gujarati article content</p>
+            <p className="mb-1.5 text-sm font-semibold">
+              Gujarati article content
+            </p>
             <AdminRichTextEditor
               initialContent={gujaratiRichContent}
               error={gujaratiArticleError}

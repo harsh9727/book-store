@@ -14,7 +14,10 @@ const quickLinks = [
 const policyLinks = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms and Conditions", href: "/terms-and-conditions" },
-  { label: "Shipping and Delivery Policy", href: "/shipping-and-delivery-policy" },
+  {
+    label: "Shipping and Delivery Policy",
+    href: "/shipping-and-delivery-policy",
+  },
 ];
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
@@ -38,11 +41,10 @@ function Footer() {
           <div className="lg:col-span-4">
             <Image src={Logo} alt="GTBS Book Store" width={72} height={72} />
             <p className="text-white/60 font-normal pt-5 text-sm leading-relaxed max-w-xs">
-              Welcome to GTBS Book Store, your trusted destination for
-              Christian books, Holy Bibles, devotionals, study guides,
-              children&apos;s books, magazines, and faith-inspired gifts.
+              Welcome to GTBS Book Store, your trusted destination for Christian
+              books, Holy Bibles, devotionals, study guides, children&apos;s
+              books, magazines, and faith-inspired gifts.
             </p>
-
           </div>
 
           {/* Quick Links */}
@@ -51,7 +53,10 @@ function Footer() {
             <ul className="text-white/60 font-normal text-sm space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="transition-colors hover:text-amber-400">
+                  <Link
+                    href={link.href}
+                    className="transition-colors hover:text-amber-400"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -65,7 +70,10 @@ function Footer() {
             <ul className="text-white/60 font-normal text-sm space-y-3">
               {policyLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="transition-colors hover:text-amber-400">
+                  <Link
+                    href={link.href}
+                    className="transition-colors hover:text-amber-400"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -99,15 +107,25 @@ function Footer() {
                 </div>
               </li>
               <li>
-                <Link href="mailto:gtbs-1852@yahoo.in" className="flex items-center gap-3 transition-colors hover:text-amber-400">
+                <Link
+                  href="mailto:gtbs-1852@yahoo.in"
+                  className="flex items-center gap-3 transition-colors hover:text-amber-400"
+                >
                   <Mail size={16} className="shrink-0 text-amber-400/80" />
                   gtbs-1852@yahoo.in
                 </Link>
               </li>
               <li>
-                <Link href="https://www.google.com/maps" className="flex items-start gap-3 transition-colors hover:text-amber-400">
-                  <MapPin size={16} className="mt-0.5 shrink-0 text-amber-400/80" />
-                  Sahitya Seva Sadan, Shahid Veer Kinariwala Marg, I P Mission Compound, Ellisbridge, Ahmedabad, Gujarat 380006
+                <Link
+                  href="https://www.google.com/maps"
+                  className="flex items-start gap-3 transition-colors hover:text-amber-400"
+                >
+                  <MapPin
+                    size={16}
+                    className="mt-0.5 shrink-0 text-amber-400/80"
+                  />
+                  Sahitya Seva Sadan, Shahid Veer Kinariwala Marg, I P Mission
+                  Compound, Ellisbridge, Ahmedabad, Gujarat 380006
                 </Link>
               </li>
             </ul>

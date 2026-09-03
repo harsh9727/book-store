@@ -108,11 +108,12 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
                       {magazine.badge || `Magazine 0${index + 1}`}
                     </span>
 
-                    {typeof magazine.price === "number" && magazine.price > 0 && (
-                      <span className="text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md">
-                        ₹{magazine.price}
-                      </span>
-                    )}
+                    {typeof magazine.price === "number" &&
+                      magazine.price > 0 && (
+                        <span className="text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md">
+                          ₹{magazine.price}
+                        </span>
+                      )}
                   </div>
 
                   {/* Title */}

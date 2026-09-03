@@ -3,10 +3,7 @@ import { NextResponse } from "next/server";
 
 import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
-import {
-  deleteTestimonial,
-  updateTestimonial,
-} from "@/lib/contentRepository";
+import { deleteTestimonial, updateTestimonial } from "@/lib/contentRepository";
 import { testimonialDraftSchema } from "@/lib/contentValidation";
 
 interface RouteContext {

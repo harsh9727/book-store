@@ -38,9 +38,9 @@ const OurStory = () => {
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
                 What started as a mission for discovering meaningful Christian
                 literature and Holy Bibles has grown into a trusted destination
-                for readers and communities. From timeless classics to
-                spiritual devotionals, we carefully bring together books that
-                inspire faith, curiosity, and spiritual growth.
+                for readers and communities. From timeless classics to spiritual
+                devotionals, we carefully bring together books that inspire
+                faith, curiosity, and spiritual growth.
               </p>
             </div>
 
@@ -59,18 +59,14 @@ const OurStory = () => {
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   8K+
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Happy Readers
-                </p>
+                <p className="mt-1 text-[11px] text-gray-500">Happy Readers</p>
               </div>
 
               <div className="pl-4">
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   4.9/5
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Reader Rating
-                </p>
+                <p className="mt-1 text-[11px] text-gray-500">Reader Rating</p>
               </div>
             </div>
           </div>

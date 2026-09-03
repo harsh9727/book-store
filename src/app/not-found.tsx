@@ -25,8 +25,8 @@ export default function NotFound() {
           Page Not Found
         </h1>
         <p className="description mx-auto mt-4 max-w-xl text-sm leading-7 text-gray-600 sm:text-base">
-          The page may have moved, or the address may be incorrect. Return home or
-          continue browsing our bookstore.
+          The page may have moved, or the address may be incorrect. Return home
+          or continue browsing our bookstore.
         </p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
           <Link

@@ -12,6 +12,15 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminGalleriesPage() {
   const cookieStore = await cookies();
-  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) redirect("/admin/login");
-  return <AdminContentShell active="galleries" title="Gallery management" description="Manage albums, cover images, and up to 12 photos per album."><AdminGalleryManager initialItems={await getGalleries()} /></AdminContentShell>;
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value))
+    redirect("/admin/login");
+  return (
+    <AdminContentShell
+      active="galleries"
+      title="Gallery management"
+      description="Manage albums, cover images, and up to 12 photos per album."
+    >
+      <AdminGalleryManager initialItems={await getGalleries()} />
+    </AdminContentShell>
+  );
 }

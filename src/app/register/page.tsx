@@ -12,7 +12,9 @@ export default function RegisterPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.info("Customer registration will be available soon. For book inquiries or instant orders, please contact us via WhatsApp!");
+    toast.info(
+      "Customer registration will be available soon. For book inquiries or instant orders, please contact us via WhatsApp!",
+    );
   };
 
   return (
@@ -98,7 +100,10 @@ export default function RegisterPage() {
 
             <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-600">
               <span>Already have an account? </span>
-              <Link href="/login" className="font-semibold text-orange-600 hover:underline">
+              <Link
+                href="/login"
+                className="font-semibold text-orange-600 hover:underline"
+              >
                 Sign In
               </Link>
             </div>

@@ -43,9 +43,10 @@ before(async () => {
   process.env.ADMIN_EMAIL = "admin@example.com";
   process.env.ADMIN_PASSWORD_HASH = await createAdminPasswordHash(
     "correct-horse-battery-staple",
-    randomBytes(16)
+    randomBytes(16),
   );
-  process.env.ADMIN_SESSION_SECRET = "test-session-secret-that-is-longer-than-32-characters";
+  process.env.ADMIN_SESSION_SECRET =
+    "test-session-secret-that-is-longer-than-32-characters";
   process.env.ADMIN_SESSION_VERSION = "1";
   process.env.ADMIN_REQUIRE_MFA = "false";
   process.env.NEXT_PUBLIC_SITE_URL = "https://www.example.com";
@@ -63,16 +64,22 @@ after(() => {
 test("validates a scrypt password hash without accepting wrong credentials", async () => {
   assert.equal(getAdminAuthConfigurationIssues().length, 0);
   assert.equal(
-    await validateAdminCredentials(" ADMIN@example.com ", "correct-horse-battery-staple"),
-    true
+    await validateAdminCredentials(
+      " ADMIN@example.com ",
+      "correct-horse-battery-staple",
+    ),
+    true,
   );
   assert.equal(
     await validateAdminCredentials("admin@example.com", "incorrect-password"),
-    false
+    false,
   );
   assert.equal(
-    await validateAdminCredentials("other@example.com", "correct-horse-battery-staple"),
-    false
+    await validateAdminCredentials(
+      "other@example.com",
+      "correct-horse-battery-staple",
+    ),
+    false,
   );
 });
 
@@ -110,13 +117,17 @@ test("verifies a six-digit TOTP code when MFA is enabled", async () => {
     await validateAdminCredentials(
       "admin@example.com",
       "correct-horse-battery-staple",
-      currentTotpForTest()
+      currentTotpForTest(),
     ),
-    true
+    true,
   );
   assert.equal(
-    await validateAdminCredentials("admin@example.com", "correct-horse-battery-staple", "000000"),
-    false
+    await validateAdminCredentials(
+      "admin@example.com",
+      "correct-horse-battery-staple",
+      "000000",
+    ),
+    false,
   );
 
   process.env.ADMIN_REQUIRE_MFA = "false";
@@ -137,15 +148,24 @@ test("locks a client/account pair after five failures and permits explicit reset
   resetAdminLoginRateLimitForTests();
   const now = 1_000_000;
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    assert.equal(recordAdminLoginFailure("client-a", "admin@example.com", now).allowed, true);
+    assert.equal(
+      recordAdminLoginFailure("client-a", "admin@example.com", now).allowed,
+      true,
+    );
   }
   const locked = recordAdminLoginFailure("client-a", "admin@example.com", now);
   assert.equal(locked.allowed, false);
   assert.equal(locked.retryAfterSeconds, 900);
-  assert.equal(getAdminLoginLimit("client-a", "admin@example.com", now).allowed, false);
+  assert.equal(
+    getAdminLoginLimit("client-a", "admin@example.com", now).allowed,
+    false,
+  );
 
   clearAdminLoginFailures("client-a", "admin@example.com");
-  assert.equal(getAdminLoginLimit("client-a", "admin@example.com", now).allowed, true);
+  assert.equal(
+    getAdminLoginLimit("client-a", "admin@example.com", now).allowed,
+    true,
+  );
 });
 
 test("requires a matching origin and explicit admin mutation header", () => {
@@ -159,12 +179,15 @@ test("requires a matching origin and explicit admin mutation header", () => {
   });
   assert.equal(isTrustedAdminMutation(trustedRequest), true);
 
-  const crossOriginRequest = new Request("http://localhost:3000/api/admin/logout", {
-    method: "POST",
-    headers: {
-      Origin: "https://attacker.example",
-      [ADMIN_REQUEST_HEADER]: ADMIN_REQUEST_HEADER_VALUE,
+  const crossOriginRequest = new Request(
+    "http://localhost:3000/api/admin/logout",
+    {
+      method: "POST",
+      headers: {
+        Origin: "https://attacker.example",
+        [ADMIN_REQUEST_HEADER]: ADMIN_REQUEST_HEADER_VALUE,
+      },
     },
-  });
+  );
   assert.equal(isTrustedAdminMutation(crossOriginRequest), false);
 });

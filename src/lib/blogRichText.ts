@@ -76,9 +76,7 @@ export function blogToRichText(blog?: BlogPost): BlogRichTextDocument {
         type: "bulletList",
         content: section.keyTakeaways.map((takeaway) => ({
           type: "listItem",
-          content: [
-            { type: "paragraph", content: [textNode(takeaway)] },
-          ],
+          content: [{ type: "paragraph", content: [textNode(takeaway)] }],
         })),
       });
     }
@@ -128,7 +126,10 @@ export function blogRichTextToPlainText(
   };
 
   document.content.forEach(visit);
-  return blocks.map((block) => block.trim()).filter(Boolean).join("\n\n");
+  return blocks
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 export function isSafeRichTextHref(value: string): boolean {
