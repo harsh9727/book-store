@@ -15,6 +15,7 @@ import type { Product } from "@/types/product";
 import type { Category } from "@/types/category";
 import { shopFaqs } from "@/data/faqs";
 import ProductGrid from "@/components/product/ProductGrid";
+import { ProductCardSkeleton } from "@/components/common/Skeleton";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
@@ -553,7 +554,13 @@ function AllProductsContent({
           )}
 
           {/* Book Catalog Grid & Pagination */}
-          {filteredAndSortedProducts.length === 0 ? (
+          {catalogLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 lg:gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredAndSortedProducts.length === 0 ? (
             <div className="py-16 sm:py-20 text-center rounded-3xl border border-gray-100 bg-white p-6 sm:p-8">
               <BookOpen size={40} className="mx-auto text-gray-300 mb-3" />
               <h3 className="title text-lg sm:text-xl font-bold text-gray-800">

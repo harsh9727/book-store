@@ -10,10 +10,12 @@ import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeBlog } from "@/lib/localizedBlog";
+import { BlogCardSkeleton } from "@/components/common/Skeleton";
 
 export default function BlogsPage() {
   const { language } = useLanguage();
   const [blogItems, setBlogItems] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -32,9 +34,14 @@ export default function BlogsPage() {
     fetch("/api/content/blogs", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((result: { items: BlogPost[] }) => {
-        if (active) setBlogItems(result.items);
+        if (active) {
+          setBlogItems(result.items);
+          setLoading(false);
+        }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (active) setLoading(false);
+      });
     return () => {
       active = false;
     };
@@ -134,7 +141,13 @@ export default function BlogsPage() {
       </div>
 
       {/* Blog Cards Grid */}
-      {filteredBlogs.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <BlogCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : filteredBlogs.length === 0 ? (
         <div className="py-16 text-center rounded-3xl border border-gray-100 bg-white p-8">
           <p className="text-gray-500 description text-sm">
             No blog posts found matching your search.

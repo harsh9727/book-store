@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Global animated skeleton loading system across all pages
+
+- Outcome: designed and implemented a full animated skeleton shimmer loading system. Added `.skeleton-shimmer` smooth wave animation in `src/app/globals.css`. Built comprehensive, domain-matching skeleton components in `src/components/common/Skeleton.tsx` (`ProductCardSkeleton`, `BlogCardSkeleton`, `GalleryCardSkeleton`, `ProductDetailSkeleton`, `BlogDetailSkeleton`, `GalleryDetailSkeleton`, `CatalogPageSkeleton`, `HomePageSkeleton`). Implemented Next.js App Router streaming `loading.tsx` routes for global root (`/loading.tsx`), `/allproducts/loading.tsx`, `/product/[id]/loading.tsx`, `/blogs/loading.tsx`, `/blogs/[id]/loading.tsx`, `/gallery/loading.tsx`, `/gallery/[id]/loading.tsx`, `/about/loading.tsx`, `/contact/loading.tsx`, and `/admin/loading.tsx`. Updated client components (`AllProductsPage`, `BlogsPage`, `GalleryPage`) with instant client-side shimmer skeleton states during dynamic catalog fetches.
+- Main files/areas: `src/app/globals.css`, `src/components/common/Skeleton.tsx`, `src/app/loading.tsx`, `src/app/allproducts/loading.tsx`, `src/app/product/[id]/loading.tsx`, `src/app/blogs/loading.tsx`, `src/app/blogs/[id]/loading.tsx`, `src/app/gallery/loading.tsx`, `src/app/gallery/[id]/loading.tsx`, `src/app/about/loading.tsx`, `src/app/contact/loading.tsx`, `src/app/admin/loading.tsx`, `src/app/allproducts/page.tsx`, `src/app/blogs/page.tsx`, `src/app/gallery/page.tsx`, `docs/PROGRESS.md`.
+- Data/API/security impact: None; presentation and streaming UI layer enhancement.
+- Verification and exact result: `pnpm lint` passed with 0 errors/warnings; `pnpm test:admin-auth` passed 7/7; `pnpm test:content` passed 22/22; `pnpm build` compiled in 5.2s, finished TypeScript in 8.8s, generated all 35/35 routes with exit code 0.
+- Known limitations or next step: none.
+
 ### 2026-09-03 - Dynamic Magazine product catalog integration
 
 - Outcome: integrated Magazines as first-class dynamic Products. Added `magazines` ("Magazines & Periodicals") to store categories. Configured homepage Magazines section to render dynamic Product attributes (price, badge, localized Gujarati title/description, cover image, and direct product detail links to `/product/[id]`). Admin users can create, edit, price, and manage magazines directly from Admin Products (`/admin/products`).

@@ -17,10 +17,12 @@ import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeGallery } from "@/lib/localizedGallery";
+import { GalleryCardSkeleton } from "@/components/common/Skeleton";
 
 export default function GalleryPage() {
   const { language } = useLanguage();
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(6);
@@ -39,9 +41,14 @@ export default function GalleryPage() {
     fetch("/api/content/galleries", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((result: { items: GalleryItem[] }) => {
-        if (active) setGalleryItems(result.items);
+        if (active) {
+          setGalleryItems(result.items);
+          setLoading(false);
+        }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (active) setLoading(false);
+      });
     return () => {
       active = false;
     };
@@ -140,7 +147,13 @@ export default function GalleryPage() {
       </div>
 
       {/* Gallery Album Cards Grid */}
-      {filteredGalleries.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <GalleryCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : filteredGalleries.length === 0 ? (
         <div className="py-16 text-center rounded-3xl border border-gray-100 bg-white p-8">
           <p className="text-gray-500 description text-sm">
             No gallery albums found matching your search.
