@@ -18,6 +18,8 @@ import ProductGrid from "@/components/product/ProductGrid";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeProduct } from "@/lib/localizedProduct";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -32,6 +34,7 @@ function AllProductsContent({
   initialCollection,
   initialSearch,
 }: AllProductsContentProps) {
+  const { language } = useLanguage();
   // Filters: Category, Price Range, Collections
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [priceRange, setPriceRange] = useState("all");
@@ -116,6 +119,7 @@ function AllProductsContent({
   // Filter & Sort Logic
   const filteredAndSortedProducts = useMemo(() => {
     let result = products.filter((p) => {
+      const localizedProduct = localizeProduct(p, language);
       // 1. Category Filter
       const matchesCat =
         selectedCategory === "all" ||
@@ -153,7 +157,7 @@ function AllProductsContent({
       // Search Query
       const matchesSearch =
         searchQuery.trim() === "" ||
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        localizedProduct.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesCat && matchesPrice && matchesCollection && matchesSearch;
@@ -176,6 +180,7 @@ function AllProductsContent({
     searchQuery,
     sortBy,
     products,
+    language,
   ]);
 
   const activeFilterCount = [

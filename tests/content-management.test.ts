@@ -13,10 +13,12 @@ import {
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
+import { localizeProduct } from "../src/lib/localizedProduct.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
 import { hasInitializedCatalog } from "../src/lib/catalogMigration.ts";
 import type { BlogPost } from "../src/types/blog.ts";
 import type { GalleryItem } from "../src/types/gallery.ts";
+import type { Product } from "../src/types/product.ts";
 
 const blogDraft = {
   title: "A valid article",
@@ -107,6 +109,12 @@ const productDraft = {
   specifications: [{ name: "Material", value: "Paper" }],
   variants: [{ name: "Edition", options: ["Standard", "Gift"] }],
   features: ["One reflection for every day"],
+  gujarati: {
+    title: "દૈનિક ભક્તિ",
+    specifications: [{ name: "સામગ્રી", value: "કાગળ" }],
+    variants: [{ name: "આવૃત્તિ", options: ["પ્રમાણભૂત", "ભેટ"] }],
+    features: ["દરેક દિવસ માટે એક મનન"],
+  },
 };
 
 test("accepts valid blog and gallery drafts", () => {
@@ -117,6 +125,21 @@ test("accepts valid blog and gallery drafts", () => {
 test("accepts valid category and product drafts", () => {
   assert.equal(categoryDraftSchema.safeParse(categoryDraft).success, true);
   assert.equal(productDraftSchema.safeParse(productDraft).success, true);
+});
+
+test("requires Gujarati Product content and selects it without changing shared fields", () => {
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, gujarati: undefined }).success,
+    false,
+  );
+
+  const localized = localizeProduct(productDraft as Product, "gu");
+  assert.equal(localized.title, "દૈનિક ભક્તિ");
+  assert.deepEqual(localized.specifications, [{ name: "સામગ્રી", value: "કાગળ" }]);
+  assert.deepEqual(localized.variants, [{ name: "આવૃત્તિ", options: ["પ્રમાણભૂત", "ભેટ"] }]);
+  assert.equal(localized.price, productDraft.price);
+  assert.equal(localized.image, productDraft.image);
+  assert.equal(localized.category, productDraft.category);
 });
 
 test("rejects malformed catalog fields", () => {

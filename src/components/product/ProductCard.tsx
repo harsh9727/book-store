@@ -7,6 +7,8 @@ import { ShoppingBag, Eye } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeProduct } from "@/lib/localizedProduct";
 
 export interface ProductCardProps {
   product: Product | {
@@ -22,10 +24,13 @@ export interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { language } = useLanguage();
+  const localizedProduct = localizeProduct(product as Product, language);
+  const usesStoredGujarati = language === "gu" && "gujarati" in product && Boolean(product.gujarati);
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.success(`Added "${product.title}" to your cart!`);
+    toast.success(`Added "${localizedProduct.title}" to your cart!`);
   };
 
   const coverSrc = "image" in product && product.image ? product.image : "cover" in product ? product.cover : null;
@@ -41,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const productUrl = new URL(productHref, window.location.origin).toString();
     const message = encodeURIComponent(
-      `Hello GTBS Book Store, I am interested in "${product.title}". Product link: ${productUrl}`
+      `Hello GTBS Book Store, I am interested in "${localizedProduct.title}". Product link: ${productUrl}`
     );
     window.open(
       `https://wa.me/917490028867?text=${message}`,
@@ -66,7 +71,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {coverSrc && (
             <Image
               src={coverSrc}
-              alt={product.title}
+              alt={localizedProduct.title}
               fill
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -83,8 +88,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         </span>
 
         <Link href={productHref}>
-          <h3 className="line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600">
-            {product.title}
+          <h3 className={`line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+            {localizedProduct.title}
           </h3>
         </Link>
 
@@ -100,7 +105,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Link
               href={productHref}
               className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-900 hover:text-white"
-              aria-label={`View details for ${product.title}`}
+              aria-label={`View details for ${localizedProduct.title}`}
               title="View details"
             >
               <Eye size={15} />
@@ -109,7 +114,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               type="button"
               onClick={handleWhatsApp}
               className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors hover:bg-emerald-600 hover:text-white"
-              aria-label={`Ask about ${product.title} on WhatsApp`}
+              aria-label={`Ask about ${localizedProduct.title} on WhatsApp`}
               title="Ask on WhatsApp"
             >
               <FaWhatsapp size={16} />
@@ -118,7 +123,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               type="button"
               onClick={handleAddToCart}
               className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-colors hover:bg-orange-600 hover:text-white"
-              aria-label={`Add ${product.title} to cart`}
+              aria-label={`Add ${localizedProduct.title} to cart`}
               title="Add to cart"
             >
               <ShoppingBag size={15} />

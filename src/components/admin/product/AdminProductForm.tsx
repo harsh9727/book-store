@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
+import { ArrowLeft, ChevronDown, Languages, Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { adminJsonRequest, slugify, uploadAdminImages, validateClientImages } from "@/lib/adminContentClient";
@@ -26,6 +26,8 @@ interface NewDetailImagePreview {
   file: File;
   previewUrl: string;
 }
+
+type FormLanguage = "en" | "gu";
 
 const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
@@ -68,6 +70,7 @@ function initialDetailImages(product?: Product): ProductDetailImage[] {
 export default function AdminProductForm({ initialItem, categories: initialCategories }: Props) {
   const router = useRouter();
   const previewUrlsRef = useRef(new Set<string>());
+  const [formLanguage, setFormLanguage] = useState<FormLanguage>("en");
   const [categoryOptions, setCategoryOptions] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState(initialItem?.category || "");
   const [categoryCreatorOpen, setCategoryCreatorOpen] = useState(false);
@@ -77,6 +80,8 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   const [categoryError, setCategoryError] = useState("");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(() => initialSpecifications(initialItem));
   const [variants, setVariants] = useState<ProductVariant[]>(() => initialVariants(initialItem));
+  const [gujaratiSpecifications, setGujaratiSpecifications] = useState<ProductSpecification[]>(() => initialItem?.gujarati?.specifications || []);
+  const [gujaratiVariants, setGujaratiVariants] = useState<ProductVariant[]>(() => initialItem?.gujarati?.variants || []);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [newDetailImages, setNewDetailImages] = useState<NewDetailImagePreview[]>([]);
   const [retainedDetailImages, setRetainedDetailImages] = useState<ProductDetailImage[]>(() => initialDetailImages(initialItem));
@@ -84,6 +89,17 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   const [detailImagesError, setDetailImagesError] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const activeSpecifications = formLanguage === "gu" ? gujaratiSpecifications : specifications;
+  const activeVariants = formLanguage === "gu" ? gujaratiVariants : variants;
+  const updateActiveSpecifications = (update: (current: ProductSpecification[]) => ProductSpecification[]) => {
+    if (formLanguage === "gu") setGujaratiSpecifications(update);
+    else setSpecifications(update);
+  };
+  const updateActiveVariants = (update: (current: ProductVariant[]) => ProductVariant[]) => {
+    if (formLanguage === "gu") setGujaratiVariants(update);
+    else setVariants(update);
+  };
 
   useEffect(() => {
     const previewUrls = previewUrlsRef.current;
@@ -174,6 +190,16 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
     setBusy(true);
     setError("");
     try {
+      const title = String(values.get("title") || "").trim();
+      const gujaratiTitle = String(values.get("gujaratiTitle") || "").trim();
+      if (!title) {
+        setFormLanguage("en");
+        throw new Error("Enter the English product title before saving.");
+      }
+      if (!gujaratiTitle) {
+        setFormLanguage("gu");
+        throw new Error("Enter the Gujarati product title before saving.");
+      }
       let image = initialItem?.image || "";
       let imageKey = initialItem?.imageKey;
       if (imageFile) {
@@ -194,7 +220,6 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
           title: item.name.replace(/\.[^.]+$/u, ""),
         })),
       ];
-      const title = String(values.get("title") || "").trim();
       const payload = {
         id: slugify(String(values.get("slug") || "").trim() || title),
         title,
@@ -216,6 +241,21 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
         description: String(values.get("description") || "").trim() || undefined,
         synopsis: String(values.get("synopsis") || "").trim() || undefined,
         features: [...new Set(String(values.get("features") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean))],
+        gujarati: {
+          title: gujaratiTitle,
+          specifications: gujaratiSpecifications
+            .map((item) => ({ name: item.name.trim(), value: item.value.trim() }))
+            .filter((item) => item.name || item.value),
+          variants: gujaratiVariants
+            .map((variant) => ({
+              name: variant.name.trim(),
+              options: [...new Set(variant.options.map((option) => option.trim()).filter(Boolean))],
+            }))
+            .filter((variant) => variant.name || variant.options.length),
+          description: String(values.get("gujaratiDescription") || "").trim() || undefined,
+          synopsis: String(values.get("gujaratiSynopsis") || "").trim() || undefined,
+          features: [...new Set(String(values.get("gujaratiFeatures") || "").split(/\r?\n/gu).map((value) => value.trim()).filter(Boolean))],
+        },
       };
       const url = initialItem ? `/api/admin/content/products/${encodeURIComponent(initialItem.id)}` : "/api/admin/content/products";
       await adminJsonRequest(url, initialItem ? "PUT" : "POST", payload);
@@ -231,11 +271,26 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
   };
 
   return <section className="space-y-5">
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-lg font-bold">{initialItem ? "Edit product" : "Add a new product"}</h2><p className="text-xs text-slate-500">Catalog, pricing, media, variants, and product-detail content.</p></div><Link href="/admin/products" className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"><ArrowLeft size={16} />Back to list</Link></div>
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div><h2 className="text-lg font-bold">{initialItem ? "Edit product" : "Add a new product"}</h2><p className="text-xs text-slate-500">Catalog, pricing, media, variants, and product-detail content.</p></div>
+      <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+        <label className="relative flex h-10 min-w-40 items-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50">
+          <Languages size={16} className="pointer-events-none absolute left-3" />
+          <span className="sr-only">Content language</span>
+          <select aria-label="Content language" value={formLanguage} onChange={(event) => setFormLanguage(event.target.value as FormLanguage)} className="h-full w-full cursor-pointer appearance-none rounded-xl bg-transparent pl-10 pr-8 outline-none">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી</option>
+          </select>
+          <ChevronDown aria-hidden="true" size={15} className="pointer-events-none absolute right-3" />
+        </label>
+        <Link href="/admin/products" className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"><ArrowLeft size={16} />Back to list</Link>
+      </div>
+    </div>
     {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
     <form onSubmit={save} className="grid gap-5 lg:grid-cols-2">
       <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:col-span-2"><legend className="px-2 font-bold">Core details</legend>
-        <label className="text-sm font-semibold sm:col-span-2">Title<input name="title" required maxLength={220} defaultValue={initialItem?.title} className={inputClass} /></label>
+        <label className={`${formLanguage === "en" ? "" : "hidden"} text-sm font-semibold sm:col-span-2`}>English title<input name="title" maxLength={220} defaultValue={initialItem?.title} className={inputClass} /></label>
+        <label className={`${formLanguage === "gu" ? "" : "hidden"} text-sm font-semibold sm:col-span-2`}>Gujarati title<input name="gujaratiTitle" lang="gu" maxLength={220} defaultValue={initialItem?.gujarati?.title} className={inputClass} /></label>
         <label className="min-w-0 text-sm font-semibold">Slug<input name="slug" maxLength={220} defaultValue={initialItem?.id} placeholder="auto-from-title" className={inputClass} /></label>
         <div className="min-w-0">
           <div className="flex items-center justify-between gap-3">
@@ -261,19 +316,26 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
       </fieldset>
 
       <fieldset className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Specifications</legend>
-        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Add any product-specific detail, such as Material, Size, Weight, Publisher, ISBN, or Warranty.</p><button type="button" onClick={() => setSpecifications((current) => [...current, { name: "", value: "" }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add specification</button></div>
-        {specifications.length ? <div className="space-y-3">{specifications.map((specification, index) => <div key={`specification-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Name<input value={specification.name} onChange={(event) => setSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Material" className={inputClass} /></label><label className="text-xs font-semibold">Value<input value={specification.value} onChange={(event) => setSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, value: event.target.value } : item))} maxLength={500} placeholder="e.g. Stainless steel" className={inputClass} /></label><button type="button" onClick={() => setSpecifications((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove specification ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No specifications added.</p>}
+        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Add {formLanguage === "gu" ? "Gujarati " : ""}product-specific details, such as Material, Size, Weight, Publisher, ISBN, or Warranty.</p><button type="button" onClick={() => updateActiveSpecifications((current) => [...current, { name: "", value: "" }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add specification</button></div>
+        {activeSpecifications.length ? <div className="space-y-3">{activeSpecifications.map((specification, index) => <div key={`specification-${formLanguage}-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Name<input lang={formLanguage} value={specification.name} onChange={(event) => updateActiveSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Material" className={inputClass} /></label><label className="text-xs font-semibold">Value<input lang={formLanguage} value={specification.value} onChange={(event) => updateActiveSpecifications((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, value: event.target.value } : item))} maxLength={500} placeholder="e.g. Stainless steel" className={inputClass} /></label><button type="button" onClick={() => updateActiveSpecifications((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove specification ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No specifications added for {formLanguage === "gu" ? "Gujarati" : "English"}.</p>}
       </fieldset>
 
       <fieldset className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Variants</legend>
-        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Create product-specific groups such as Size, Color, Format, Pack, Storage, or Edition.</p><button type="button" onClick={() => setVariants((current) => [...current, { name: "", options: [] }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add variant</button></div>
-        {variants.length ? <div className="space-y-3">{variants.map((variant, index) => <div key={`variant-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Variant name<input value={variant.name} onChange={(event) => setVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Color" className={inputClass} /></label><label className="text-xs font-semibold">Options, one per line<textarea value={variant.options.join("\n")} onChange={(event) => setVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, options: event.target.value.split(/\r?\n/gu) } : item))} rows={3} placeholder={"Black\nWhite\nOrange"} className={textareaClass} /></label><button type="button" onClick={() => setVariants((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove variant ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No variants added. Products can be saved without variants.</p>}
+        <div className="flex items-start justify-between gap-4"><p className="text-sm text-slate-500">Create {formLanguage === "gu" ? "Gujarati " : ""}product-specific groups such as Size, Color, Format, Pack, Storage, or Edition.</p><button type="button" onClick={() => updateActiveVariants((current) => [...current, { name: "", options: [] }])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"><Plus size={15} />Add variant</button></div>
+        {activeVariants.length ? <div className="space-y-3">{activeVariants.map((variant, index) => <div key={`variant-${formLanguage}-${index}`} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"><label className="text-xs font-semibold">Variant name<input lang={formLanguage} value={variant.name} onChange={(event) => updateActiveVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item))} maxLength={100} placeholder="e.g. Color" className={inputClass} /></label><label className="text-xs font-semibold">Options, one per line<textarea lang={formLanguage} value={variant.options.join("\n")} onChange={(event) => updateActiveVariants((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, options: event.target.value.split(/\r?\n/gu) } : item))} rows={3} placeholder={"Black\nWhite\nOrange"} className={textareaClass} /></label><button type="button" onClick={() => updateActiveVariants((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50" aria-label={`Remove variant ${index + 1}`}><Trash2 size={17} /></button></div>)}</div> : <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">No variants added for {formLanguage === "gu" ? "Gujarati" : "English"}. Products can be saved without variants.</p>}
       </fieldset>
 
       <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"><legend className="px-2 font-bold">Storefront content</legend>
-        <label className="text-sm font-semibold">Short description<textarea name="description" maxLength={10000} rows={4} defaultValue={initialItem?.description} className={textareaClass} /></label>
-        <label className="text-sm font-semibold">Detailed overview<textarea name="synopsis" maxLength={20000} rows={5} defaultValue={initialItem?.synopsis} className={textareaClass} /></label>
-        <label className="text-sm font-semibold">Features, one per line<textarea name="features" rows={5} defaultValue={initialItem?.features?.join("\n")} className={textareaClass} /></label>
+        <div className={formLanguage === "en" ? "grid gap-4" : "hidden"}>
+          <label className="text-sm font-semibold">Short description<textarea name="description" maxLength={10000} rows={4} defaultValue={initialItem?.description} className={textareaClass} /></label>
+          <label className="text-sm font-semibold">Detailed overview<textarea name="synopsis" maxLength={20000} rows={5} defaultValue={initialItem?.synopsis} className={textareaClass} /></label>
+          <label className="text-sm font-semibold">Features, one per line<textarea name="features" rows={5} defaultValue={initialItem?.features?.join("\n")} className={textareaClass} /></label>
+        </div>
+        <div className={formLanguage === "gu" ? "grid gap-4" : "hidden"} lang="gu">
+          <label className="text-sm font-semibold">Gujarati short description<textarea name="gujaratiDescription" maxLength={10000} rows={4} defaultValue={initialItem?.gujarati?.description} className={textareaClass} /></label>
+          <label className="text-sm font-semibold">Gujarati detailed overview<textarea name="gujaratiSynopsis" maxLength={20000} rows={5} defaultValue={initialItem?.gujarati?.synopsis} className={textareaClass} /></label>
+          <label className="text-sm font-semibold">Gujarati features, one per line<textarea name="gujaratiFeatures" rows={5} defaultValue={initialItem?.gujarati?.features?.join("\n")} className={textareaClass} /></label>
+        </div>
       </fieldset>
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end lg:col-span-2"><Link href="/admin/products" className="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600">Cancel</Link><button disabled={busy || !selectedCategory || Boolean(imageError) || Boolean(detailImagesError)} className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"><Save size={17} />{busy ? "Saving..." : initialItem ? "Update product" : "Create product"}</button></div>
     </form>

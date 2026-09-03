@@ -24,6 +24,15 @@ export interface ProductDetailImage {
   title: string;
 }
 
+export interface ProductLocalizedContent {
+  title: string;
+  specifications?: ProductSpecification[];
+  variants?: ProductVariant[];
+  description?: string;
+  synopsis?: string;
+  features?: string[];
+}
+
 export interface ProductReview {
   id: string;
   user: string;
@@ -66,5 +75,6 @@ export interface Product {
   synopsis?: string;
   authorBio?: string;
   features?: string[];
+  gujarati?: ProductLocalizedContent;
   reviews?: ProductReview[];
 }

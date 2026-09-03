@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Bilingual Product authoring and language selector
+
+- Outcome: added an English/Gujarati content-language dropdown immediately beside `Back to list` on Product create/edit pages. Switching it swaps the language-specific title, specifications, variants, short description, overview, and feature inputs without losing either language's unsaved values; price, slug, category, badge, and images remain shared. New Product saves require an English and Gujarati title. Saved Gujarati Product text is selected reactively on storefront cards, catalog search, detail breadcrumbs, product information, variants, overview/features, specifications, and related-product cards.
+- Main files/areas: Product admin form, Product types and strict validation, Product localization helper, public Product cards/detail UI, catalog search, breadcrumb rendering, focused content tests, and Product documentation.
+- Data/API/security impact: Product create/update payloads now contain a required bounded `gujarati` content block. Persisted Product records keep that block optional so seed and legacy records remain readable; those records continue through the existing Google Translate fallback. Price, media, category relation, slug, badge, and other shared values are not duplicated. Auth and mutation request protections are unchanged.
+- Verification and exact result: focused `pnpm exec eslint ...` passed for all changed TypeScript/TSX files; `pnpm exec tsc --noEmit` passed; the restricted `pnpm test:content` run hit the documented Windows sandbox `spawn EPERM`, while the permitted rerun passed 18/18 including Gujarati Product requirement/localization coverage. The restricted `pnpm build` compiled successfully before the same worker restriction; its permitted rerun completed TypeScript and generated 33/33 static pages. `git diff --check` passed with only repository line-ending notices.
+- Known limitations or next step: legacy Products do not gain authored Gujarati content automatically and use the existing translation fallback until edited and saved. Product Category remains the shared category slug/name model rather than a Product-localized field. Authenticated browser-level visual verification is still recommended.
+
 ### 2026-09-03 - Smooth-scroll route-transition warning fixed
 
 - Outcome: declared the existing global smooth-scroll behavior on the root HTML element so Next.js can manage it correctly during client-side route transitions without emitting the browser warning.

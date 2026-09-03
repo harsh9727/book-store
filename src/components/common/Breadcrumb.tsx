@@ -4,6 +4,7 @@ import { ChevronRight, Home } from "lucide-react";
 export interface BreadcrumbItem {
   label: string;
   href?: string;
+  skipTranslation?: boolean;
 }
 
 export interface BreadcrumbProps {
@@ -36,10 +37,10 @@ const Breadcrumb = ({
                 {isFirst && showHomeIcon && (
                   <Home size={15} className="shrink-0 text-gray-400 group-hover:text-orange-600" />
                 )}
-                <span>{item.label}</span>
+                <span className={item.skipTranslation ? "notranslate" : undefined} translate={item.skipTranslation ? "no" : undefined}>{item.label}</span>
               </Link>
             ) : (
-              <span className="truncate max-w-[200px] sm:max-w-md font-semibold text-gray-700">
+              <span className={`truncate max-w-[200px] sm:max-w-md font-semibold text-gray-700 ${item.skipTranslation ? "notranslate" : ""}`} translate={item.skipTranslation ? "no" : undefined}>
                 {item.label}
               </span>
             )}

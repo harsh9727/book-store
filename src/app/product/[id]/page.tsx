@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Breadcrumb from "@/components/common/Breadcrumb";
 import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductTabs from "@/components/product/ProductTabs";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import LocalizedProductBreadcrumb from "@/components/product/LocalizedProductBreadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   absoluteUrl,
@@ -63,13 +63,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ...(product.images || []),
   ];
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Shop", href: "/shop" },
-    { label: product.category, href: `/shop?category=${product.category}` },
-    { label: product.title },
-  ];
-
   const productStructuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -100,7 +93,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <JsonLd data={productStructuredData} />
       <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Breadcrumbs */}
-      <Breadcrumb items={breadcrumbItems} />
+      <LocalizedProductBreadcrumb product={product} />
 
       {/* Main Product Hero Grid */}
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">

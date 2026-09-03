@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { CheckCircle, FileText, PackageOpen } from "lucide-react";
 import type { Product, ProductSpecification } from "@/types/product";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeProduct } from "@/lib/localizedProduct";
 
 interface ProductTabsProps {
   product: Product;
@@ -28,8 +30,13 @@ function getSpecifications(product: Product): ProductSpecification[] {
 }
 
 export default function ProductTabs({ product }: ProductTabsProps) {
+  const { language } = useLanguage();
+  const localizedProduct = localizeProduct(product, language);
+  const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
   const [activeTab, setActiveTab] = useState<ProductTab>("overview");
-  const specifications = getSpecifications(product);
+  const specifications = usesStoredGujarati
+    ? localizedProduct.specifications || []
+    : getSpecifications(localizedProduct);
 
   return (
     <div className="mt-14">
@@ -63,18 +70,18 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               <h3 className="title mb-3 text-xl font-bold text-gray-900">
                 Product Overview
               </h3>
-              <p className="description text-base leading-relaxed text-gray-600">
-                {product.synopsis || product.description || "No detailed overview is available for this product."}
+              <p className={`description text-base leading-relaxed text-gray-600 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+                {localizedProduct.synopsis || localizedProduct.description || (usesStoredGujarati ? "આ ઉત્પાદન માટે વિગતવાર માહિતી ઉપલબ્ધ નથી." : "No detailed overview is available for this product.")}
               </p>
             </div>
 
-            {product.features && product.features.length > 0 && (
+            {localizedProduct.features && localizedProduct.features.length > 0 && (
               <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-6">
                 <h4 className="title mb-3 text-base font-bold text-orange-950">
                   Key Highlights
                 </h4>
-                <ul className="space-y-2.5 text-sm text-gray-700">
-                  {product.features.map((feature, index) => (
+                <ul className={`space-y-2.5 text-sm text-gray-700 ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
+                  {localizedProduct.features.map((feature, index) => (
                     <li key={`${feature}-${index}`} className="flex items-start gap-2.5">
                       <CheckCircle size={17} className="mt-0.5 shrink-0 text-orange-600" />
                       <span>{feature}</span>
@@ -92,7 +99,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               Product Specifications
             </h3>
             {specifications.length ? (
-              <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+              <div className={`divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white ${usesStoredGujarati ? "notranslate" : ""}`} translate={usesStoredGujarati ? "no" : undefined} lang={usesStoredGujarati ? "gu" : undefined}>
                 {specifications.map((specification, index) => (
                   <div key={`${specification.name}-${index}`} className={`grid grid-cols-1 p-4 text-sm sm:grid-cols-2 ${index % 2 === 0 ? "bg-gray-50/50" : ""}`}>
                     <span className="font-semibold text-gray-500">{specification.name}</span>

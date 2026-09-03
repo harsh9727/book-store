@@ -331,6 +331,17 @@ const productVariantSchema = z
   })
   .strict();
 
+const productLocalizedContentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(220),
+    specifications: z.array(productSpecificationSchema).max(50).optional(),
+    variants: z.array(productVariantSchema).max(20).optional(),
+    description: optionalText(10_000),
+    synopsis: optionalText(20_000),
+    features: z.array(z.string().trim().min(1).max(500)).max(30).optional(),
+  })
+  .strict();
+
 const productDetailImageSchema = z
   .object({
     id: z.string().trim().min(1).max(100),
@@ -371,6 +382,7 @@ export const productSchema = z
     synopsis: optionalText(20_000),
     authorBio: optionalText(10_000),
     features: z.array(z.string().trim().min(1).max(500)).max(30).optional(),
+    gujarati: productLocalizedContentSchema.optional(),
     reviews: z.array(productReviewSchema).max(2_000).optional(),
   })
   .strict();
@@ -396,7 +408,10 @@ export const productDraftSchema = productSchema
     language: true,
     dimensions: true,
   })
-  .extend({ badge: z.enum(PRODUCT_BADGES).optional() });
+  .extend({
+    badge: z.enum(PRODUCT_BADGES).optional(),
+    gujarati: productLocalizedContentSchema,
+  });
 
 export const contentStoreSchema = z
   .object({
