@@ -39,7 +39,7 @@ export default async function About() {
             <Faq
               faqs={aboutFaqs}
               badge="Learn More About Us"
-              title="About ProBooks & GTBS FAQ"
+              title="About GTBS FAQ"
               subtitle="Everything you need to know about our history, collections, and publishing values."
             />
           </div>

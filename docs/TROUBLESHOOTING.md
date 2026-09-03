@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Broken navigation links return 404 (e.g., /books/* or /magazines/*)
+
+**Symptom:** Clicking category links in Header or Magazine cards on the homepage returns a 404 Not Found page.
+
+**Cause:** Legacy template anchor tags pointed to static placeholder paths like `/books/bibles` or `/magazines/faith-life` that did not exist in the App Router.
+
+**Solution:** Route category and collection links through the dynamic catalog query routes: `/allproducts?category=${slug}` and `/allproducts`. Connect dynamic homepage sections (e.g. Magazines) to `getProducts()` filtered by category/badge.
+
+**Prevention:** Always verify link destinations against the active `src/app` route tree and use dynamic catalog filters rather than hardcoding static mock paths.
+
 ## Admin login says “not configured”
 
 **Symptom:** `POST /api/admin/login` returns HTTP 503.

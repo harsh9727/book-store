@@ -26,8 +26,7 @@ function Header() {
   const { language, setLanguage } = useLanguage();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] =
-    useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
 
   // Mobile/tablet dropdowns must work with tap/click, not only hover.
@@ -43,7 +42,6 @@ function Header() {
       if (languageRef.current && !languageRef.current.contains(target)) {
         setIsLanguageOpen(false);
       }
-
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
@@ -90,7 +88,10 @@ function Header() {
     },
   ];
 
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string | null) => {
+  const handleSmoothScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    sectionId: string | null
+  ) => {
     if (pathname === "/" && sectionId) {
       e.preventDefault();
       const element = document.getElementById(sectionId);
@@ -109,24 +110,24 @@ function Header() {
 
   const categories = [
     {
-      name: "Bibles",
-      href: "/books/bibles",
+      name: "Holy Bibles",
+      href: "/allproducts?category=bible-books",
     },
     {
-      name: "Christian Books",
-      href: "/books/christian-books",
+      name: "Christian Living",
+      href: "/allproducts?category=christian-living",
     },
     {
-      name: "Devotional Books",
-      href: "/books/devotional",
+      name: "Devotionals",
+      href: "/allproducts?category=devotionals",
     },
     {
-      name: "Magazines",
-      href: "/books/magazines",
+      name: "Kids & Youth",
+      href: "/allproducts?category=kids",
     },
     {
       name: "Accessories",
-      href: "/books/accessories",
+      href: "/allproducts?category=accessories",
     },
   ];
 
@@ -175,9 +176,7 @@ function Header() {
             >
               <Mail className="h-4 w-4 shrink-0" />
 
-              <span className="hidden sm:inline">
-                gtbs-1852@yahoo.in
-              </span>
+              <span className="hidden sm:inline">gtbs-1852@yahoo.in</span>
             </Link>
 
             {/* Divider */}
@@ -221,9 +220,7 @@ function Header() {
           >
             <Headset className="h-4 w-4 shrink-0" />
 
-            <span className="hidden sm:inline">
-              Help Center
-            </span>
+            <span className="hidden sm:inline">Help Center</span>
           </Link>
         </div>
       </div>
@@ -241,11 +238,7 @@ function Header() {
           <div className="flex items-center justify-between gap-4 lg:gap-8">
             {/* ================= LOGO ================= */}
 
-            <Link
-              href="/"
-              className="shrink-0"
-              aria-label="Book Store Home"
-            >
+            <Link href="/" className="shrink-0" aria-label="Book Store Home">
               <Image
                 src={Logo}
                 alt="Book Store Logo"
@@ -277,7 +270,11 @@ function Header() {
                   Click/tap dropdown — works on desktop + mobile
               ================================================= */}
 
-              <div ref={languageRef} className="notranslate relative" translate="no">
+              <div
+                ref={languageRef}
+                className="notranslate relative"
+                translate="no"
+              >
                 <button
                   type="button"
                   aria-label="Select language"
@@ -297,18 +294,20 @@ function Header() {
                   </span>
 
                   <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${isLanguageOpen ? "rotate-180" : ""
-                      }`}
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      isLanguageOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
                 {/* Language Dropdown */}
 
                 <div
-                  className={`absolute left-1/2 top-full z-[120] mt-2 w-[calc(100vw-24px)] max-w-[240px] -translate-x-1/2 origin-top overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 sm:left-auto sm:right-0 sm:translate-x-0 sm:origin-top-right ${isLanguageOpen
-                    ? "visible translate-y-0 scale-100 opacity-100"
-                    : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
-                    }`}
+                  className={`absolute left-1/2 top-full z-[120] mt-2 w-[calc(100vw-24px)] max-w-[240px] -translate-x-1/2 origin-top overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] transition-all duration-200 sm:left-auto sm:right-0 sm:translate-x-0 sm:origin-top-right ${
+                    isLanguageOpen
+                      ? "visible translate-y-0 scale-100 opacity-100"
+                      : "invisible translate-y-1 scale-95 opacity-0 pointer-events-none"
+                  }`}
                 >
                   <div className="border-b border-gray-100 px-4 py-3.5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
@@ -329,15 +328,10 @@ function Header() {
                           : "text-gray-700"
                       }`}
                     >
-
                       <div className="text-left">
-                        <p className="text-sm font-medium">
-                          English
-                        </p>
+                        <p className="text-sm font-medium">English</p>
 
-                        <p className="text-[11px] text-gray-400">
-                          English
-                        </p>
+                        <p className="text-[11px] text-gray-400">English</p>
                       </div>
                       {language === "en" && <Check className="h-4 w-4" />}
                     </button>
@@ -354,15 +348,10 @@ function Header() {
                           : "text-gray-700"
                       }`}
                     >
-
                       <div className="text-left">
-                        <p className="text-sm font-medium">
-                          ગુજરાતી
-                        </p>
+                        <p className="text-sm font-medium">ગુજરાતી</p>
 
-                        <p className="text-[11px] text-gray-400">
-                          Gujarati
-                        </p>
+                        <p className="text-[11px] text-gray-400">Gujarati</p>
                       </div>
                       {language === "gu" && <Check className="h-4 w-4" />}
                     </button>
@@ -375,8 +364,7 @@ function Header() {
               <span className="hidden h-7 w-px bg-gray-200 sm:block" />
 
               {/* =================================================
-                  ACCOUNT
-                  Click/tap dropdown — works on desktop + mobile
+                  CART
               ================================================= */}
 
               <Link
@@ -386,9 +374,7 @@ function Header() {
               >
                 <ShoppingBag className="h-5 w-5" />
 
-                <span className="hidden sm:inline">
-                  Cart
-                </span>
+                <span className="hidden sm:inline">Cart</span>
               </Link>
 
               {/* =================================================
@@ -443,15 +429,17 @@ function Header() {
             <button
               type="button"
               onClick={() => setIsCategoryMenuOpen((open) => !open)}
-              className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all duration-200 ${isCategoryActive
-                ? "border-orange-500 bg-orange-500 text-white"
-                : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
-                }`}
+              className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all duration-200 ${
+                isCategoryActive
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
+              }`}
             >
               Categories
-
               <ChevronDown
-                className={`h-4 w-4 transition-transform duration-200 ${isCategoryMenuOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 transition-transform duration-200 ${
+                  isCategoryMenuOpen ? "rotate-180" : ""
+                }`}
               />
             </button>
 
@@ -483,18 +471,15 @@ function Header() {
                       key={category.href}
                       href={category.href}
                       onClick={() => setIsCategoryMenuOpen(false)}
-                      className={`flex items-center justify-between rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200 ${active
-                        ? "border-orange-200 bg-orange-50 text-orange-600"
-                        : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
-                        }`}
+                      className={`flex items-center justify-between rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                        active
+                          ? "border-orange-200 bg-orange-50 text-orange-600"
+                          : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                      }`}
                     >
-                      <span>
-                        {category.name}
-                      </span>
+                      <span>{category.name}</span>
 
-                      <span className="text-base">
-                        →
-                      </span>
+                      <span className="text-base">→</span>
                     </Link>
                   );
                 })}
@@ -507,7 +492,7 @@ function Header() {
               {/* View All */}
 
               <Link
-                href="/books"
+                href="/allproducts"
                 onClick={() => setIsCategoryMenuOpen(false)}
                 className="flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
               >
@@ -527,10 +512,11 @@ function Header() {
                   key={item.href}
                   href={item.href}
                   onClick={(e) => handleSmoothScroll(e, item.sectionId)}
-                  className={`py-2 text-sm font-medium transition-colors duration-200 ${active
-                    ? "text-orange-500"
-                    : "text-gray-700 hover:text-orange-500"
-                    }`}
+                  className={`py-2 text-sm font-medium transition-colors duration-200 ${
+                    active
+                      ? "text-orange-500"
+                      : "text-gray-700 hover:text-orange-500"
+                  }`}
                 >
                   {item.name}
                 </Link>
@@ -545,10 +531,9 @@ function Header() {
       ===================================================== */}
 
       <div
-        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${isSidebarOpen
-          ? "visible opacity-100"
-          : "invisible opacity-0"
-          }`}
+        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
+          isSidebarOpen ? "visible opacity-100" : "invisible opacity-0"
+        }`}
         onClick={closeSidebar}
       />
 
@@ -557,24 +542,15 @@ function Header() {
       ===================================================== */}
 
       <aside
-        className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${isSidebarOpen
-          ? "translate-x-0"
-          : "translate-x-full"
-          }`}
+        className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          isSidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         {/* ================= SIDEBAR HEADER ================= */}
 
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-          <Link
-            href="/"
-            onClick={closeSidebar}
-            className="shrink-0"
-          >
-            <Image
-              src={Logo}
-              alt="Book Store Logo"
-              className="h-auto w-20"
-            />
+          <Link href="/" onClick={closeSidebar} className="shrink-0">
+            <Image src={Logo} alt="Book Store Logo" className="h-auto w-20" />
           </Link>
 
           {/* Close Button */}
@@ -602,34 +578,31 @@ function Header() {
             <button
               type="button"
               onClick={() =>
-                setIsMobileCategoriesOpen(
-                  !isMobileCategoriesOpen
-                )
+                setIsMobileCategoriesOpen(!isMobileCategoriesOpen)
               }
-              className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${isCategoryActive
-                ? "bg-orange-500 text-white"
-                : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
-                }`}
+              className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                isCategoryActive
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
+              }`}
             >
-              <span>
-                Categories
-              </span>
+              <span>Categories</span>
 
               <ChevronDown
-                className={`h-4 w-4 transition-transform duration-300 ${isMobileCategoriesOpen
-                  ? "rotate-180"
-                  : ""
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  isMobileCategoriesOpen ? "rotate-180" : ""
+                }`}
               />
             </button>
 
             {/* Category Items */}
 
             <div
-              className={`grid overflow-hidden transition-all duration-300 ease-in-out ${isMobileCategoriesOpen
-                ? "mt-2 grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0"
-                }`}
+              className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+                isMobileCategoriesOpen
+                  ? "mt-2 grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0"
+              }`}
             >
               <div className="min-h-0 overflow-hidden">
                 <div className="space-y-1 rounded-xl bg-gray-50 p-2">
@@ -641,14 +614,13 @@ function Header() {
                         key={category.href}
                         href={category.href}
                         onClick={closeSidebar}
-                        className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active
-                          ? "bg-orange-50 text-orange-600"
-                          : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
-                          }`}
+                        className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                          active
+                            ? "bg-orange-50 text-orange-600"
+                            : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                        }`}
                       >
-                        <span>
-                          {category.name}
-                        </span>
+                        <span>{category.name}</span>
 
                         <ChevronRight className="h-4 w-4" />
                       </Link>
@@ -658,7 +630,7 @@ function Header() {
                   {/* View All */}
 
                   <Link
-                    href="/books"
+                    href="/allproducts"
                     onClick={closeSidebar}
                     className="mt-2 flex items-center justify-center rounded-lg bg-orange-500 px-3 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
                   >
@@ -685,14 +657,13 @@ function Header() {
                     handleSmoothScroll(e, item.sectionId);
                     closeSidebar();
                   }}
-                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${active
-                    ? "bg-orange-50 text-orange-500"
-                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
-                    }`}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-orange-50 text-orange-500"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
+                  }`}
                 >
-                  <span>
-                    {item.name}
-                  </span>
+                  <span>{item.name}</span>
 
                   <ChevronRight className="h-4 w-4" />
                 </Link>

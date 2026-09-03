@@ -70,7 +70,7 @@ export default function BlogsPage() {
       <div className="mb-10 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-sm font-semibold description tracking-wide text-orange-700 mb-3">
           <BookOpen size={16} />
-          <span>The ProBooks Literary Journal</span>
+          <span>The GTBS Literary Journal</span>
         </div>
         <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
           Stories, Ideas & Book Wisdom

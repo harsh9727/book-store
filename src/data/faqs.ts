@@ -28,12 +28,12 @@ export const homeFaqs: FaqItem[] = [
 
 export const aboutFaqs: FaqItem[] = [
   {
-    question: "What is the mission of ProBooks / GTBS Bookstore?",
-    answer: "Our mission is to inspire, educate, and empower readers of all ages with curated literature, spiritual devotionals, classic fiction, and transformative educational resources.",
+    question: "What is the mission of GTBS Bookstore?",
+    answer: "Our mission is to inspire, educate, and empower readers of all ages with curated Christian literature, Holy Bibles, spiritual devotionals, and transformative faith-based resources.",
   },
   {
     question: "When was the bookstore founded?",
-    answer: "We have been faithfully serving literature lovers and communities since 2010 with quality books, author events, and educational outreach.",
+    answer: "We have been faithfully serving literature lovers and faith communities since 2010 with quality books, author events, and educational outreach.",
   },
   {
     question: "Are your books authentic first-party editions?",
@@ -78,7 +78,7 @@ export const galleryFaqs: FaqItem[] = [
     answer: "Yes! Most of our book fairs, storytelling hours, and reading gatherings are free and open to the public. Certain special gala nights may require prior RSVP.",
   },
   {
-    question: "How can authors or publishers host a book launch at ProBooks?",
+    question: "How can authors or publishers host a book launch at GTBS?",
     answer: "Authors and publishers can submit an event proposal via our Contact page or email our events committee. We provide venue, audiovisual, and event promotion support.",
   },
   {
@@ -91,14 +91,14 @@ export const galleryFaqs: FaqItem[] = [
   },
   {
     question: "Can I submit photos taken during community events to be featured?",
-    answer: "We love sharing community moments! Tag us on social media with #ProBooksMoments or send photos to our events email.",
+    answer: "We love sharing community moments! Tag us on social media with #GTBSMoments or send photos to our events email.",
   },
 ];
 
 export const blogsFaqs: FaqItem[] = [
   {
-    question: "How often is the ProBooks literary journal updated?",
-    answer: "We publish fresh reading guides, book reviews, author interviews, and mindfulness tips every week.",
+    question: "How often is the GTBS literary journal updated?",
+    answer: "We publish fresh reading guides, book reviews, author interviews, and mindfulness tips regularly.",
   },
   {
     question: "Can guest writers and critics submit articles for publication?",

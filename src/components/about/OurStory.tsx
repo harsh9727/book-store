@@ -1,19 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import {
-  BookOpen,
-} from "lucide-react";
-
+import { BookOpen } from "lucide-react";
 import OurStoryImage from "../../../public/images/about/story.webp";
 
 const OurStory = () => {
   return (
     <section className="relative overflow-hidden bg-white py-10">
-
       <div className="container relative px-3 lg:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
-
           {/* ================= LEFT CONTENT ================= */}
           <div>
             {/* Label */}
@@ -35,16 +30,17 @@ const OurStory = () => {
             {/* Description */}
             <div className="mt-6 space-y-4">
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                At ProBooks, our story began with a simple belief — every
-                great book has the power to change the way we think, learn,
-                and see the world.
+                At GTBS Book Store, our story began with a simple belief — every
+                great book and faith-filled resource has the power to change the
+                way we think, learn, and see the world.
               </p>
 
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                What started as a passion for discovering meaningful books has
-                grown into a trusted destination for readers everywhere. From
-                timeless classics to modern bestsellers, we carefully bring
-                together books that inspire curiosity and imagination.
+                What started as a mission for discovering meaningful Christian
+                literature and Holy Bibles has grown into a trusted destination
+                for readers and communities. From timeless classics to
+                spiritual devotionals, we carefully bring together books that
+                inspire faith, curiosity, and spiritual growth.
               </p>
             </div>
 
@@ -81,16 +77,16 @@ const OurStory = () => {
 
           {/* ================= RIGHT IMAGE ================= */}
           <div className="relative lg:pl-4">
-
             {/* Image */}
             <div className="relative overflow-hidden rounded-[28px] bg-gray-100 shadow-xl">
               <div className="aspect-[1.3/1] w-full">
                 <Image
                   src={OurStoryImage}
-                  alt="A cozy reading space surrounded by books"
+                  alt="A cozy reading space surrounded by books at GTBS"
                   fill
                   priority
                   className="object-cover transition-transform duration-700 hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
                 />
               </div>
 
@@ -99,7 +95,7 @@ const OurStory = () => {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600">
-                      Since 2020
+                      Since 2010
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-gray-900">

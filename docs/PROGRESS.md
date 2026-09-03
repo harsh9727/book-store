@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Full site audit: 404 remediation, dynamic magazines, branding cleanup, and empty-state UI upgrade
+
+- Outcome: completed a comprehensive audit across Performance, Functionality, Responsive Design, Code Quality, Dynamic Admin Data, and SEO/Security. Fixed broken `/books/*` and `/magazines/*` links in Header navigation and homepage, pointing them to valid dynamic category query routes (`/allproducts?category=...`). Connected homepage Magazines section to dynamic product catalog repository data with localized text selection. Removed residual template "ProBooks" branding across FAQs, WhatsApp greeting, About story, and Blog headers. Upgraded empty-state and placeholder pages (`/cart`, `/wishlist`, `/checkout`, `/login`, `/register`, `/profile`) with responsive layouts, helpful CTAs, and direct WhatsApp/Phone ordering integration.
+- Main files/areas: `src/components/layout/Header.tsx`, `src/components/home/Magazines.tsx`, `src/app/page.tsx`, `src/data/faqs.ts`, `src/components/about/OurStory.tsx`, `src/app/blogs/page.tsx`, `src/app/about/page.tsx`, `src/components/common/WhatsAppButton.tsx`, `src/app/cart/page.tsx`, `src/app/wishlist/page.tsx`, `src/app/checkout/page.tsx`, `src/app/login/page.tsx`, `src/app/register/page.tsx`, `src/app/profile/page.tsx`, `docs/PROGRESS.md`, `docs/PROJECT_OVERVIEW.md`, `docs/TROUBLESHOOTING.md`.
+- Data/API/security impact: Dynamic admin products matching magazine category/badges are now reactively surfaced on the homepage. Customer auth and checkout forms remain secure client-side UI routes with direct assistance channels.
+- Verification and exact result: `pnpm lint` passed with 0 errors and 0 warnings; `pnpm test:admin-auth` passed 7/7; `pnpm test:content` passed 22/22; `pnpm build` compiled in 6.5s, finished TypeScript in 9.6s, generated all 35/35 static and dynamic pages with exit code 0.
+- Known limitations or next step: Database persistence layer for persistent customer accounts and cart sync remains scheduled for future backend milestone.
+
 ### 2026-09-03 - Repository cleanup and code-surface reduction
 
 - Outcome: removed the unused 335-line Blog seed module, the empty Gallery seed module, and four one-use homepage carousel wrapper components. The homepage now composes the shared Product carousel directly, including the corrected Best Sellers naming, and the carousel JSX has readable component/prop formatting. Removed the unreferenced Category repository lookup and changed implementation-only props, nested domain types, validation schemas, and constants from exported to module-private declarations.

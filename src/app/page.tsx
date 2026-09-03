@@ -36,6 +36,12 @@ export default async function Home() {
     (product) =>
       product.category === "accessories" || hasBadge(product, "accessor"),
   );
+  const magazineProducts = products.filter(
+    (product) =>
+      product.category === "magazines" ||
+      hasBadge(product, "magazine") ||
+      product.title.toLowerCase().includes("magazine"),
+  );
 
   return (
     <div className="py-3">
@@ -50,7 +56,7 @@ export default async function Home() {
         />
       </div>
       <div id="magazines">
-        <Magazines />
+        <Magazines products={magazineProducts} />
       </div>
       <div id="best-sellers">
         <ProductCarouselSection

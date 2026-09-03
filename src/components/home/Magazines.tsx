@@ -3,44 +3,68 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
-import Magazine from "../../../public/images/products/magazines/magazine.jpg";
+import type { Product } from "@/types/product";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeProduct } from "@/lib/localizedProduct";
+import DefaultMagazineCover from "../../../public/images/products/magazines/magazine.jpg";
 
-const magazines = [
+interface MagazinesProps {
+  products?: Product[];
+}
+
+const fallbackMagazines = [
   {
-    id: 1,
-    title: "Faith & Life",
+    id: "mag-faith-life",
+    title: "Faith & Life Magazine",
     description:
-      "Discover inspiring stories, faith-filled articles, and meaningful reflections.",
-    image: Magazine,
-    href: "/magazines/faith-life",
+      "Discover inspiring stories, faith-filled articles, and meaningful reflections for daily Christian life.",
+    image: DefaultMagazineCover.src,
+    href: "/allproducts?category=magazines",
   },
   {
-    id: 2,
-    title: "Christian Living",
+    id: "mag-christian-living",
+    title: "Christian Living Digest",
     description:
-      "Explore practical guidance, inspiring stories, and ideas for everyday Christian living.",
-    image: Magazine,
-    href: "/magazines/christian-living",
+      "Explore practical guidance, inspiring stories, and ideas for everyday Christian fellowship and family living.",
+    image: DefaultMagazineCover.src,
+    href: "/allproducts?category=magazines",
   },
   {
-    id: 3,
-    title: "The Good News",
+    id: "mag-good-news",
+    title: "The Good News Monthly",
     description:
-      "Read encouraging articles, spiritual insights, and stories that inspire hope.",
-    image: Magazine,
-    href: "/magazines/the-good-news",
+      "Read encouraging articles, spiritual insights, testimonies, and stories that inspire lasting hope.",
+    image: DefaultMagazineCover.src,
+    href: "/allproducts?category=magazines",
   },
 ];
 
-const Magazines = () => {
+const Magazines = ({ products = [] }: MagazinesProps) => {
+  const { language } = useLanguage();
+
+  const magazineItems =
+    products.length > 0
+      ? products.slice(0, 3).map((prod) => {
+          const localized = localizeProduct(prod, language);
+          return {
+            id: prod.id,
+            title: localized.title,
+            description:
+              localized.description ||
+              localized.synopsis ||
+              "Inspiring Christian periodical filled with faith, stories, and spiritual insights.",
+            image: prod.image || DefaultMagazineCover.src,
+            href: `/product/${prod.id}`,
+          };
+        })
+      : fallbackMagazines;
+
   return (
     <section className="bg-white py-10">
       <div className="container px-3 lg:px-6">
-
         {/* Section Header */}
         <div className="mb-10 flex items-end justify-between gap-6">
           <div className="max-w-2xl text-center mx-auto">
-            
             {/* Heading */}
             <h2 className="title text-3xl font-semibold text-orange-600 sm:text-4xl">
               Our Magazines
@@ -48,16 +72,15 @@ const Magazines = () => {
 
             {/* Description */}
             <p className="description mt-3 max-w-xl text-sm leading-6 text-gray-500 sm:text-[15px]">
-              Discover inspiring Christian magazines filled with
-              faith, stories, spiritual insights, and meaningful
-              content for everyday life.
+              Discover inspiring Christian magazines filled with faith, stories,
+              spiritual insights, and meaningful content for everyday life.
             </p>
           </div>
         </div>
 
         {/* Magazine Cards */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {magazines.map((magazine, index) => (
+          {magazineItems.map((magazine, index) => (
             <Link
               href={magazine.href}
               key={magazine.id}
@@ -73,12 +96,12 @@ const Magazines = () => {
                   <div className="mb-3 flex items-center justify-between">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-600">
                       <BookOpen size={13} className="text-orange-600" />
-                      Magazine 0{magazine.id}
+                      Magazine 0{index + 1}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600 sm:text-xl">
+                  <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600 sm:text-xl line-clamp-2">
                     {magazine.title}
                   </h3>
 
@@ -105,7 +128,7 @@ const Magazines = () => {
                   alt={magazine.title}
                   fill
                   priority={index === 0}
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 18vw"
                 />
 
@@ -119,13 +142,13 @@ const Magazines = () => {
           ))}
         </div>
 
-        {/* Mobile View All */}
-        <div className="mt-8 flex justify-center sm:hidden">
+        {/* View All */}
+        <div className="mt-8 flex justify-center">
           <Link
-            href="/magazines"
+            href="/allproducts?category=magazines"
             className="description flex items-center gap-2 rounded-full border border-orange-600 px-6 py-2.5 text-sm font-medium text-orange-600 transition-all duration-300 hover:bg-orange-600 hover:text-white"
           >
-            View All
+            <span>View All Magazines</span>
             <ArrowRight size={16} />
           </Link>
         </div>

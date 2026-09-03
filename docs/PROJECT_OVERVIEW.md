@@ -14,6 +14,15 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 - EmailJS for the contact form
 - Swiper for carousels
 - Zod for request and persisted-content validation
+
+## Technology stack
+
+- Next.js 16 App Router, React 19, and strict TypeScript
+- Tailwind CSS 4
+- Lucide React and React Icons
+- EmailJS for the contact form
+- Swiper for carousels
+- Zod for request and persisted-content validation
 - Tiptap 3 for the Blog admin rich-text editor
 - UploadThing server SDK for managed blog/gallery/product/team images
 - Node crypto for scrypt password hashing, TOTP MFA, and admin session signing
@@ -22,16 +31,12 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 
 | Area | Routes | Current state |
 | --- | --- | --- |
-| Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | Dynamic Product/Category catalog and homepage Testimonials served by the content repository |
+| Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository |
 | Content | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact` | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs |
-| Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
-| Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
+| Shopping | `/cart`, `/wishlist`, `/checkout` | Responsive empty states and ordering assistance UI with direct WhatsApp inquiry integration |
+| Customer | `/login`, `/register`, `/profile` | Responsive customer UI with admin gateway link; persistent identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
 | Admin | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
-| Admin API | `/api/admin/login`, `/api/admin/logout`, `/api/admin/content/*` | Auth plus validated same-origin content CRUD and UploadThing uploads |
-| SEO | robots, sitemap, manifest, metadata | App Router generated |
-
-The public storefront has no cookie-consent banner or consent cookie. Selecting Gujarati opts into the Google Translate integration and its language cookie. Admin authentication continues to use a signed HttpOnly session cookie.
 
 The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script.
 
