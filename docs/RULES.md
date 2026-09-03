@@ -48,7 +48,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Do not mutate imported domain data.
 - Introduce typed service/repository functions when persistence is added.
 - Admin state-changing requests require same-origin verification and the `X-GTBS-Admin-Request` marker.
-- Catalog/blog/gallery/testimonial admin APIs also require a verified admin session and bounded, strict Zod payloads.
+- Catalog/blog/gallery/testimonial/team admin APIs also require a verified admin session and bounded, strict Zod payloads.
 - Category create/update accepts only name and slug. Category descriptions must not appear in the admin form/list or home-page Category cards; the optional stored field exists only for legacy file compatibility.
 - Product create/update accepts one Price and no Original price. Badge is optional but, when present, must be one of Best Sellers, New Releases, Trending Products, or Accessories.
 - Product specifications must be arbitrary bounded name/value rows rather than fixed book fields. Product variants must be optional named groups with product-specific options; do not hardcode Size, Color, Format, or any other group as universally required.
@@ -56,7 +56,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Product create/edit must not expose or submit Available for sale, Stock count, Rating, or Reviews count. Their optional persisted fields exist only for legacy catalog compatibility until a separate inventory/review workflow is designed.
 - Product create/edit and storefront Product surfaces must not expose or submit Brand / creator or Brand / creator details. Legacy `author` and `authorBio` fields remain optional at rest only so old content files validate.
 - The Product form may create a missing Category from an Add category modal only through the existing protected Category API; after success, the returned Category must be added to the selector and selected without requiring a page reload.
-- Blog banners, Gallery covers/photos, and Product card/detail images accept JPG, PNG, or WebP only, with a 500 KiB maximum per image. A Product may have one card image and at most 6 extra detail images.
+- Blog banners, Gallery covers/photos, Product card/detail images, and Team member images accept JPG, PNG, or WebP only, with a 500 KiB maximum per image. A Product may have one card image and at most 6 extra detail images.
 - Product detail-image selections must preview before save, support individual removal, and include the card image first on the public detail gallery. Managed images removed during update/delete receive best-effort provider cleanup.
 - Product Core details must stack on mobile and use two columns from `sm` upward, pairing Slug/Category and Badge/Price without horizontal overflow.
 - Product create/update pages must place an English/Gujarati content selector directly beside `Back to list`. Switching language must preserve unsaved values and swap Title, Specifications, Variants, Short description, Detailed overview, and Features; Slug, Category, Badge, Price, and images remain shared.
@@ -75,12 +75,15 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Testimonial admin must provide a searchable, eight-row paginated list with Add, Edit, and confirmation-based Delete actions. Add/Edit must use protected standalone routes and the shared language selector beside `Back to list`.
 - Testimonial forms require separate English and Gujarati customer name, role, and testimonial text, plus one shared integer Rating from 1 through 5. Switching language must preserve unsaved values, and save validation must reveal missing content in the appropriate language.
 - The homepage Testimonial carousel must read repository data, render each saved Rating, switch reactively to authored Gujarati content without retranslating it, and render no Testimonial section when the persisted list is empty.
+- Team admin must provide a searchable, eight-row paginated list with Add, Edit, and confirmation-based Delete actions. Add/Edit must use protected standalone routes and the shared language selector beside `Back to list`.
+- Team forms require separate English and Gujarati member name and role values plus one shared image. Switching language must preserve both unsaved versions, and save validation must reveal missing content in the appropriate language.
+- The About-page Team grid must read repository data, switch reactively to authored Gujarati name/role text without retranslating it, preserve repository order, and render no Team section when the persisted list is empty.
 - Client image type, size, and gallery-count validation messages must render below the file input that caused them, with accessible invalid-state attributes; do not place these field errors only in a form-level banner.
 - Valid pending Gallery photos must show an immediate removable preview marked `New`. Repeated selections append until the combined retained-plus-pending count reaches 12; temporary preview URLs must be revoked when no longer used.
 - Public Gallery detail pages display at most 8 photos initially in a responsive 1/2/4-column grid. View more reveals the next batch, and the lightbox must navigate only photos currently revealed to the visitor.
 - While the public Gallery lightbox is open, Left Arrow and Right Arrow navigate the revealed photo set and Escape closes it; keyboard listeners must be removed whenever the viewer is closed.
 - Public Gallery detail links and SEO URLs must use the stored title-derived slug. A resolvable non-canonical identifier must redirect to that slug URL; an unknown identifier returns not found.
-- Admin sidebars expose only implemented destinations: Overview, Products, Categories, Blogs, Gallery, and Testimonials. Do not show placeholder navigation for unavailable modules.
+- Admin sidebars expose only implemented destinations: Overview, Products, Categories, Blogs, Gallery, Testimonials, and Team. Do not show placeholder navigation for unavailable modules.
 - Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
 - Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.

@@ -6,6 +6,9 @@ import Team from "@/components/about/Team";
 import Newsletter from "@/components/home/Newsletter";
 import Faq from "@/components/common/Faq";
 import { aboutFaqs } from "@/data/faqs";
+import { getTeamMembers } from "@/lib/contentRepository";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
   title: "About Us",
@@ -15,7 +18,9 @@ export const metadata = createPageMetadata({
   image: "/images/about/story.webp",
 });
 
-export default function About() {
+export default async function About() {
+  const teamMembers = await getTeamMembers();
+
   return (
     <div>
       <OurStory />
@@ -25,7 +30,7 @@ export default function About() {
         title="Join our community"
         description="Stay updated with our latest releases and exclusive offers."
       />
-      <Team />
+      <Team members={teamMembers} />
       
       {/* FAQ Section */}
       <section className="py-12">

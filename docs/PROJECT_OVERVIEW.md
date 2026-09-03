@@ -4,7 +4,7 @@
 
 GTBS Book Store is a responsive e-commerce website for Gujarat Tract Book Store. It presents Christian books, Bibles, devotionals, magazines, gifts, store information, editorial content, and a protected administration area.
 
-The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial repository. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These commerce areas are not connected to a production database or backend.
+The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial/team repository. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These commerce areas are not connected to a production database or backend.
 
 ## Technology stack
 
@@ -15,7 +15,7 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 - Swiper for carousels
 - Zod for request and persisted-content validation
 - Tiptap 3 for the Blog admin rich-text editor
-- UploadThing server SDK for managed blog/gallery/product images
+- UploadThing server SDK for managed blog/gallery/product/team images
 - Node crypto for scrypt password hashing, TOTP MFA, and admin session signing
 
 ## Routes and current state
@@ -23,11 +23,11 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 | Area | Routes | Current state |
 | --- | --- | --- |
 | Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]` | Dynamic Product/Category catalog and homepage Testimonials served by the content repository |
-| Content | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact` | Blog/gallery data is dynamic; Gallery detail URLs use title-derived slugs |
+| Content | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact` | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs |
 | Shopping | `/cart`, `/wishlist`, `/checkout` | Static empty states/presentation UI; no cart state or production order backend |
 | Customer | `/login`, `/register`, `/profile` | UI exists; identity backend pending |
 | Policies | Privacy, terms, and shipping routes | Content implemented |
-| Admin | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, and Testimonial management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, and Testimonials use list-first management while Categories use a dedicated inline module |
+| Admin | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
 | Admin API | `/api/admin/login`, `/api/admin/logout`, `/api/admin/content/*` | Auth plus validated same-origin content CRUD and UploadThing uploads |
 | SEO | robots, sitemap, manifest, metadata | App Router generated |
 
@@ -41,7 +41,7 @@ Gallery cards and canonical detail URLs use each album's stored title-derived sl
 
 ## Data
 
-Products, Categories, and Testimonials have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; admin mutations persist them alongside Blogs and Galleries in ignored `storage/content.json`. Existing stores missing the Testimonial field receive the committed bilingual seeds, while an explicit empty Testimonial array remains authoritative. The full document is strictly validated and written atomically. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static, and cart/wishlist have no state layer or persistence implementation.
+Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; admin mutations persist them alongside Blogs and Galleries in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static, and cart/wishlist have no state layer or persistence implementation.
 
 ## Local setup
 
@@ -67,7 +67,7 @@ npm run build
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL and SEO | Public |
 | `GOOGLE_SITE_VERIFICATION` | Search Console verification | Server config |
 | `NEXT_PUBLIC_EMAILJS_*` | Contact-form EmailJS configuration | Public/browser |
-| `UPLOADTHING_TOKEN` | Authenticates server-side blog/gallery image uploads | Server only |
+| `UPLOADTHING_TOKEN` | Authenticates server-side blog/gallery/product/team image uploads | Server only |
 | `ADMIN_EMAIL` | Admin identity | Server only |
 | `ADMIN_PASSWORD_HASH` | Generated scrypt password verifier; required in production | Server only |
 | `ADMIN_SESSION_SECRET` | HMAC signing secret | Server only |
@@ -81,16 +81,17 @@ npm run build
 ## Current limitations
 
 - Dashboard product, order, revenue, and inventory figures are presentation data.
-- Admin Orders, Customers, Analytics, Settings, and Help are not implemented and are not shown in the sidebar; Overview, Products, Categories, Blogs, Gallery, and Testimonials are available.
+- Admin Orders, Customers, Analytics, Settings, and Help are not implemented and are not shown in the sidebar; Overview, Products, Categories, Blogs, Gallery, Testimonials, and Team are available.
 - Product management supports search/filter/list and standalone add/edit forms for books, gifts, accessories, and other catalog items. The admin list shows Product, Category, Price, and Actions; it does not expose legacy stock data. The form header places an English/Gujarati dropdown beside `Back to list`; switching it preserves and swaps the language-specific title, specifications, variants, short description, overview, and features. New writes require both titles, while Price, Slug, Category, Badge, Card image, and up to 6 Detail page images are shared. Each language supports up to 50 arbitrary specification rows and 20 product-specific variant groups with up to 50 options per group. Exact duplicate feature lines are collapsed independently on submission, while legacy duplicates remain safe to render. Brand/creator, inventory/availability, and rating/review-count controls are not authored in this form. The storefront reactively selects authored Gujarati Product cards, catalog-search titles, detail breadcrumbs/content, variants, specifications, and related items; legacy Products without Gujarati content retain Google Translate fallback. Category remains shared. The storefront renders saved groups such as Size, Color, Format, Pack, Storage, or Edition without hardcoded variant names, and the detail gallery combines the card image with saved extras. Legacy creator, book, inventory/rating, and extra-image URL fields remain readable by the storage validator, with book details and legacy images migrated into generic records when edited, but new mutations use only the flexible supported shape. Category selection is strict, but an admin can open Add category from the Product form, create a missing name-and-slug Category in a modal popup, and have it selected immediately. The separate Category manager supports slug edits that cascade to assigned Products and prevents deletion of an assigned Category. Category descriptions are no longer accepted by admin mutations or displayed on home-page Category cards, while legacy stored descriptions remain readable for backward-compatible validation.
 - Product Core details stacks on mobile; from `sm` upward it pairs Slug with Category and Badge with Price while the selected language's Title remains full-width.
 - Blog and Gallery index routes default to responsive tables with text search, category filtering, and 8-row client-side pagination. Add and Edit navigate to separate protected form routes; Save or Cancel returns to the related list, while View opens the corresponding public detail route. CRUD mutations report success/failure through admin-scoped toasts, and Delete requires confirmation in a custom modal.
 - Blog admin create/edit pages place the shared English/Gujarati dropdown beside `Back to list`. The language-independent Slug, Date, Banner image, and Author avatar controls remain visible in the Common fields card; the selected language card shows its title, category, author name/role, and article editor. Switching preserves unsaved values in both language cards, and incomplete hidden-language content switches into view during save validation. Both language articles use the responsive Tiptap toolbar for headings, inline emphasis, lists, quotes, code, rules, links, and history controls. When Gujarati is selected on the storefront, saved Gujarati data is used reactively on home cards, the Blog list/search/categories, detail content, breadcrumbs, and related articles; legacy posts without it retain the prior translation fallback. The forms no longer require a summary field, and the author avatar is optional. If no avatar image is uploaded, the form uses `/images/logo/logo.webp` so the public author card still renders a valid image.
 - Gallery admin create/edit pages use the same header language dropdown and show one English or Gujarati content card at a time while preserving both sets of unsaved values. Common Slug/Date and the Gallery images card remain visible. Each language requires title, category, location, and description while organizer is optional; incomplete hidden-language content switches into view during save validation. Subtitle is not part of Gallery CRUD. Cover upload, extra-photo selection, inline image errors, retained photos, and pending previews stay together in the image card. Selecting Gujarati reactively switches authored Gallery list/search/category, detail, breadcrumb, organizer, and related-album text; legacy records without Gujarati content retain the translation fallback.
 - Testimonial management provides a searchable, paginated list plus protected standalone add/edit forms and confirmation-based deletion. Rating is a shared 1–5 value; English and Gujarati separately require customer name, role, and testimonial text. The shared language selector preserves both unsaved versions and reveals incomplete hidden-language content on save. The homepage review carousel reads the repository on each dynamic request, renders saved star ratings, switches reactively to authored Gujarati content, and disappears when the persisted list is empty. Initials are derived from the localized customer name; avatar uploads and manual ordering are not implemented.
+- Team management provides a searchable, eight-row paginated list plus protected standalone add/edit forms and confirmation-based deletion. Each profile has one shared uploaded image and separately required English/Gujarati name and role fields, with the shared language selector beside `Back to list`. The dynamic About page selects authored Gujarati profiles reactively and hides the complete Team section when its persisted array is empty. Repository order controls display order; manual reordering is not implemented.
 - Image selection errors are displayed directly below the affected banner, cover, or extra-photo input; general API/mutation failures remain form-level and toast notifications.
 - Newly selected Gallery extra photos render local previews before submission, are marked `New`, can be removed individually, and remain subject to the combined 12-photo limit.
-- Product/category/blog/gallery/testimonial metadata persistence requires one writable persistent Node filesystem. Serverless/read-only/multi-replica deployments need a shared database repository before use.
+- Product/category/blog/gallery/testimonial/team metadata persistence requires one writable persistent Node filesystem. Serverless/read-only/multi-replica deployments need a shared database repository before use.
 - Uploading images and then failing a later content mutation can leave an unreferenced UploadThing file that must be cleaned up manually.
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.

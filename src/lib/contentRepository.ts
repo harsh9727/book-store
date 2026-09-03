@@ -7,9 +7,11 @@ import type { Category } from "@/types/category";
 import type { GalleryItem } from "@/types/gallery";
 import type { Product } from "@/types/product";
 import type { Testimonial } from "@/types/testimonial";
+import type { TeamMember } from "@/types/team";
 import { categories as seededCategories } from "@/data/categories";
 import { products as seededProducts } from "@/data/products";
 import { testimonials as seededTestimonials } from "@/data/testimonials";
+import { teamMembers as seededTeamMembers } from "@/data/team";
 import { plainTextToBlogRichText } from "@/lib/blogRichText";
 import { hasInitializedCatalog } from "@/lib/catalogMigration";
 import {
@@ -19,11 +21,13 @@ import {
   galleryDraftSchema,
   productDraftSchema,
   testimonialDraftSchema,
+  teamMemberDraftSchema,
   type BlogDraft,
   type CategoryDraft,
   type GalleryDraft,
   type ProductDraft,
   type TestimonialDraft,
+  type TeamMemberDraft,
 } from "@/lib/contentValidation";
 
 interface ContentStore {
@@ -34,6 +38,7 @@ interface ContentStore {
   products: Product[];
   categories: Category[];
   testimonials: Testimonial[];
+  teamMembers: TeamMember[];
 }
 
 const storageDirectory = path.join(process.cwd(), "storage");
@@ -49,6 +54,7 @@ function seededStore(): ContentStore {
     products: seededProducts.map((product) => ({ ...product })),
     categories: seededCategories.map((category) => ({ ...category })),
     testimonials: seededTestimonials.map((testimonial) => ({ ...testimonial })),
+    teamMembers: seededTeamMembers.map((member) => ({ ...member })),
   };
 }
 
@@ -61,6 +67,9 @@ async function readStore(): Promise<ContentStore> {
     const storedTestimonials = Array.isArray(stored.testimonials)
       ? stored.testimonials
       : seededTestimonials;
+    const storedTeamMembers = Array.isArray(stored.teamMembers)
+      ? stored.teamMembers
+      : seededTeamMembers;
     const catalogIsInitialized = hasInitializedCatalog(stored);
     return contentStoreSchema.parse({
       ...stored,
@@ -68,6 +77,7 @@ async function readStore(): Promise<ContentStore> {
       products: catalogIsInitialized ? storedProducts : seededProducts,
       categories: catalogIsInitialized ? storedCategories : seededCategories,
       testimonials: storedTestimonials,
+      teamMembers: storedTeamMembers,
     }) as ContentStore;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return seededStore();
@@ -264,6 +274,42 @@ export function deleteTestimonial(id: string) {
     const index = store.testimonials.findIndex((testimonial) => testimonial.id === id);
     if (index < 0) return null;
     return store.testimonials.splice(index, 1)[0];
+  });
+}
+
+export async function getTeamMembers() {
+  return (await readStore()).teamMembers;
+}
+
+export async function getTeamMember(id: string) {
+  return (await getTeamMembers()).find((member) => member.id === id);
+}
+
+export function createTeamMember(draft: TeamMemberDraft) {
+  return mutateStore((store) => {
+    const parsed = teamMemberDraftSchema.parse(draft);
+    const member: TeamMember = { ...parsed, id: randomUUID() };
+    store.teamMembers.push(member);
+    return member;
+  });
+}
+
+export function updateTeamMember(id: string, draft: TeamMemberDraft) {
+  return mutateStore((store) => {
+    const index = store.teamMembers.findIndex((member) => member.id === id);
+    if (index < 0) return null;
+    const parsed = teamMemberDraftSchema.parse(draft);
+    const member: TeamMember = { ...parsed, id: store.teamMembers[index].id };
+    store.teamMembers[index] = member;
+    return member;
+  });
+}
+
+export function deleteTeamMember(id: string) {
+  return mutateStore((store) => {
+    const index = store.teamMembers.findIndex((member) => member.id === id);
+    if (index < 0) return null;
+    return store.teamMembers.splice(index, 1)[0];
   });
 }
 

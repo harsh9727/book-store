@@ -160,6 +160,16 @@
 
 **Observed 2026-09-01:** after unused-file/dependency cleanup, production compilation succeeded in 4.1 seconds before the same TypeScript-worker denial. Full lint, generated route types, standalone TypeScript, and the direct 7/7 admin-auth suite passed.
 
+## Turbopack build exits with Windows code `3221225725`
+
+**Symptom:** `pnpm build` stops during `Creating an optimized production build` without a source diagnostic and exits with decimal code `3221225725` (`0xC00000FD`).
+
+**Cause:** the native Windows bundler process exhausted its stack or crashed transiently. Because no TypeScript/module diagnostic is emitted, this exit alone does not identify an application-code error.
+
+**Solution:** rerun focused ESLint and `pnpm exec tsc --noEmit`, then make one clean build retry after the failed process has ended. If the exit repeats, stop other Next.js processes, inspect available memory/paging resources, and clear only this workspace's `.next` cache when safe. Do not claim build success without a later exit code 0.
+
+**Observed 2026-09-03:** the first permitted Team-module build exited with `3221225725` during native compilation. An unchanged immediate retry compiled in 7.2 seconds, completed TypeScript in 16.6 seconds, generated 35/35 static pages, listed the Team pages/APIs, and exited 0; the failure was transient.
+
 ## Build cannot fetch configured Google Fonts
 
 **Symptom:** `npm run build` reports `next/font` failures for Fraunces and Inter because it cannot connect to `fonts.googleapis.com`.

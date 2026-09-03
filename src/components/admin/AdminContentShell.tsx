@@ -9,12 +9,13 @@ import {
   Package,
   Store,
   Tags,
+  UsersRound,
 } from "lucide-react";
 
 import AdminLogoutButton from "@/components/admin/login/AdminLogoutButton";
 
 interface AdminContentShellProps {
-  active: "overview" | "products" | "categories" | "blogs" | "galleries" | "testimonials";
+  active: "overview" | "products" | "categories" | "blogs" | "galleries" | "testimonials" | "team";
   title?: string;
   description?: string;
   children: ReactNode;
@@ -27,6 +28,7 @@ const navigation = [
   { key: "blogs", label: "Blogs", href: "/admin/blogs", icon: BookOpenText },
   { key: "galleries", label: "Gallery", href: "/admin/galleries", icon: Images },
   { key: "testimonials", label: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
+  { key: "team", label: "Team", href: "/admin/team", icon: UsersRound },
 ];
 
 export default function AdminContentShell({

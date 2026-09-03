@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+import AdminContentShell from "@/components/admin/AdminContentShell";
+import AdminTeamManager from "@/components/admin/team/AdminTeamManager";
+import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/adminAuth";
+import { getTeamMembers } from "@/lib/contentRepository";
+
+export const metadata: Metadata = { title: "Manage Team" };
+export const dynamic = "force-dynamic";
+
+export default async function AdminTeamPage() {
+  const cookieStore = await cookies();
+  if (!verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) {
+    redirect("/admin/login");
+  }
+
+  const teamMembers = await getTeamMembers();
+
+  return (
+    <AdminContentShell
+      active="team"
+      title="Team"
+      description="Manage the bilingual team section shown on the About page."
+    >
+      <AdminTeamManager initialItems={teamMembers} />
+    </AdminContentShell>
+  );
+}

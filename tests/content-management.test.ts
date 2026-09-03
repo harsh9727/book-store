@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { galleries } from "../src/data/galleries.ts";
 import { testimonials } from "../src/data/testimonials.ts";
+import { teamMembers } from "../src/data/team.ts";
 import {
   blogDraftSchema,
   categoryDraftSchema,
@@ -11,18 +12,21 @@ import {
   MAX_BLOG_DRAFT_BODY_BYTES,
   productDraftSchema,
   testimonialDraftSchema,
+  teamMemberDraftSchema,
 } from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { localizeProduct } from "../src/lib/localizedProduct.ts";
 import { localizeTestimonial } from "../src/lib/localizedTestimonial.ts";
+import { localizeTeamMember } from "../src/lib/localizedTeam.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
 import { hasInitializedCatalog } from "../src/lib/catalogMigration.ts";
 import type { BlogPost } from "../src/types/blog.ts";
 import type { GalleryItem } from "../src/types/gallery.ts";
 import type { Product } from "../src/types/product.ts";
 import type { Testimonial } from "../src/types/testimonial.ts";
+import type { TeamMember } from "../src/types/team.ts";
 
 const blogDraft = {
   title: "A valid article",
@@ -133,6 +137,16 @@ const testimonialDraft = {
   },
 };
 
+const teamMemberDraft = {
+  name: "Ruth Patel",
+  role: "Community Partnerships Lead",
+  image: "https://example.com/ruth.webp",
+  gujarati: {
+    name: "રુથ પટેલ",
+    role: "સમુદાય ભાગીદારી વડા",
+  },
+};
+
 test("accepts valid blog and gallery drafts", () => {
   assert.equal(blogDraftSchema.safeParse(blogDraft).success, true);
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
@@ -190,6 +204,42 @@ test("accepts the seeded bilingual Testimonials in the persisted store schema", 
     blogs: [],
     galleries: [],
     testimonials,
+  });
+  assert.equal(parsed.success, true);
+});
+
+test("validates bilingual Team drafts and selects stored Gujarati content", () => {
+  assert.equal(teamMemberDraftSchema.safeParse(teamMemberDraft).success, true);
+  assert.equal(
+    teamMemberDraftSchema.safeParse({
+      ...teamMemberDraft,
+      gujarati: undefined,
+    }).success,
+    false,
+  );
+  assert.equal(
+    teamMemberDraftSchema.safeParse({ ...teamMemberDraft, image: "" }).success,
+    false,
+  );
+
+  const storedMember: TeamMember = {
+    ...teamMemberDraft,
+    id: "team-member-5",
+  };
+  const localized = localizeTeamMember(storedMember, "gu");
+  assert.equal(localized.name, "રુથ પટેલ");
+  assert.equal(localized.role, "સમુદાય ભાગીદારી વડા");
+  assert.equal(localized.image, teamMemberDraft.image);
+  assert.equal(localized.id, storedMember.id);
+  assert.equal(localizeTeamMember(storedMember, "en"), storedMember);
+});
+
+test("accepts the seeded bilingual Team in the persisted store schema", () => {
+  const parsed = contentStoreSchema.safeParse({
+    version: 1,
+    blogs: [],
+    galleries: [],
+    teamMembers,
   });
   assert.equal(parsed.success, true);
 });
@@ -424,6 +474,7 @@ test("accepts an empty editorial store without any committed fallback data", () 
     assert.deepEqual(parsed.data.products, []);
     assert.deepEqual(parsed.data.categories, []);
     assert.deepEqual(parsed.data.testimonials, []);
+    assert.deepEqual(parsed.data.teamMembers, []);
   }
 });
 

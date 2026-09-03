@@ -10,7 +10,7 @@
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
 | Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
-| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial management is implemented |
+| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
 | Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
@@ -24,6 +24,14 @@
 5. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-09-03 - Dynamic bilingual About Team module
+
+- Outcome: replaced the hardcoded About-page Team array with repository-backed Team members and added protected admin list/add/edit/delete routes. The searchable list uses eight-row pagination and confirmation-based deletion. Add/Edit places the shared English/Gujarati selector beside `Back to list`, keeps one shared member image, requires separate name and role values for both languages, and reveals the incomplete language during save validation. The About page reactively selects authored Gujarati profiles and hides the Team section when the persisted list is empty.
+- Main files/areas: Team types/seeds/localization, strict content validation, filesystem repository, protected Team CRUD and upload-purpose APIs, admin navigation/list/add/edit form, About page data composition, focused content tests, and project documentation.
+- Data/API/security impact: `storage/content.json` now supports a bounded `teamMembers` array. Stores missing the field receive the four committed bilingual members, while an explicitly persisted empty array remains empty. New writes require strict bounded English and Gujarati names/roles plus a valid image reference. Managed Team images use the existing JPG/PNG/WebP, binary-signature, positive-size, and 500 KiB upload controls; replacing or deleting a member triggers best-effort provider cleanup. Mutations retain signed-session, same-origin/marker, bounded-body, serialized atomic-write, and no-store protections.
+- Verification and exact result: focused ESLint passed for all changed TypeScript/TSX and test files; `pnpm exec tsc --noEmit` passed; the restricted `pnpm test:content` run hit the documented Windows sandbox `spawn EPERM`, while the permitted rerun passed 22/22 including bilingual Team validation, localization, seed validation, and empty-store compatibility. The first permitted `pnpm build` attempt exited during native Turbopack compilation with transient Windows code `3221225725`; the clean retry compiled in 7.2 seconds, finished TypeScript in 16.6 seconds, generated 35/35 static pages, listed all three Team admin routes and both Team CRUD APIs, and exited 0. `git diff --check` passed with only line-ending notices.
+- Known limitations or next step: Team order follows repository order and has no manual reordering control. The four compatibility seeds currently share the existing Team image. An authenticated browser CRUD and responsive visual review remain recommended.
 
 ### 2026-09-03 - Dynamic bilingual Testimonial module
 
