@@ -10,7 +10,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 
-export type AppLanguage = "en" | "gu";
+type AppLanguage = "en" | "gu";
 
 interface LanguageContextValue {
   language: AppLanguage;

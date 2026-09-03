@@ -200,7 +200,7 @@ const blogLocalizedDraftSchema = z
   })
   .strict();
 
-export const blogPostSchema = z
+const blogPostSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
     title: z.string().trim().min(1).max(220),
@@ -246,7 +246,7 @@ export const blogDraftSchema = z
   })
   .strict();
 
-export const galleryPhotoSchema = z
+const galleryPhotoSchema = z
   .object({
     id: z.string().trim().min(1).max(100),
     url: imageReferenceSchema,
@@ -266,7 +266,7 @@ const galleryLocalizedContentSchema = z
   })
   .strict();
 
-export const galleryItemSchema = z
+const galleryItemSchema = z
   .object({
     id: z.union([z.string().trim().min(1).max(100), z.number()]),
     slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u).max(220),
@@ -294,7 +294,7 @@ const slugSchema = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
   .max(220);
 
-export const categorySchema = z
+const categorySchema = z
   .object({
     id: z.string().trim().min(1).max(100),
     name: z.string().trim().min(1).max(120),
@@ -351,7 +351,7 @@ const productDetailImageSchema = z
   })
   .strict();
 
-export const productSchema = z
+const productSchema = z
   .object({
     id: slugSchema,
     title: z.string().trim().min(1).max(220),
@@ -421,7 +421,7 @@ const testimonialLocalizedContentSchema = z
   })
   .strict();
 
-export const testimonialSchema = z
+const testimonialSchema = z
   .object({
     id: z.string().trim().min(1).max(100),
     name: z.string().trim().min(1).max(120),
@@ -443,7 +443,7 @@ const teamMemberLocalizedContentSchema = z
   })
   .strict();
 
-export const teamMemberSchema = z
+const teamMemberSchema = z
   .object({
     id: z.string().trim().min(1).max(100),
     name: z.string().trim().min(1).max(120),

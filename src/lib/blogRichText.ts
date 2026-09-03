@@ -7,7 +7,7 @@ import type {
 export const MAX_BLOG_CONTENT_CHARACTERS = 40_000;
 export const MAX_BLOG_RICH_TEXT_JSON_CHARACTERS = 80_000;
 
-export function emptyBlogRichText(): BlogRichTextDocument {
+function emptyBlogRichText(): BlogRichTextDocument {
   return { type: "doc", content: [{ type: "paragraph" }] };
 }
 

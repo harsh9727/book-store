@@ -10,7 +10,7 @@ import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
 
-export interface ProductCardProps {
+interface ProductCardProps {
   product: Product | {
     id: string | number;
     title: string;

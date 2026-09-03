@@ -1,13 +1,10 @@
 import { createPageMetadata, siteConfig } from "@/lib/seo";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
-import NewArrivals from "@/components/home/NewArrivals";
 import Magazines from "@/components/home/Magazines";
-import BestSallers from "@/components/home/BestSallers";
-import Trendings from "@/components/home/Trendings";
 import CategorySection from "@/components/home/CategorySection";
 import WhyChoose from "@/components/home/WhyChoose";
-import OurAccessories from "@/components/home/OurAccessories";
+import ProductCarouselSection from "@/components/home/ProductCarouselSection";
 import Reviews from "@/components/home/Reviews";
 import FaqAndBlog from "@/components/home/FaqAndBlog";
 import { getProducts, getTestimonials } from "@/lib/contentRepository";
@@ -25,30 +22,62 @@ export default async function Home() {
     getProducts(),
     getTestimonials(),
   ]);
-  const hasBadge = (product: (typeof products)[number], value: string) => product.badge?.toLowerCase().includes(value) ?? false;
+  const hasBadge = (product: (typeof products)[number], value: string) =>
+    product.badge?.toLowerCase().includes(value) ?? false;
   const newReleases = products.filter((product) => hasBadge(product, "new"));
   const bestSellers = products.filter((product) => hasBadge(product, "best"));
-  const trending = products.filter((product) => hasBadge(product, "trend") || hasBadge(product, "popular") || (product.rating ?? 0) >= 4.7);
-  const accessories = products.filter((product) => product.category === "accessories" || hasBadge(product, "accessor"));
+  const trending = products.filter(
+    (product) =>
+      hasBadge(product, "trend") ||
+      hasBadge(product, "popular") ||
+      (product.rating ?? 0) >= 4.7,
+  );
+  const accessories = products.filter(
+    (product) =>
+      product.category === "accessories" || hasBadge(product, "accessor"),
+  );
+
   return (
     <div className="py-3">
       <HeroSection />
       <FeaturesSection />
       <div id="new-releases">
-        <NewArrivals products={newReleases} />
+        <ProductCarouselSection
+          title="New Releases"
+          description="Explore the latest Christian books, devotionals, study guides, children’s books, and inspiring titles recently added to our collection."
+          href="/allproducts?collection=new"
+          products={newReleases}
+        />
       </div>
       <div id="magazines">
         <Magazines />
       </div>
       <div id="best-sellers">
-        <BestSallers products={bestSellers} />
+        <ProductCarouselSection
+          title="Best Sellers"
+          description="Discover the books readers return to most, from trusted faith resources to practical guides and memorable stories."
+          href="/allproducts?collection=bestseller"
+          products={bestSellers}
+          background="bg-[#fffaf5]"
+        />
       </div>
       <div id="trending-books">
-        <Trendings products={trending} />
+        <ProductCarouselSection
+          title="Trending Products"
+          description="Explore popular books, Bibles, devotionals, and inspirational titles currently attracting readers."
+          href="/allproducts?collection=trending"
+          products={trending}
+        />
       </div>
       <CategorySection />
       <WhyChoose />
-      <OurAccessories products={accessories} />
+      <ProductCarouselSection
+        title="Our Accessories"
+        description="Thoughtful essentials for readers, gifting, and creating a peaceful study space with comfort and style."
+        href="/allproducts?collection=accessories"
+        products={accessories}
+        background="bg-[#fffaf5]"
+      />
       <Reviews testimonials={testimonials} />
       <FaqAndBlog />
     </div>

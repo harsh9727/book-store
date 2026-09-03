@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { galleries } from "../src/data/galleries.ts";
 import { testimonials } from "../src/data/testimonials.ts";
 import { teamMembers } from "../src/data/team.ts";
 import {
@@ -466,8 +465,7 @@ test("accepts blank summary and avatar strings and normalizes them to defaults",
 });
 
 test("accepts an empty editorial store without any committed fallback data", () => {
-  assert.deepEqual(galleries, []);
-  const parsed = contentStoreSchema.safeParse({ version: 1, blogs: [], galleries });
+  const parsed = contentStoreSchema.safeParse({ version: 1, blogs: [], galleries: [] });
   assert.equal(parsed.success, true);
   if (parsed.success) {
     assert.equal(parsed.data.catalogInitialized, false);

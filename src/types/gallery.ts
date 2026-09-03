@@ -6,7 +6,7 @@ export interface GalleryPhoto {
   caption?: string;
 }
 
-export interface GalleryLocalizedContent {
+interface GalleryLocalizedContent {
   title: string;
   category: string;
   location: string;

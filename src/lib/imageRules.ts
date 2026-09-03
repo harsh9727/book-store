@@ -1,7 +1,7 @@
 export const MAX_IMAGE_BYTES = 500 * 1024;
 export const MAX_GALLERY_PHOTOS = 12;
 export const MAX_PRODUCT_DETAIL_IMAGES = 6;
-export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
 export function validateImageSelection(file: File) {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {

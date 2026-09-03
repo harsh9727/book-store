@@ -304,6 +304,16 @@
 
 **Solution:** mount persistent writable storage for a single instance. Before using serverless or multiple replicas, replace `contentRepository.ts` with a shared database implementation and migrate the JSON document.
 
+## Orphan content temporary files remain in storage
+
+**Symptom:** ignored files named `storage/content-<uuid>.tmp` remain beside `storage/content.json` after an interrupted or failed content mutation.
+
+**Cause:** content mutations write a unique temporary document before atomically renaming it. Older failure paths could leave that file behind, and a hard process termination can prevent all in-process cleanup from running.
+
+**Resolved 2026-09-03:** failed writes and renames now make a best-effort removal of their own temporary path before rethrowing the original persistence error. Two verified stale local temp files were removed during repository cleanup; the active `storage/content.json` was not changed.
+
+**Prevention:** do not broadly delete the `storage` directory. Confirm that no content mutation is active, preserve `content.json`, and remove only stale files matching the unique `content-<uuid>.tmp` naming convention. Production still requires persistent writable storage on one application instance.
+
 ## Admin sidebar disappears on Blog or Gallery
 
 **Symptom:** selecting Blog or Gallery appears to leave the dashboard shell, and the page opens directly on an editor instead of a content list.

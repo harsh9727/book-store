@@ -1,4 +1,4 @@
-export interface TeamMemberLocalizedContent {
+interface TeamMemberLocalizedContent {
   name: string;
   role: string;
 }

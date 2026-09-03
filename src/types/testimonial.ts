@@ -1,4 +1,4 @@
-export interface TestimonialLocalizedContent {
+interface TestimonialLocalizedContent {
   name: string;
   role: string;
   review: string;

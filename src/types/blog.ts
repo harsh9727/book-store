@@ -1,4 +1,4 @@
-export interface BlogComment {
+interface BlogComment {
   id: string;
   name: string;
   avatar?: string;
@@ -6,7 +6,7 @@ export interface BlogComment {
   content: string;
 }
 
-export interface BlogContentSection {
+interface BlogContentSection {
   heading?: string;
   body: string;
   subsections?: {
@@ -49,7 +49,7 @@ export interface BlogRichTextDocument extends BlogRichTextNode {
   content: BlogRichTextNode[];
 }
 
-export interface BlogLocalizedContent {
+interface BlogLocalizedContent {
   title: string;
   category: string;
   summary: string;

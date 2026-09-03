@@ -24,7 +24,7 @@ export interface ProductDetailImage {
   title: string;
 }
 
-export interface ProductLocalizedContent {
+interface ProductLocalizedContent {
   title: string;
   specifications?: ProductSpecification[];
   variants?: ProductVariant[];
@@ -33,7 +33,7 @@ export interface ProductLocalizedContent {
   features?: string[];
 }
 
-export interface ProductReview {
+interface ProductReview {
   id: string;
   user: string;
   rating: number;

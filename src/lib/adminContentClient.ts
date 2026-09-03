@@ -1,6 +1,6 @@
 import { validateImageSelection } from "@/lib/imageRules";
 
-export interface UploadedImage {
+interface UploadedImage {
   key: string;
   url: string;
   name: string;

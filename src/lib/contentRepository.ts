@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { BlogPost } from "@/types/blog";
@@ -88,8 +88,14 @@ async function readStore(): Promise<ContentStore> {
 async function writeStore(store: ContentStore) {
   await mkdir(storageDirectory, { recursive: true });
   const temporaryPath = path.join(storageDirectory, `content-${randomUUID()}.tmp`);
-  await writeFile(temporaryPath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
-  await rename(temporaryPath, storagePath);
+
+  try {
+    await writeFile(temporaryPath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+    await rename(temporaryPath, storagePath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
 }
 
 function mutateStore<T>(mutation: (store: ContentStore) => Promise<T> | T): Promise<T> {
@@ -368,12 +374,6 @@ export function deleteProduct(id: string) {
 
 export async function getCategories() {
   return (await readStore()).categories;
-}
-
-export async function getCategory(identifier: string) {
-  return (await getCategories()).find(
-    (category) => category.id === identifier || category.slug === identifier,
-  );
 }
 
 export function createCategory(draft: CategoryDraft) {

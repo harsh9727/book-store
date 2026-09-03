@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
 
-export interface BreadcrumbItem {
+interface BreadcrumbItem {
   label: string;
   href?: string;
   skipTranslation?: boolean;
 }
 
-export interface BreadcrumbProps {
+interface BreadcrumbProps {
   items: BreadcrumbItem[];
   showHomeIcon?: boolean;
   className?: string;
