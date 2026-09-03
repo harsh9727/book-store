@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Dynamic Magazine product catalog integration
+
+- Outcome: integrated Magazines as first-class dynamic Products. Added `magazines` ("Magazines & Periodicals") to store categories. Configured homepage Magazines section to render dynamic Product attributes (price, badge, localized Gujarati title/description, cover image, and direct product detail links to `/product/[id]`). Admin users can create, edit, price, and manage magazines directly from Admin Products (`/admin/products`).
+- Main files/areas: `src/data/categories.ts`, `src/components/home/Magazines.tsx`, `src/app/page.tsx`, `docs/PROGRESS.md`, `docs/PROJECT_OVERVIEW.md`.
+- Data/API/security impact: Magazine products use the standard product validation schema, storage repository, and image upload pipelines.
+- Verification and exact result: `pnpm lint` passed with 0 errors/warnings; `pnpm test:admin-auth` passed 7/7; `pnpm test:content` passed 22/22; `pnpm build` completed in 3.4s, finished TypeScript in 7.3s, generated all 35/35 routes with exit code 0.
+- Known limitations or next step: none.
+
 ### 2026-09-03 - Full site audit: 404 remediation, dynamic magazines, branding cleanup, and empty-state UI upgrade
 
 - Outcome: completed a comprehensive audit across Performance, Functionality, Responsive Design, Code Quality, Dynamic Admin Data, and SEO/Security. Fixed broken `/books/*` and `/magazines/*` links in Header navigation and homepage, pointing them to valid dynamic category query routes (`/allproducts?category=...`). Connected homepage Magazines section to dynamic product catalog repository data with localized text selection. Removed residual template "ProBooks" branding across FAQs, WhatsApp greeting, About story, and Blog headers. Upgraded empty-state and placeholder pages (`/cart`, `/wishlist`, `/checkout`, `/login`, `/register`, `/profile`) with responsive layouts, helpful CTAs, and direct WhatsApp/Phone ordering integration.

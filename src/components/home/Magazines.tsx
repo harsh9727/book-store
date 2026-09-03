@@ -19,6 +19,8 @@ const fallbackMagazines = [
     description:
       "Discover inspiring stories, faith-filled articles, and meaningful reflections for daily Christian life.",
     image: DefaultMagazineCover.src,
+    price: 120,
+    badge: "Quarterly Issue",
     href: "/allproducts?category=magazines",
   },
   {
@@ -27,6 +29,8 @@ const fallbackMagazines = [
     description:
       "Explore practical guidance, inspiring stories, and ideas for everyday Christian fellowship and family living.",
     image: DefaultMagazineCover.src,
+    price: 150,
+    badge: "Monthly Edition",
     href: "/allproducts?category=magazines",
   },
   {
@@ -35,6 +39,8 @@ const fallbackMagazines = [
     description:
       "Read encouraging articles, spiritual insights, testimonies, and stories that inspire lasting hope.",
     image: DefaultMagazineCover.src,
+    price: 99,
+    badge: "Special Edition",
     href: "/allproducts?category=magazines",
   },
 ];
@@ -54,6 +60,9 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
               localized.synopsis ||
               "Inspiring Christian periodical filled with faith, stories, and spiritual insights.",
             image: prod.image || DefaultMagazineCover.src,
+            price: prod.price,
+            originalPrice: prod.originalPrice,
+            badge: prod.badge || "Magazine",
             href: `/product/${prod.id}`,
           };
         })
@@ -93,11 +102,17 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
               <div className="flex flex-1 flex-col justify-between bg-white p-5 sm:p-6">
                 <div>
                   {/* Top Badge & Number */}
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mb-3 flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-600">
                       <BookOpen size={13} className="text-orange-600" />
-                      Magazine 0{index + 1}
+                      {magazine.badge || `Magazine 0${index + 1}`}
                     </span>
+
+                    {typeof magazine.price === "number" && magazine.price > 0 && (
+                      <span className="text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md">
+                        ₹{magazine.price}
+                      </span>
+                    )}
                   </div>
 
                   {/* Title */}
@@ -112,12 +127,14 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
                 </div>
 
                 {/* Bottom CTA */}
-                <div className="mt-4 flex items-center text-xs font-semibold text-orange-600 transition-all duration-300 group-hover:text-orange-700 sm:text-sm">
-                  <span>Explore Magazine</span>
-                  <ArrowRight
-                    size={15}
-                    className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1.5"
-                  />
+                <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center text-xs font-semibold text-orange-600 transition-all duration-300 group-hover:text-orange-700 sm:text-sm">
+                    <span>View Product Details</span>
+                    <ArrowRight
+                      size={15}
+                      className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1.5"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -148,7 +165,7 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
             href="/allproducts?category=magazines"
             className="description flex items-center gap-2 rounded-full border border-orange-600 px-6 py-2.5 text-sm font-medium text-orange-600 transition-all duration-300 hover:bg-orange-600 hover:text-white"
           >
-            <span>View All Magazines</span>
+            <span>View All Magazines in Catalog</span>
             <ArrowRight size={16} />
           </Link>
         </div>

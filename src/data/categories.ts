@@ -20,6 +20,12 @@ export const categories: Category[] = [
     description: "Daily morning & evening prayers, reflections, and meditations",
   },
   {
+    id: "magazines",
+    name: "Magazines & Periodicals",
+    slug: "magazines",
+    description: "Christian magazines, faith periodicals, and monthly journals",
+  },
+  {
     id: "self-help",
     name: "Self Help & Growth",
     slug: "self-help",
