@@ -413,6 +413,29 @@ export const productDraftSchema = productSchema
     gujarati: productLocalizedContentSchema,
   });
 
+const testimonialLocalizedContentSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    role: z.string().trim().min(1).max(160),
+    review: z.string().trim().min(1).max(2_000),
+  })
+  .strict();
+
+export const testimonialSchema = z
+  .object({
+    id: z.string().trim().min(1).max(100),
+    name: z.string().trim().min(1).max(120),
+    role: z.string().trim().min(1).max(160),
+    review: z.string().trim().min(1).max(2_000),
+    rating: z.number().int().min(1).max(5),
+    gujarati: testimonialLocalizedContentSchema.optional(),
+  })
+  .strict();
+
+export const testimonialDraftSchema = testimonialSchema
+  .omit({ id: true, gujarati: true })
+  .extend({ gujarati: testimonialLocalizedContentSchema });
+
 export const contentStoreSchema = z
   .object({
     version: z.literal(1),
@@ -421,6 +444,7 @@ export const contentStoreSchema = z
     galleries: z.array(galleryItemSchema).max(2_000),
     products: z.array(productSchema).max(10_000).optional().default([]),
     categories: z.array(categorySchema).max(2_000).optional().default([]),
+    testimonials: z.array(testimonialSchema).max(2_000).optional().default([]),
   })
   .strict();
 
@@ -428,3 +452,4 @@ export type BlogDraft = z.infer<typeof blogDraftSchema>;
 export type GalleryDraft = z.infer<typeof galleryDraftSchema>;
 export type ProductDraft = z.infer<typeof productDraftSchema>;
 export type CategoryDraft = z.infer<typeof categoryDraftSchema>;
+export type TestimonialDraft = z.infer<typeof testimonialDraftSchema>;

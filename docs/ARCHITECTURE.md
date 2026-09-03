@@ -8,7 +8,7 @@ Browser
   │    ├─ shared site chrome
   │    ├─ feature components
   │    ├─ catalog/content seed data
-  │    └─ file-backed product/category/blog/gallery repository
+  │    └─ file-backed product/category/blog/gallery/testimonial repository
   └─ Admin pages
        ├─ login → POST /api/admin/login
        ├─ signed HttpOnly session cookie
@@ -27,7 +27,7 @@ Browser
 | `src/lib/` | Utilities, SEO, constants, and auth |
 | `src/types/` | Shared domain types |
 | `public/images/` | Static image assets |
-| `storage/content.json` | Ignored runtime product/category/blog/gallery metadata, created on first mutation |
+| `storage/content.json` | Ignored runtime product/category/blog/gallery/testimonial metadata, created on first mutation |
 | `docs/` | Maintained project knowledge |
 
 ## Rendering boundaries
@@ -43,7 +43,7 @@ Browser
 
 Product and Category records flow through `contentRepository.ts`. The home catalog sections and Category cards read it in Server Components; `/allproducts` hydrates its interactive filters from the no-store `/api/content/catalog` endpoint; Product detail metadata/rendering and sitemap resolve the same repository records. Product IDs are normalized slugs and form dynamic routes. Cart and wishlist still render static empty states with no state or persistence layer. The catalog repository is dynamic but remains a single-instance filesystem implementation rather than a production database.
 
-Catalog, blog, and gallery filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
+Catalog, blog, gallery, and testimonial filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
 
 ## Catalog and editorial content flow
 
@@ -70,14 +70,16 @@ The existing editorial flow shares the same store:
 12. Storefront Gallery client boundaries select the stored Gujarati block reactively for filters/search, album cards, detail text, breadcrumbs, organizer credit, and related albums. Authored Gujarati text is excluded from machine retranslation; legacy albums without the block retain the Google Translate fallback.
 13. Product mutations require English and Gujarati authored titles and accept independently bounded specifications, variants, descriptions, overviews, and feature lists. Slug, category relation, badge, price, and media remain shared. The persisted Gujarati block is optional so existing seeds and legacy storage remain valid.
 14. Storefront Product client boundaries read `LanguageContext` and select saved Gujarati content for cards, catalog title search, detail breadcrumbs, purchase information, variants, overview/features, specifications, and related cards. Authored Gujarati fields opt out of machine retranslation, while shared UI and legacy Products remain eligible for the existing translation fallback.
+15. Testimonials use committed bilingual seeds only when the persisted store has no `testimonials` field. The admin list/add/edit/delete routes read and mutate the same array through protected APIs and the serialized atomic repository queue. New drafts require bounded English and Gujarati name, role, and review text plus a shared integer 1–5 rating; stored Gujarati remains optional for backward-compatible records.
+16. The dynamic homepage reads Testimonials in its Server Component alongside Products and passes them into the existing client carousel. That boundary selects authored Gujarati text from `LanguageContext`, excludes it from machine retranslation, renders the saved star count, and returns no section for an intentionally empty persisted array.
 
 On the public Gallery detail route, `GalleryLightbox` progressively exposes photos in batches of 8. The responsive grid uses 1 column on mobile, 2 on tablet, and 4 on desktop. Click and Left/Right keyboard navigation are bounded to the currently visible slice so undisclosed photos do not open before View more is selected; Escape closes the viewer. The document keyboard listener exists only while the lightbox is open and is removed on close/unmount.
 
 Gallery detail links, canonical metadata, structured data, and sitemap entries use the stored slug. `getGallery` continues to resolve either an ID or slug, allowing an incoming numeric URL to find the record and redirect to the canonical `/gallery/[slug]` address.
 
-The Overview, Products, Categories, Blog, and Gallery admin pages render through the shared `AdminContentShell`, which provides one consistent desktop sidebar, top header, and horizontally scrollable route bar on smaller screens. Overview renders its dashboard content directly; management routes provide headings/descriptions in the shared header. Product, Blog, and Gallery index routes use list-first tables and protected standalone add/edit pages. Their bilingual forms reuse `AdminContentLanguageSelect` beside `Back to list`; both language sections stay mounted while only the selected section is displayed, preserving unsaved values without moving shared fields or media. Categories intentionally use a separate inline CRUD workspace beside their list because the authored domain has only name and slug. Category draft validation rejects description input; the stored Category schema keeps its optional legacy field so existing content files continue to validate, but the admin list/form and home Category cards do not render it. The admin layout owns a persistent Sonner toaster; destructive actions use the shared confirmation modal, and the protected API remains the source of persistence.
+The Overview, Products, Categories, Blog, Gallery, and Testimonial admin pages render through the shared `AdminContentShell`, which provides one consistent desktop sidebar, top header, and horizontally scrollable route bar on smaller screens. Overview renders its dashboard content directly; management routes provide headings/descriptions in the shared header. Product, Blog, Gallery, and Testimonial index routes use list-first tables and protected standalone add/edit pages. Their bilingual forms reuse `AdminContentLanguageSelect` beside `Back to list`; both language sections stay mounted while only the selected section is displayed, preserving unsaved values without moving shared fields or media. Categories intentionally use a separate inline CRUD workspace beside their list because the authored domain has only name and slug. Category draft validation rejects description input; the stored Category schema keeps its optional legacy field so existing content files continue to validate, but the admin list/form and home Category cards do not render it. The admin layout owns a persistent Sonner toaster; destructive actions use the shared confirmation modal, and the protected API remains the source of persistence.
 
-Admin UI components are grouped by domain beneath `src/components/admin/`: Product, Category, Blog, Gallery, and login controls live in their matching feature folders. Cross-domain components such as `AdminContentShell` and `ConfirmDeleteModal` remain at the admin root. Route modules import these components through the `@/components/admin/...` alias, so folder organization does not affect the public or protected route structure.
+Admin UI components are grouped by domain beneath `src/components/admin/`: Product, Category, Blog, Gallery, Testimonial, and login controls live in their matching feature folders. Cross-domain components such as `AdminContentShell`, `AdminContentLanguageSelect`, and `ConfirmDeleteModal` remain at the admin root. Route modules import these components through the `@/components/admin/...` alias, so folder organization does not affect the public or protected route structure.
 
 Image controls keep field-specific client validation state: Product card/detail images, Blog banner, Gallery cover, and Gallery extra photos each render their own validation message adjacent to the input. Product and Gallery multi-image selections show removable local previews and revoke their temporary object URLs on removal/unmount. Cross-field, upload-provider, and API mutation failures remain general form errors and toasts.
 

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { galleries } from "../src/data/galleries.ts";
+import { testimonials } from "../src/data/testimonials.ts";
 import {
   blogDraftSchema,
   categoryDraftSchema,
@@ -9,16 +10,19 @@ import {
   galleryDraftSchema,
   MAX_BLOG_DRAFT_BODY_BYTES,
   productDraftSchema,
+  testimonialDraftSchema,
 } from "../src/lib/contentValidation.ts";
 import { MAX_GALLERY_PHOTOS, MAX_IMAGE_BYTES, validateImageSelection } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { localizeProduct } from "../src/lib/localizedProduct.ts";
+import { localizeTestimonial } from "../src/lib/localizedTestimonial.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
 import { hasInitializedCatalog } from "../src/lib/catalogMigration.ts";
 import type { BlogPost } from "../src/types/blog.ts";
 import type { GalleryItem } from "../src/types/gallery.ts";
 import type { Product } from "../src/types/product.ts";
+import type { Testimonial } from "../src/types/testimonial.ts";
 
 const blogDraft = {
   title: "A valid article",
@@ -117,6 +121,18 @@ const productDraft = {
   },
 };
 
+const testimonialDraft = {
+  name: "Grace P.",
+  role: "Verified Buyer",
+  review: "The books arrived quickly and in excellent condition.",
+  rating: 5,
+  gujarati: {
+    name: "ગ્રેસ પી.",
+    role: "ચકાસાયેલ ખરીદદાર",
+    review: "પુસ્તકો ઝડપથી અને ખૂબ સારી સ્થિતિમાં મળ્યાં.",
+  },
+};
+
 test("accepts valid blog and gallery drafts", () => {
   assert.equal(blogDraftSchema.safeParse(blogDraft).success, true);
   assert.equal(galleryDraftSchema.safeParse(galleryDraft).success, true);
@@ -140,6 +156,42 @@ test("requires Gujarati Product content and selects it without changing shared f
   assert.equal(localized.price, productDraft.price);
   assert.equal(localized.image, productDraft.image);
   assert.equal(localized.category, productDraft.category);
+});
+
+test("validates bilingual Testimonial drafts and selects stored Gujarati content", () => {
+  assert.equal(testimonialDraftSchema.safeParse(testimonialDraft).success, true);
+  assert.equal(
+    testimonialDraftSchema.safeParse({
+      ...testimonialDraft,
+      gujarati: undefined,
+    }).success,
+    false,
+  );
+  assert.equal(
+    testimonialDraftSchema.safeParse({ ...testimonialDraft, rating: 6 }).success,
+    false,
+  );
+
+  const storedTestimonial: Testimonial = {
+    ...testimonialDraft,
+    id: "testimonial-1",
+  };
+  const localized = localizeTestimonial(storedTestimonial, "gu");
+  assert.equal(localized.name, "ગ્રેસ પી.");
+  assert.equal(localized.role, "ચકાસાયેલ ખરીદદાર");
+  assert.equal(localized.review, "પુસ્તકો ઝડપથી અને ખૂબ સારી સ્થિતિમાં મળ્યાં.");
+  assert.equal(localized.rating, testimonialDraft.rating);
+  assert.equal(localizeTestimonial(storedTestimonial, "en"), storedTestimonial);
+});
+
+test("accepts the seeded bilingual Testimonials in the persisted store schema", () => {
+  const parsed = contentStoreSchema.safeParse({
+    version: 1,
+    blogs: [],
+    galleries: [],
+    testimonials,
+  });
+  assert.equal(parsed.success, true);
 });
 
 test("rejects malformed catalog fields", () => {
@@ -363,7 +415,7 @@ test("accepts blank summary and avatar strings and normalizes them to defaults",
   }
 });
 
-test("accepts an empty blog and gallery store without any committed fallback data", () => {
+test("accepts an empty editorial store without any committed fallback data", () => {
   assert.deepEqual(galleries, []);
   const parsed = contentStoreSchema.safeParse({ version: 1, blogs: [], galleries });
   assert.equal(parsed.success, true);
@@ -371,6 +423,7 @@ test("accepts an empty blog and gallery store without any committed fallback dat
     assert.equal(parsed.data.catalogInitialized, false);
     assert.deepEqual(parsed.data.products, []);
     assert.deepEqual(parsed.data.categories, []);
+    assert.deepEqual(parsed.data.testimonials, []);
   }
 });
 

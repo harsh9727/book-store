@@ -5,6 +5,7 @@ import {
   BookOpenText,
   Images,
   LayoutDashboard,
+  MessageSquareQuote,
   Package,
   Store,
   Tags,
@@ -13,7 +14,7 @@ import {
 import AdminLogoutButton from "@/components/admin/login/AdminLogoutButton";
 
 interface AdminContentShellProps {
-  active: "overview" | "products" | "categories" | "blogs" | "galleries";
+  active: "overview" | "products" | "categories" | "blogs" | "galleries" | "testimonials";
   title?: string;
   description?: string;
   children: ReactNode;
@@ -25,6 +26,7 @@ const navigation = [
   { key: "categories", label: "Categories", href: "/admin/categories", icon: Tags },
   { key: "blogs", label: "Blogs", href: "/admin/blogs", icon: BookOpenText },
   { key: "galleries", label: "Gallery", href: "/admin/galleries", icon: Images },
+  { key: "testimonials", label: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
 ];
 
 export default function AdminContentShell({

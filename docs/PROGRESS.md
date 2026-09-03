@@ -10,7 +10,7 @@
 | Checkout/payments | UI only | No persistent payment/order workflow |
 | Customer auth | UI only | No documented production identity backend |
 | Admin auth | Production-hardened baseline | Single environment-backed admin, scrypt + TOTP, signed cookie |
-| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery management is implemented |
+| Admin dashboard | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial management is implemented |
 | SEO | Baseline implemented | Metadata, structured data, robots, sitemap, manifest |
 | Documentation | Active | Must evolve with every change |
 | Automated quality | Healthy baseline | Full ESLint and TypeScript checks pass; admin auth has focused coverage |
@@ -24,6 +24,14 @@
 5. Define persistent customer, cart, checkout, and payment architecture.
 
 ## Change log
+
+### 2026-09-03 - Dynamic bilingual Testimonial module
+
+- Outcome: replaced the hardcoded homepage customer-review array with repository-backed Testimonials and added a complete protected admin module. Admin users can search, paginate, add, edit, and confirm-delete Testimonials. The add/edit form follows the Blog/Gallery structure with a shared Rating card plus an English/Gujarati dropdown beside `Back to list`; each language separately requires customer name, role, and testimonial text, and hidden-language validation switches the relevant form into view. The homepage carousel now renders the saved rating and reactively selects authored Gujarati content.
+- Main files/areas: Testimonial types/seeds/localization, strict content validation, filesystem repository, protected CRUD APIs, admin navigation/list/add/edit forms, homepage data composition and review carousel, focused content tests, and project documentation.
+- Data/API/security impact: `storage/content.json` now supports a bounded `testimonials` array. Existing stores without the field hydrate the six committed bilingual seed Testimonials, while an explicitly persisted empty array stays empty. New writes require strict English and Gujarati name/role/review fields plus an integer Rating from 1 through 5. Mutations use the existing signed admin session, same-origin/marker protection, bounded JSON reader, serialized atomic write queue, and no-store responses.
+- Verification and exact result: focused ESLint passed for every changed TypeScript/TSX file; `pnpm exec tsc --noEmit` passed; the restricted `pnpm test:content` run hit the documented Windows sandbox `spawn EPERM`, while the permitted final rerun passed 20/20 including bilingual draft/localization, rating rejection, seed validation, and missing-field store compatibility. The permitted `pnpm build` completed TypeScript, generated 35/35 static pages, and listed all three Testimonial admin routes plus both protected CRUD API routes. `git diff --check` passed with only repository line-ending notices.
+- Known limitations or next step: Testimonials use generated initials rather than uploaded customer avatars, have no public detail route, and use repository order as carousel order. Authenticated browser-level CRUD and responsive visual review remain recommended.
 
 ### 2026-09-03 - Blog and Gallery content-language selectors
 

@@ -6,8 +6,10 @@ import type { BlogPost } from "@/types/blog";
 import type { Category } from "@/types/category";
 import type { GalleryItem } from "@/types/gallery";
 import type { Product } from "@/types/product";
+import type { Testimonial } from "@/types/testimonial";
 import { categories as seededCategories } from "@/data/categories";
 import { products as seededProducts } from "@/data/products";
+import { testimonials as seededTestimonials } from "@/data/testimonials";
 import { plainTextToBlogRichText } from "@/lib/blogRichText";
 import { hasInitializedCatalog } from "@/lib/catalogMigration";
 import {
@@ -16,10 +18,12 @@ import {
   contentStoreSchema,
   galleryDraftSchema,
   productDraftSchema,
+  testimonialDraftSchema,
   type BlogDraft,
   type CategoryDraft,
   type GalleryDraft,
   type ProductDraft,
+  type TestimonialDraft,
 } from "@/lib/contentValidation";
 
 interface ContentStore {
@@ -29,6 +33,7 @@ interface ContentStore {
   galleries: GalleryItem[];
   products: Product[];
   categories: Category[];
+  testimonials: Testimonial[];
 }
 
 const storageDirectory = path.join(process.cwd(), "storage");
@@ -43,6 +48,7 @@ function seededStore(): ContentStore {
     galleries: [],
     products: seededProducts.map((product) => ({ ...product })),
     categories: seededCategories.map((category) => ({ ...category })),
+    testimonials: seededTestimonials.map((testimonial) => ({ ...testimonial })),
   };
 }
 
@@ -52,12 +58,16 @@ async function readStore(): Promise<ContentStore> {
     const stored = JSON.parse(raw) as Record<string, unknown>;
     const storedProducts = Array.isArray(stored.products) ? stored.products : [];
     const storedCategories = Array.isArray(stored.categories) ? stored.categories : [];
+    const storedTestimonials = Array.isArray(stored.testimonials)
+      ? stored.testimonials
+      : seededTestimonials;
     const catalogIsInitialized = hasInitializedCatalog(stored);
     return contentStoreSchema.parse({
       ...stored,
       catalogInitialized: true,
       products: catalogIsInitialized ? storedProducts : seededProducts,
       categories: catalogIsInitialized ? storedCategories : seededCategories,
+      testimonials: storedTestimonials,
     }) as ContentStore;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return seededStore();
@@ -218,6 +228,42 @@ export function deleteGallery(id: string) {
     const index = store.galleries.findIndex((gallery) => String(gallery.id) === id);
     if (index < 0) return null;
     return store.galleries.splice(index, 1)[0];
+  });
+}
+
+export async function getTestimonials() {
+  return (await readStore()).testimonials;
+}
+
+export async function getTestimonial(id: string) {
+  return (await getTestimonials()).find((testimonial) => testimonial.id === id);
+}
+
+export function createTestimonial(draft: TestimonialDraft) {
+  return mutateStore((store) => {
+    const parsed = testimonialDraftSchema.parse(draft);
+    const testimonial: Testimonial = { ...parsed, id: randomUUID() };
+    store.testimonials.unshift(testimonial);
+    return testimonial;
+  });
+}
+
+export function updateTestimonial(id: string, draft: TestimonialDraft) {
+  return mutateStore((store) => {
+    const index = store.testimonials.findIndex((testimonial) => testimonial.id === id);
+    if (index < 0) return null;
+    const parsed = testimonialDraftSchema.parse(draft);
+    const testimonial: Testimonial = { ...parsed, id: store.testimonials[index].id };
+    store.testimonials[index] = testimonial;
+    return testimonial;
+  });
+}
+
+export function deleteTestimonial(id: string) {
+  return mutateStore((store) => {
+    const index = store.testimonials.findIndex((testimonial) => testimonial.id === id);
+    if (index < 0) return null;
+    return store.testimonials.splice(index, 1)[0];
   });
 }
 

@@ -28,7 +28,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
 - Admin pages are outside `LanguageProvider`; they neither initialize Google Translate nor load its third-party script. Gujarati translation remains an explicit public-storefront opt-in only.
-- Product/category/blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
+- Product/category/blog/gallery/testimonial mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
 - Product and Category mutation bodies are capped at 64 KiB and validated with strict schemas. Product writes also verify the referenced Category inside the serialized repository mutation, preventing stale clients from creating orphan relationships.
 - Product card image references are restricted to local paths or UploadThing hosts. Managed detail-image records and legacy extra references accept only local paths, UploadThing, or the two already configured Unsplash hosts; arbitrary remote hosts are rejected before persistence.
 - Product detail uploads accept at most 6 files per Product, with the same MIME, signature, positive-size, and 500 KiB checks as other managed images. Product update/delete cleans up unretained managed card/detail keys best-effort without deleting keyless legacy URLs.
@@ -39,6 +39,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Legacy Product author/creator and author-details fields are accepted only by persisted-content validation and are rejected by Product create/update schemas.
 - English and Gujarati Blog rich-text payloads are independently bounded and use the same allow-list of Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Both public language variants render through explicit React elements without `dangerouslySetInnerHTML`.
 - Gallery mutations require strict bounded English and Gujarati text blocks; unknown fields such as the removed Subtitle are rejected. Stored legacy Gallery records may retain optional Subtitle data but it is no longer accepted from create/update forms.
+- Testimonial mutations require strict bounded English and Gujarati name, role, and review text plus an integer Rating from 1 through 5. Unknown properties are rejected; stored backward-compatible records may omit Gujarati content, while new writes may not.
 - Upload bodies are capped for one cover/primary image or twelve Gallery photos plus multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
 - Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 
