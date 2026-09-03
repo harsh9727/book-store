@@ -25,6 +25,14 @@
 
 ## Change log
 
+### 2026-09-03 - Blog and Gallery content-language selectors
+
+- Outcome: added the same reusable English/Gujarati dropdown beside `Back to list` on Blog and Gallery create/edit pages. Common fields and media remain visible, while the selected language's content card is shown. Switching languages keeps both forms mounted so unsaved text and Blog editor content are preserved. If required hidden-language content is incomplete at save time, the form switches to that language and displays a targeted validation message.
+- Main files/areas: shared admin content-language control, Blog and Gallery create/edit forms, and admin workflow documentation. The Product form now consumes the same shared selector for consistent styling and behavior.
+- Data/API/security impact: none. Existing required bilingual payloads, bounded validation, authentication, uploads, and persistence are unchanged.
+- Verification and exact result: focused ESLint passed for the shared selector and all three admin forms; `pnpm exec tsc --noEmit` passed. The restricted `pnpm build` compiled successfully before the documented Windows sandbox `spawn EPERM`; the permitted rerun completed TypeScript and generated 33/33 static pages. `git diff --check` passed with only repository line-ending notices.
+- Known limitations or next step: authenticated browser-level visual verification is still recommended at mobile and desktop widths.
+
 ### 2026-09-03 - Bilingual Product authoring and language selector
 
 - Outcome: added an English/Gujarati content-language dropdown immediately beside `Back to list` on Product create/edit pages. Switching it swaps the language-specific title, specifications, variants, short description, overview, and feature inputs without losing either language's unsaved values; price, slug, category, badge, and images remain shared. New Product saves require an English and Gujarati title. Saved Gujarati Product text is selected reactively on storefront cards, catalog search, detail breadcrumbs, product information, variants, overview/features, specifications, and related-product cards.

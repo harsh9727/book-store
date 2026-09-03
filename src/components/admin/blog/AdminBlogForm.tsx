@@ -7,6 +7,7 @@ import { ArrowLeft, ImageUp, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import AdminRichTextEditor from "@/components/admin/blog/AdminRichTextEditor";
+import AdminContentLanguageSelect, { type AdminContentLanguage } from "@/components/admin/AdminContentLanguageSelect";
 import type { BlogPost } from "@/types/blog";
 import {
   blogRichTextToPlainText,
@@ -31,6 +32,7 @@ const inputClass =
 
 export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const router = useRouter();
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -81,15 +83,35 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
   const saveBlog = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    setError("");
+    const englishFields = ["title", "category", "authorName", "authorRole"];
+    if (englishFields.some((field) => !String(values.get(field) || "").trim())) {
+      setFormLanguage("en");
+      setError("Complete all required English content fields before saving.");
+      return;
+    }
+    const gujaratiFields = [
+      "gujaratiTitle",
+      "gujaratiCategory",
+      "gujaratiAuthorName",
+      "gujaratiAuthorRole",
+    ];
+    if (gujaratiFields.some((field) => !String(values.get(field) || "").trim())) {
+      setFormLanguage("gu");
+      setError("Complete all required Gujarati content fields before saving.");
+      return;
+    }
     const contentText = blogRichTextToPlainText(richContent).trim();
     const gujaratiContentText = blogRichTextToPlainText(
       gujaratiRichContent,
     ).trim();
     if (!contentText) {
+      setFormLanguage("en");
       setArticleError("Add article content before saving.");
       return;
     }
     if (!gujaratiContentText) {
+      setFormLanguage("gu");
       setGujaratiArticleError("Add Gujarati article content before saving.");
       return;
     }
@@ -98,6 +120,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       JSON.stringify(gujaratiRichContent).length >
         MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
     ) {
+      setFormLanguage("gu");
       setGujaratiArticleError("Gujarati article content is too long.");
       return;
     }
@@ -106,6 +129,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       JSON.stringify(richContent).length >
         MAX_BLOG_RICH_TEXT_JSON_CHARACTERS
     ) {
+      setFormLanguage("en");
       setArticleError("Article content is too long.");
       return;
     }
@@ -194,13 +218,16 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
               Banner: JPG, PNG, or WebP; maximum 500 KB.
             </p>
           </div>
-          <Link
-            href="/admin/blogs"
-            className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-          >
-            <ArrowLeft size={16} />
-            Back to list
-          </Link>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <AdminContentLanguageSelect value={formLanguage} onChange={setFormLanguage} />
+            <Link
+              href="/admin/blogs"
+              className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+            >
+              <ArrowLeft size={16} />
+              Back to list
+            </Link>
+          </div>
         </div>
 
         {error && (
@@ -302,7 +329,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             )}
           </label>
         </fieldset>
-        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+        <fieldset className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
           <legend className="px-2 text-base font-bold text-slate-800">
             English content
           </legend>
@@ -313,7 +340,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             Title
             <input
               name="title"
-              required
+              required={formLanguage === "en"}
               maxLength={220}
               defaultValue={initialItem?.title}
               className={inputClass}
@@ -323,7 +350,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             Category
             <input
               name="category"
-              required
+              required={formLanguage === "en"}
               maxLength={100}
               defaultValue={initialItem?.category}
               className={inputClass}
@@ -333,7 +360,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             Author name
             <input
               name="authorName"
-              required
+              required={formLanguage === "en"}
               defaultValue={initialItem?.author.name || "GTBS Editorial Team"}
               className={inputClass}
             />
@@ -342,7 +369,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             Author role
             <input
               name="authorRole"
-              required
+              required={formLanguage === "en"}
               defaultValue={initialItem?.author.role || "Editor"}
               className={inputClass}
             />
@@ -359,7 +386,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             />
           </div>
         </fieldset>
-        <fieldset className="grid gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+        <fieldset className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
           <legend className="px-2 text-base font-bold text-orange-700">
             Gujarati content
           </legend>
@@ -371,7 +398,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             <input
               name="gujaratiTitle"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={220}
               defaultValue={initialItem?.gujarati?.title}
               className={inputClass}
@@ -382,7 +409,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             <input
               name="gujaratiCategory"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={100}
               defaultValue={initialItem?.gujarati?.category}
               className={inputClass}
@@ -393,7 +420,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             <input
               name="gujaratiAuthorName"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={120}
               defaultValue={initialItem?.gujarati?.author.name}
               className={inputClass}
@@ -404,7 +431,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
             <input
               name="gujaratiAuthorRole"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={160}
               defaultValue={initialItem?.gujarati?.author.role}
               className={inputClass}

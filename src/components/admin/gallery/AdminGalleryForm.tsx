@@ -15,6 +15,7 @@ import {
   validateClientImages,
 } from "@/lib/adminContentClient";
 import { MAX_GALLERY_PHOTOS } from "@/lib/imageRules";
+import AdminContentLanguageSelect, { type AdminContentLanguage } from "@/components/admin/AdminContentLanguageSelect";
 
 interface AdminGalleryFormProps {
   initialItem?: GalleryItem;
@@ -32,6 +33,7 @@ const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white
 export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps) {
   const router = useRouter();
   const previewUrlsRef = useRef(new Set<string>());
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [newPhotos, setNewPhotos] = useState<NewPhotoPreview[]>([]);
   const [retainedPhotos, setRetainedPhotos] = useState<GalleryPhoto[]>(initialItem?.photos || []);
@@ -93,8 +95,25 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
   const saveGallery = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
-    setBusy(true);
     setError("");
+    const englishFields = ["title", "category", "location", "description"];
+    if (englishFields.some((field) => !String(values.get(field) || "").trim())) {
+      setFormLanguage("en");
+      setError("Complete all required English content fields before saving.");
+      return;
+    }
+    const gujaratiFields = [
+      "gujaratiTitle",
+      "gujaratiCategory",
+      "gujaratiLocation",
+      "gujaratiDescription",
+    ];
+    if (gujaratiFields.some((field) => !String(values.get(field) || "").trim())) {
+      setFormLanguage("gu");
+      setError("Complete all required Gujarati content fields before saving.");
+      return;
+    }
+    setBusy(true);
     try {
       let coverImage = initialItem?.coverImage || "";
       let coverImageKey = initialItem?.coverImageKey;
@@ -166,13 +185,16 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
               Every image: max 500 KB. Extra photos: max 12.
             </p>
           </div>
-          <Link
-            href="/admin/galleries"
-            className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-          >
-            <ArrowLeft size={16} />
-            Back to list
-          </Link>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <AdminContentLanguageSelect value={formLanguage} onChange={setFormLanguage} />
+            <Link
+              href="/admin/galleries"
+              className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+            >
+              <ArrowLeft size={16} />
+              Back to list
+            </Link>
+          </div>
         </div>
 
         {error && (
@@ -215,7 +237,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           </label>
         </fieldset>
 
-        <fieldset className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+        <fieldset className={`${formLanguage === "en" ? "grid" : "hidden"} gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
           <legend className="px-2 text-base font-bold text-slate-800">
             English content
           </legend>
@@ -224,19 +246,19 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           </p>
           <label className="sm:col-span-2 text-sm font-semibold">
             Title
-            <input name="title" required maxLength={220} defaultValue={initialItem?.title} className={inputClass} />
+            <input name="title" required={formLanguage === "en"} maxLength={220} defaultValue={initialItem?.title} className={inputClass} />
           </label>
           <label className="text-sm font-semibold">
             Category
-            <input name="category" required defaultValue={initialItem?.category} className={inputClass} />
+            <input name="category" required={formLanguage === "en"} defaultValue={initialItem?.category} className={inputClass} />
           </label>
           <label className="text-sm font-semibold">
             Location
-            <input name="location" required defaultValue={initialItem?.location} className={inputClass} />
+            <input name="location" required={formLanguage === "en"} defaultValue={initialItem?.location} className={inputClass} />
           </label>
           <label className="sm:col-span-2 text-sm font-semibold">
             Description
-            <textarea name="description" required maxLength={20000} rows={5} defaultValue={initialItem?.description} className={textareaClass} />
+            <textarea name="description" required={formLanguage === "en"} maxLength={20000} rows={5} defaultValue={initialItem?.description} className={textareaClass} />
           </label>
           <label className="sm:col-span-2 text-sm font-semibold">
             Organizer
@@ -244,7 +266,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
           </label>
         </fieldset>
 
-        <fieldset className="grid gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6">
+        <fieldset className={`${formLanguage === "gu" ? "grid" : "hidden"} gap-4 rounded-2xl border border-orange-200 bg-orange-50/30 p-5 shadow-sm sm:col-span-2 sm:grid-cols-2 sm:p-6`}>
           <legend className="px-2 text-base font-bold text-orange-700">
             Gujarati content
           </legend>
@@ -256,7 +278,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             <input
               name="gujaratiTitle"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={220}
               defaultValue={initialItem?.gujarati?.title}
               className={inputClass}
@@ -267,7 +289,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             <input
               name="gujaratiCategory"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={100}
               defaultValue={initialItem?.gujarati?.category}
               className={inputClass}
@@ -278,7 +300,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             <input
               name="gujaratiLocation"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={240}
               defaultValue={initialItem?.gujarati?.location}
               className={inputClass}
@@ -289,7 +311,7 @@ export default function AdminGalleryForm({ initialItem }: AdminGalleryFormProps)
             <textarea
               name="gujaratiDescription"
               lang="gu"
-              required
+              required={formLanguage === "gu"}
               maxLength={20000}
               rows={5}
               defaultValue={initialItem?.gujarati?.description}

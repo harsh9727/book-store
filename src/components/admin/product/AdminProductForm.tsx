@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ChevronDown, Languages, Plus, Save, Trash2, X } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { adminJsonRequest, slugify, uploadAdminImages, validateClientImages } from "@/lib/adminContentClient";
 import { MAX_PRODUCT_DETAIL_IMAGES } from "@/lib/imageRules";
+import AdminContentLanguageSelect, { type AdminContentLanguage } from "@/components/admin/AdminContentLanguageSelect";
 import type { Category } from "@/types/category";
 import {
   PRODUCT_BADGES,
@@ -26,8 +27,6 @@ interface NewDetailImagePreview {
   file: File;
   previewUrl: string;
 }
-
-type FormLanguage = "en" | "gu";
 
 const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
 const textareaClass = "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
@@ -70,7 +69,7 @@ function initialDetailImages(product?: Product): ProductDetailImage[] {
 export default function AdminProductForm({ initialItem, categories: initialCategories }: Props) {
   const router = useRouter();
   const previewUrlsRef = useRef(new Set<string>());
-  const [formLanguage, setFormLanguage] = useState<FormLanguage>("en");
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [categoryOptions, setCategoryOptions] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState(initialItem?.category || "");
   const [categoryCreatorOpen, setCategoryCreatorOpen] = useState(false);
@@ -274,15 +273,7 @@ export default function AdminProductForm({ initialItem, categories: initialCateg
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div><h2 className="text-lg font-bold">{initialItem ? "Edit product" : "Add a new product"}</h2><p className="text-xs text-slate-500">Catalog, pricing, media, variants, and product-detail content.</p></div>
       <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-        <label className="relative flex h-10 min-w-40 items-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50">
-          <Languages size={16} className="pointer-events-none absolute left-3" />
-          <span className="sr-only">Content language</span>
-          <select aria-label="Content language" value={formLanguage} onChange={(event) => setFormLanguage(event.target.value as FormLanguage)} className="h-full w-full cursor-pointer appearance-none rounded-xl bg-transparent pl-10 pr-8 outline-none">
-            <option value="en">English</option>
-            <option value="gu">ગુજરાતી</option>
-          </select>
-          <ChevronDown aria-hidden="true" size={15} className="pointer-events-none absolute right-3" />
-        </label>
+        <AdminContentLanguageSelect value={formLanguage} onChange={setFormLanguage} />
         <Link href="/admin/products" className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"><ArrowLeft size={16} />Back to list</Link>
       </div>
     </div>
