@@ -18,6 +18,16 @@
 
 **Prevention:** Always verify link destinations against the active `src/app` route tree and use dynamic catalog filters rather than hardcoding static mock paths.
 
+## Product, Blog, or Gallery lists stay on skeletons and feel slow
+
+**Symptom:** The route shell appears, but actual cards wait for hydration and a later `/api/content/catalog`, `/api/content/blogs`, or `/api/content/galleries` request. Repeated dynamic requests also reread and revalidate the same content JSON.
+
+**Cause resolved 2026-09-03:** the three index pages were entirely client-rendered for data loading even though the content repository is server-local. This created a server HTML → JavaScript hydration → API request → render waterfall. Repository getters also performed duplicate filesystem reads and whole-document Zod parsing for concurrent or repeated calls.
+
+**Solution:** route-level Server Components now load and serialize the initial arrays into focused interactive Client Components. The repository deduplicates its initial read and retains the validated snapshot until a successful mutation atomically publishes its replacement. The below-the-fold Magazine image no longer receives eager priority over visible content.
+
+**Prevention:** prefer server-provided initial data for server-owned sources, keep filter/search interaction at a narrow client boundary, and reserve `priority` for above-the-fold images that affect LCP. In development, first visits still include route compilation time; compare warm requests or a completed production build when evaluating runtime performance.
+
 ## Admin login says “not configured”
 
 **Symptom:** `POST /api/admin/login` returns HTTP 503.
@@ -189,6 +199,8 @@
 **Solution:** run the build in the approved deployment or workstation environment with outbound HTTPS access to Google Fonts, or make a separately reviewed change to self-host the fonts with `next/font/local`. Do not disable TLS verification.
 
 **Observed 2026-09-01:** the restricted build failed only at the existing Google Font fetches; the permitted `npm run build` rerun compiled, type-checked, generated all pages, and exited 0.
+
+**Observed 2026-09-03:** the first Webpack verification build reached the existing Fraunces/Inter download and failed with `UNABLE_TO_VERIFY_LEAF_SIGNATURE`. A retry with `NODE_USE_SYSTEM_CA=1` preserved TLS verification, compiled successfully, completed TypeScript, generated 30/30 static pages, emitted the full route manifest, and exited 0.
 
 ## pnpm registry reports `UNABLE_TO_VERIFY_LEAF_SIGNATURE`
 

@@ -41,7 +41,7 @@ Browser
 
 ## Storefront data flow
 
-Product and Category records flow through `contentRepository.ts`. The home catalog sections and Category cards read it in Server Components; `/allproducts` hydrates its interactive filters from the no-store `/api/content/catalog` endpoint; Product detail metadata/rendering and sitemap resolve the same repository records. Product IDs are normalized slugs and form dynamic routes. Cart and wishlist still render static empty states with no state or persistence layer. The catalog repository is dynamic but remains a single-instance filesystem implementation rather than a production database.
+Product and Category records flow through `contentRepository.ts`. The home catalog sections and Category cards read it in Server Components; `/allproducts` also reads it in a route-level Server Component and passes the initial arrays to a focused interactive filter component. Product detail metadata/rendering and sitemap resolve the same repository records. Product IDs are normalized slugs and form dynamic routes. Cart and wishlist still render static empty states with no state or persistence layer. The catalog repository is dynamic but remains a single-instance filesystem implementation rather than a production database.
 
 Catalog, blog, gallery, and testimonial filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home carousels retain Swiper instances in refs and access them only from navigation event handlers.
 
@@ -57,10 +57,10 @@ Catalog, blog, gallery, and testimonial filter/search handlers reset pagination 
 The existing editorial flow shares the same store:
 
 1. Blogs and Galleries have no committed seed modules. A missing content store initializes both arrays empty, so editorial records are admin-managed only.
-2. `contentRepository.ts` reads `storage/content.json` when present and validates the complete document with Zod; invalid persisted data fails instead of being silently replaced.
+2. `contentRepository.ts` reads `storage/content.json` when present and validates the complete document with Zod; invalid persisted data fails instead of being silently replaced. The first read promise is shared across concurrent callers, and its validated result is retained in process memory. Mutations clone that snapshot, write the clone atomically, and publish it to the read cache only after the rename succeeds, so readers see either the previous complete store or the new complete store.
 3. Admin create/update/delete requests require the signed admin session, matching Origin/fetch metadata, and `X-GTBS-Admin-Request: 1`.
 4. Mutations are serialized in-process and written through a uniquely named temporary file followed by an atomic rename. A failed write or rename makes a best-effort removal of that operation's temporary file before rethrowing the original error.
-5. Public list APIs are no-store; detail pages, the home blog section, and sitemap read through the repository.
+5. Public list APIs remain no-store for direct consumers, but Product, Blog, and Gallery index pages do not fetch them after hydration. Route-level Server Components read the repository and pass initial data into their interactive Client Components, eliminating the extra browser request and loading waterfall. Detail pages, the home blog section, and sitemap also read through the repository.
 6. Images upload through the server-only UploadThing SDK. The browser never receives `UPLOADTHING_TOKEN`.
 7. Managed UploadThing keys are stored beside URLs. Replaced or deleted managed images are deleted best-effort from UploadThing; legacy/local/external seed images have no managed key and are never deleted remotely.
 8. Blog Article content is edited as Tiptap JSON. Draft validation bounds the JSON and allow-lists its nodes, marks, attribute primitives, and link protocols. The repository also derives plain-text sections for summaries and backward compatibility. Public detail pages render the validated tree through explicit React element mappings; legacy records without `richContent` continue through the section renderer.

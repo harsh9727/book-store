@@ -16,6 +16,8 @@
 - Keep route metadata in pages/layouts or shared SEO helpers.
 - Use route handlers for server HTTP behavior.
 - Keep persistence behind typed repository functions; do not read or write runtime content files from pages/components.
+- For repository-backed index pages, load initial data in the route Server Component and pass it to the smallest interactive Client Component. Do not delay first content behind a mount-time fetch when the server already owns the data source.
+- A process-local repository snapshot may be reused only when every in-process mutation refreshes it after a successful atomic write and never publishes a partially mutated or failed draft.
 - Treat Product IDs and Category slugs as normalized lowercase route keys; validate Product-to-Category relationships again inside repository mutations, not only in forms.
 - Do not synchronously mirror state in effects; derive or initialize it when possible.
 - Every delayed callback, subscription, or asynchronous browser integration created in an effect must be cancelled, deactivated, or detached in that effect's cleanup before its component can unmount.

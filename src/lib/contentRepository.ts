@@ -44,6 +44,8 @@ interface ContentStore {
 const storageDirectory = path.join(process.cwd(), "storage");
 const storagePath = path.join(storageDirectory, "content.json");
 let mutationQueue: Promise<unknown> = Promise.resolve();
+let cachedStore: ContentStore | undefined;
+let storeReadPromise: Promise<ContentStore> | undefined;
 
 function seededStore(): ContentStore {
   return {
@@ -58,7 +60,7 @@ function seededStore(): ContentStore {
   };
 }
 
-async function readStore(): Promise<ContentStore> {
+async function loadStore(): Promise<ContentStore> {
   try {
     const raw = await readFile(storagePath, "utf8");
     const stored = JSON.parse(raw) as Record<string, unknown>;
@@ -90,6 +92,18 @@ async function readStore(): Promise<ContentStore> {
   }
 }
 
+async function readStore(): Promise<ContentStore> {
+  if (cachedStore) return cachedStore;
+
+  storeReadPromise ??= loadStore();
+  try {
+    cachedStore = await storeReadPromise;
+    return cachedStore;
+  } finally {
+    storeReadPromise = undefined;
+  }
+}
+
 async function writeStore(store: ContentStore) {
   await mkdir(storageDirectory, { recursive: true });
   const temporaryPath = path.join(
@@ -114,9 +128,10 @@ function mutateStore<T>(
   mutation: (store: ContentStore) => Promise<T> | T,
 ): Promise<T> {
   const operation = mutationQueue.then(async () => {
-    const store = await readStore();
+    const store = structuredClone(await readStore());
     const result = await mutation(store);
     await writeStore(store);
+    cachedStore = store;
     return result;
   });
   mutationQueue = operation.catch(() => undefined);

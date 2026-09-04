@@ -145,7 +145,6 @@ const Magazines = ({ products = [] }: MagazinesProps) => {
                   src={magazine.image}
                   alt={magazine.title}
                   fill
-                  priority={index === 0}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 18vw"
                 />
