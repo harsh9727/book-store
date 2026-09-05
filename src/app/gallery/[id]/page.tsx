@@ -23,7 +23,7 @@ interface GalleryDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -177,6 +177,7 @@ export default async function GalleryDetailPage({
                       src={other.coverImage}
                       alt={other.title}
                       fill
+                      sizes="(max-width: 640px) 100vw, 192px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[13px] description tracking-wide font-semibold text-white">

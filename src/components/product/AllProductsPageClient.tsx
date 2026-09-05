@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
-  Sparkles,
   SlidersHorizontal,
   BookOpen,
   X,
@@ -40,10 +38,20 @@ function AllProductsContent({
 }: AllProductsContentProps) {
   const { language } = useLanguage();
   // Filters: Category, Price Range, Collections
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    initialCategory === "all" ||
+    categories.some((category) => category.slug === initialCategory)
+      ? initialCategory
+      : "all",
+  );
   const [priceRange, setPriceRange] = useState("all");
-  const [selectedCollection, setSelectedCollection] =
-    useState(initialCollection);
+  const [selectedCollection, setSelectedCollection] = useState(() =>
+    ["all", "bestseller", "new", "trending", "accessories"].includes(
+      initialCollection,
+    )
+      ? initialCollection
+      : "all",
+  );
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -51,13 +59,17 @@ function AllProductsContent({
 
   // Prevent background scroll when mobile filter modal is open
   useEffect(() => {
-    if (isMobileFilterOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    if (!isMobileFilterOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileFilterOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isMobileFilterOpen]);
 
@@ -73,10 +85,10 @@ function AllProductsContent({
     setSelectedCollection(value);
     setVisibleCount(8);
   };
-  const updateSearchQuery = (value: string) => {
+  const updateSearchQuery = useCallback((value: string) => {
     setSearchQuery(value);
     setVisibleCount(8);
-  };
+  }, []);
   const selectSort = (value: SortOption) => {
     setSortBy(value);
     setVisibleCount(8);
@@ -141,6 +153,10 @@ function AllProductsContent({
         localizedProduct.title
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
+        (p.author || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (localizedProduct.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesCat && matchesPrice && matchesCollection && matchesSearch;
@@ -194,6 +210,15 @@ function AllProductsContent({
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
+      <div className="mb-6 mt-4">
+        <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          Browse All Products
+        </h1>
+        <p className="description mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+          Search and filter books, magazines, gifts, and reading resources.
+        </p>
+      </div>
+
       {/* Mobile Top Action Toolbar */}
       <div className="mb-5 flex flex-col gap-3 lg:hidden">
         <div className="flex items-center gap-2">
@@ -233,6 +258,7 @@ function AllProductsContent({
           <div className="flex items-center gap-1.5">
             <span className="description text-gray-400">Sort:</span>
             <select
+              aria-label="Sort products"
               value={sortBy}
               onChange={(e) => selectSort(e.target.value as SortOption)}
               className="rounded-lg border border-gray-200 bg-white py-1 px-2 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description"
@@ -373,7 +399,7 @@ function AllProductsContent({
         </aside>
 
         {/* ================= RIGHT CATALOG AREA ================= */}
-        <main className="col-span-12 lg:col-span-9">
+        <section aria-label="Product results" className="col-span-12 lg:col-span-9">
           {/* Top Control Bar (Desktop) */}
           <div className="mb-6 hidden lg:flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             {/* Search Input */}
@@ -401,11 +427,13 @@ function AllProductsContent({
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-500 description">Sort:</span>
                 <select
+                  aria-label="Sort products"
                   value={sortBy}
                   onChange={(e) => selectSort(e.target.value as SortOption)}
                   className="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description tracking-wide cursor-pointer"
                 >
                   <option value="featured">Featured</option>
+                  <option value="rating">Top Rated</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
                 </select>
@@ -567,7 +595,7 @@ function AllProductsContent({
               ) : null}
             </div>
           )}
-        </main>
+        </section>
       </div>
 
       {/* ================= MOBILE / TABLET FILTER DRAWER ================= */}
@@ -580,18 +608,24 @@ function AllProductsContent({
           />
 
           {/* Drawer Container */}
-          <div className="relative ml-auto flex h-full w-full max-w-xs sm:max-w-sm flex-col bg-white shadow-2xl z-10">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-filter-title"
+            className="relative z-10 ml-auto flex h-full w-full max-w-xs flex-col bg-white shadow-2xl sm:max-w-sm"
+          >
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-gray-100 p-4 sm:p-5">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal size={18} className="text-orange-600" />
-                <h3 className="title text-base sm:text-lg font-bold text-gray-900">
+                <h3 id="mobile-filter-title" className="title text-base sm:text-lg font-bold text-gray-900">
                   Filter Books
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
+                aria-label="Close filters"
                 className="rounded-full p-2 text-gray-500 hover:bg-gray-100 active:scale-95"
               >
                 <X size={18} />
@@ -729,49 +763,26 @@ function AllProductsContent({
   );
 }
 
-function AllProductsFromSearchParams({
+export default function AllProductsPageClient({
+  initialCategory,
+  initialCollection,
+  initialSearch,
   products,
   categories,
 }: {
+  initialCategory: string;
+  initialCollection: string;
+  initialSearch: string;
   products: Product[];
   categories: Category[];
 }) {
-  const searchParams = useSearchParams();
-  const paramsKey = searchParams.toString();
-
   return (
     <AllProductsContent
-      key={paramsKey}
-      initialCollection={searchParams.get("collection") || "all"}
-      initialCategory={searchParams.get("category") || "all"}
-      initialSearch={searchParams.get("search") || ""}
+      initialCategory={initialCategory}
+      initialCollection={initialCollection}
+      initialSearch={initialSearch}
       products={products}
       categories={categories}
     />
-  );
-}
-
-export default function AllProductsPageClient({
-  products,
-  categories,
-}: {
-  products: Product[];
-  categories: Category[];
-}) {
-  return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-24 text-center">
-          <p className="description text-sm text-gray-500 animate-pulse">
-            Loading bookstore catalog...
-          </p>
-        </div>
-      }
-    >
-      <AllProductsFromSearchParams
-        products={products}
-        categories={categories}
-      />
-    </Suspense>
   );
 }

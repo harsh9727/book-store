@@ -3,12 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { ImageProps } from "next/image";
-import { ShoppingBag, Eye } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa6";
+import { Heart, MessageCircle, ShoppingBag, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
+import {
+  addCartItem,
+  toggleWishlistItem,
+  useWishlist,
+} from "@/lib/storefrontStorage";
 
 interface ProductCardProps {
   product:
@@ -27,15 +31,10 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { language } = useLanguage();
+  const { items: wishlistItems } = useWishlist();
   const localizedProduct = localizeProduct(product as Product, language);
   const usesStoredGujarati =
     language === "gu" && "gujarati" in product && Boolean(product.gujarati);
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toast.success(`Added "${localizedProduct.title}" to your cart!`);
-  };
-
   const coverSrc =
     "image" in product && product.image
       ? product.image
@@ -47,6 +46,49 @@ export default function ProductCard({ product }: ProductCardProps) {
       ? product.id
       : undefined;
   const productHref = productId ? `/product/${productId}` : "/allproducts";
+  const storageProduct = {
+    productId: String(product.id),
+    title: localizedProduct.title,
+    price: product.price,
+    image:
+      typeof coverSrc === "string"
+        ? coverSrc
+        : coverSrc
+          ? "src" in coverSrc
+            ? coverSrc.src
+            : coverSrc.default.src
+          : "/images/products/book-placeholder.svg",
+  };
+  const isWishlisted = wishlistItems.some(
+    (item) => item.productId === storageProduct.productId,
+  );
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (addCartItem(storageProduct)) {
+      toast.success(`Added "${localizedProduct.title}" to your cart.`);
+    } else {
+      toast.error("Your browser could not save the cart. Check storage permissions.");
+    }
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = toggleWishlistItem(storageProduct);
+    if (!result.success) {
+      toast.error(
+        "Your browser could not save the wishlist. Check storage permissions.",
+      );
+      return;
+    }
+    toast.success(
+      result.isWishlisted
+        ? `Saved "${localizedProduct.title}" to your wishlist.`
+        : `Removed "${localizedProduct.title}" from your wishlist.`,
+    );
+  };
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -73,6 +115,20 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.badge}
           </span>
         )}
+
+        <button
+          type="button"
+          onClick={handleWishlist}
+          aria-label={`${isWishlisted ? "Remove" : "Add"} ${localizedProduct.title} ${isWishlisted ? "from" : "to"} wishlist`}
+          aria-pressed={isWishlisted}
+          className={`absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-colors ${
+            isWishlisted
+              ? "bg-orange-600 text-white"
+              : "bg-white/95 text-gray-600 hover:text-orange-600"
+          }`}
+        >
+          <Heart size={17} className={isWishlisted ? "fill-current" : ""} />
+        </button>
 
         {/* Link / Image */}
         <Link href={productHref} className="relative block h-full w-full">
@@ -128,7 +184,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               aria-label={`Ask about ${localizedProduct.title} on WhatsApp`}
               title="Ask on WhatsApp"
             >
-              <FaWhatsapp size={16} />
+              <MessageCircle size={16} />
             </button>
             <button
               type="button"

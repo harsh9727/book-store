@@ -14,6 +14,7 @@ import {
 } from "@/lib/contentValidation";
 import { deleteUploadedImages } from "@/lib/imageUpload";
 import type { Product } from "@/types/product";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -50,6 +51,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     await deleteUploadedImages(
       managedKeys(previous).filter((key) => !retainedKeys.has(key)),
     );
+    revalidateStorefront();
     return response({ item });
   } catch (error) {
     if (error instanceof JsonBodyError)
@@ -73,5 +75,6 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const deleted = await deleteProduct(id);
   if (!deleted) return response({ message: "Product not found." }, 404);
   await deleteUploadedImages(managedKeys(deleted));
+  revalidateStorefront();
   return response({ success: true });
 }

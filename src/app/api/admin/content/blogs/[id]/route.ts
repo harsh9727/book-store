@@ -9,6 +9,7 @@ import {
 } from "@/lib/contentValidation";
 import { deleteUploadedImages } from "@/lib/imageUpload";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -47,6 +48,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     if (previous.imageKey && previous.imageKey !== item?.imageKey) {
       await deleteUploadedImages([previous.imageKey]);
     }
+    revalidateStorefront();
     return response({ item });
   } catch (error) {
     return response(
@@ -66,5 +68,6 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const deleted = await deleteBlog(id);
   if (!deleted) return response({ message: "Blog not found." }, 404);
   await deleteUploadedImages([deleted.imageKey]);
+  revalidateStorefront();
   return response({ success: true });
 }

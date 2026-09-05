@@ -13,7 +13,8 @@ import {
   Compass,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { getCategories, getProducts } from "@/lib/contentRepository";
+import type { Category } from "@/types/category";
+import type { Product } from "@/types/product";
 
 // Icon mapping per category slug
 const categoryIconMap: Record<string, LucideIcon> = {
@@ -27,11 +28,13 @@ const categoryIconMap: Record<string, LucideIcon> = {
   novels: BookMarked,
 };
 
-const CategorySection = async () => {
-  const [categories, products] = await Promise.all([
-    getCategories(),
-    getProducts(),
-  ]);
+const CategorySection = ({
+  categories,
+  products,
+}: {
+  categories: Category[];
+  products: Product[];
+}) => {
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
       <div className="container px-3 lg:px-6 mx-auto">

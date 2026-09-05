@@ -3,12 +3,8 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperInstance } from "swiper";
-
 import ProductCard from "@/components/product/ProductCard";
 import type { Product } from "@/types/product";
-import "swiper/css";
 
 interface ProductCarouselSectionProps {
   title: string;
@@ -25,7 +21,12 @@ export default function ProductCarouselSection({
   products,
   background = "bg-white",
 }: ProductCarouselSectionProps) {
-  const swiperRef = useRef<SwiperInstance | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const scroll = (direction: -1 | 1) => {
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollBy({ left: direction * list.clientWidth * 0.85, behavior: "smooth" });
+  };
 
   return (
     <section className={`${background} py-10`}>
@@ -50,29 +51,20 @@ export default function ProductCarouselSection({
 
         {products.length > 0 ? (
           <div className="relative">
-            <Swiper
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-              }}
-              spaceBetween={18}
-              slidesPerView={1.15}
-              breakpoints={{
-                480: { slidesPerView: 1.7 },
-                640: { slidesPerView: 2.3, spaceBetween: 20 },
-                768: { slidesPerView: 3, spaceBetween: 22 },
-                1024: { slidesPerView: 4, spaceBetween: 24 },
-                1280: { slidesPerView: 5, spaceBetween: 24 },
-              }}
+            <ul
+              ref={listRef}
+              aria-label={title}
+              className="grid snap-x snap-mandatory grid-flow-col auto-cols-[87%] gap-[18px] overflow-x-auto overscroll-x-contain pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[480px]:auto-cols-[58%] sm:auto-cols-[42%] sm:gap-5 md:auto-cols-[31%] lg:auto-cols-[23%] lg:gap-6 xl:auto-cols-[18.5%]"
             >
               {products.map((product) => (
-                <SwiperSlide key={product.id}>
+                <li key={product.id} className="min-w-0 snap-start">
                   <ProductCard product={product} />
-                </SwiperSlide>
+                </li>
               ))}
-            </Swiper>
+            </ul>
             <button
               type="button"
-              onClick={() => swiperRef.current?.slidePrev()}
+              onClick={() => scroll(-1)}
               aria-label={`Previous ${title}`}
               className="absolute -left-5 top-[38%] z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-lg hover:border-orange-600 hover:text-orange-600 lg:grid"
             >
@@ -80,7 +72,7 @@ export default function ProductCarouselSection({
             </button>
             <button
               type="button"
-              onClick={() => swiperRef.current?.slideNext()}
+              onClick={() => scroll(1)}
               aria-label={`Next ${title}`}
               className="absolute -right-5 top-[38%] z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-lg hover:border-orange-600 hover:text-orange-600 lg:grid"
             >

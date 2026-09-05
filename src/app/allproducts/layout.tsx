@@ -5,7 +5,7 @@ export const metadata = createPageMetadata({
   title: "Shop Christian Books & Bibles",
   description:
     "Browse Christian books, Holy Bibles, devotionals, study guides, children's books, magazines, and faith-inspired gifts at GTBS Book Store.",
-  path: "/shop",
+  path: "/allproducts",
 });
 
 export default function AllProductsLayout({

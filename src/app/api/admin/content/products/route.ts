@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
 import { createProduct } from "@/lib/contentRepository";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 import {
   MAX_CATALOG_DRAFT_BODY_BYTES,
   productDraftSchema,
@@ -24,7 +25,9 @@ export async function POST(request: NextRequest) {
     const parsed = productDraftSchema.safeParse(body);
     if (!parsed.success)
       return response({ message: "Product fields are invalid." }, 400);
-    return response({ item: await createProduct(parsed.data) }, 201);
+    const item = await createProduct(parsed.data);
+    revalidateStorefront();
+    return response({ item }, 201);
   } catch (error) {
     if (error instanceof JsonBodyError)
       return response({ message: error.message }, error.status);

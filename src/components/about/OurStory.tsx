@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { BookOpen } from "lucide-react";
 import OurStoryImage from "../../../public/images/about/story.webp";
@@ -19,13 +17,13 @@ const OurStory = () => {
             </div>
 
             {/* Heading */}
-            <h2 className="max-w-2xl text-3xl title font-bold leading-[1.12] tracking-tight text-gray-900 sm:text-4xl md:text-[46px]">
+            <h1 className="max-w-2xl text-3xl title font-bold leading-[1.12] tracking-tight text-gray-900 sm:text-4xl md:text-[46px]">
               More Than a Bookstore,
               <br />
               <span className="text-orange-600">
                 We Create Reading Experiences.
               </span>
-            </h2>
+            </h1>
 
             {/* Description */}
             <div className="mt-6 space-y-4">

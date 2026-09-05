@@ -20,22 +20,32 @@ const ContactForm = () => {
     setSuccess("");
     setError("");
 
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID?.trim();
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID?.trim();
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY?.trim();
+
+    if (!serviceId || !templateId || !publicKey) {
+      setLoading(false);
+      setError(
+        "Online messaging is temporarily unavailable. Please email or call us instead.",
+      );
+      return;
+    }
+
     try {
       await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        serviceId,
+        templateId,
         form.current,
         {
-          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!,
+          publicKey,
         },
       );
 
       setSuccess("Your message has been sent successfully!");
 
       form.current.reset();
-    } catch (error) {
-      console.error("EmailJS Error:", error);
-
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -58,17 +68,30 @@ const ContactForm = () => {
               our team will respond as quickly as possible.
             </p>
 
-            <form ref={form} onSubmit={sendEmail} className="mt-6 space-y-5">
+            <form
+              ref={form}
+              onSubmit={sendEmail}
+              aria-busy={loading}
+              className="mt-6 space-y-5"
+            >
               {/* Name + Phone */}
               <div className="grid gap-5 sm:grid-cols-2">
                 {/* Name */}
-                <input
-                  type="text"
-                  name="user_name"
-                  placeholder="Enter your name"
-                  required
-                  className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
-                />
+                <div>
+                  <label htmlFor="contact-name" className="sr-only">
+                    Name
+                  </label>
+                  <input
+                    id="contact-name"
+                    type="text"
+                    name="user_name"
+                    autoComplete="name"
+                    placeholder="Enter your name"
+                    required
+                    maxLength={100}
+                    className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
+                  />
+                </div>
 
                 {/* Phone */}
                 <div className="relative">
@@ -78,43 +101,60 @@ const ContactForm = () => {
                   </div>
 
                   <input
+                    id="contact-phone"
                     type="tel"
                     name="user_phone"
+                    autoComplete="tel-national"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
                     placeholder="Enter your phone number"
                     required
+                    aria-label="10-digit Indian phone number"
                     className="h-13 w-full rounded-xl border border-gray-300 pl-24 pr-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
                   />
                 </div>
               </div>
 
               {/* Email */}
-              <input
-                type="email"
-                name="user_email"
-                placeholder="Enter your email"
-                required
-                className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
-              />
+              <div>
+                <label htmlFor="contact-email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  name="user_email"
+                  autoComplete="email"
+                  maxLength={254}
+                  placeholder="Enter your email"
+                  required
+                  className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
+                />
+              </div>
 
               {/* Message */}
               <textarea
+                id="contact-message"
                 name="message"
                 placeholder="Your Message"
                 required
+                maxLength={2_000}
+                aria-label="Message"
                 rows={5}
                 className="w-full resize-none rounded-xl border border-gray-300 px-4 py-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
               />
 
               {/* Success Message */}
               {success && (
-                <div className="rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+                <div role="status" className="rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
                   {success}
                 </div>
               )}
 
               {/* Error Message */}
               {error && (
-                <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                <div role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
                   {error}
                 </div>
               )}
@@ -127,7 +167,7 @@ const ContactForm = () => {
               >
                 {loading ? (
                   <>
-                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span aria-hidden="true" className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     Sending...
                   </>
                 ) : (

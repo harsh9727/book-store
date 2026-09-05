@@ -3,12 +3,11 @@ import OurStory from "@/components/about/OurStory";
 import VisionMission from "@/components/about/VisionMission";
 import WhyChooseUs from "@/components/about/WhyChooseUs";
 import Team from "@/components/about/Team";
-import Newsletter from "@/components/home/Newsletter";
 import Faq from "@/components/common/Faq";
 import { aboutFaqs } from "@/data/faqs";
 import { getTeamMembers } from "@/lib/contentRepository";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata = createPageMetadata({
   title: "About Us",
@@ -26,10 +25,6 @@ export default async function About() {
       <OurStory />
       <VisionMission />
       <WhyChooseUs />
-      <Newsletter
-        title="Join our community"
-        description="Stay updated with our latest releases and exclusive offers."
-      />
       <Team members={teamMembers} />
 
       {/* FAQ Section */}

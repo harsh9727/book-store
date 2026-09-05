@@ -86,7 +86,7 @@ function Footer() {
             <FooterHeading>Contact Information</FooterHeading>
             <ul className="text-white/60 font-normal text-sm space-y-4">
               <li>
-                <div className="flex items-center gap-3 text-white/60">
+                <div className="flex flex-wrap items-center gap-3 text-white/60">
                   <Phone size={16} className="shrink-0 text-amber-400/80" />
 
                   <Link
@@ -117,7 +117,9 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://www.google.com/maps"
+                  href="https://www.google.com/maps/search/?api=1&query=Sahitya+Seva+Sadan,+Shahid+Veer+Kinariwala+Marg,+I+P+Mission+Compound,+Ellisbridge,+Ahmedabad,+Gujarat+380006"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-start gap-3 transition-colors hover:text-amber-400"
                 >
                   <MapPin

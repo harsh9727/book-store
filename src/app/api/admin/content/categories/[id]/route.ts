@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
 import { deleteCategory, updateCategory } from "@/lib/contentRepository";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 import {
   categoryDraftSchema,
   MAX_CATALOG_DRAFT_BODY_BYTES,
@@ -30,9 +31,9 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       return response({ message: "Category fields are invalid." }, 400);
     const { id } = await params;
     const item = await updateCategory(id, parsed.data);
-    return item
-      ? response({ item })
-      : response({ message: "Category not found." }, 404);
+    if (!item) return response({ message: "Category not found." }, 404);
+    revalidateStorefront();
+    return response({ item });
   } catch (error) {
     if (error instanceof JsonBodyError)
       return response({ message: error.message }, error.status);
@@ -54,9 +55,9 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
     const deleted = await deleteCategory(id);
-    return deleted
-      ? response({ success: true })
-      : response({ message: "Category not found." }, 404);
+    if (!deleted) return response({ message: "Category not found." }, 404);
+    revalidateStorefront();
+    return response({ success: true });
   } catch (error) {
     return response(
       {

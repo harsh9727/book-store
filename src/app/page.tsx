@@ -7,7 +7,11 @@ import WhyChoose from "@/components/home/WhyChoose";
 import ProductCarouselSection from "@/components/home/ProductCarouselSection";
 import Reviews from "@/components/home/Reviews";
 import FaqAndBlog from "@/components/home/FaqAndBlog";
-import { getProducts, getTestimonials } from "@/lib/contentRepository";
+import {
+  getCategories,
+  getProducts,
+  getTestimonials,
+} from "@/lib/contentRepository";
 
 export const metadata = createPageMetadata({
   title: "Christian Books, Bibles & Faith Resources",
@@ -15,12 +19,13 @@ export const metadata = createPageMetadata({
   path: "/",
 });
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function Home() {
-  const [products, testimonials] = await Promise.all([
+  const [products, testimonials, categories] = await Promise.all([
     getProducts(),
     getTestimonials(),
+    getCategories(),
   ]);
   const hasBadge = (product: (typeof products)[number], value: string) =>
     product.badge?.toLowerCase().includes(value) ?? false;
@@ -75,7 +80,7 @@ export default async function Home() {
           products={trending}
         />
       </div>
-      <CategorySection />
+      <CategorySection categories={categories} products={products} />
       <WhyChoose />
       <ProductCarouselSection
         title="Our Accessories"

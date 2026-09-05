@@ -1,14 +1,21 @@
+import Image from "next/image";
+import Link from "next/link";
 import Banner from "../../../public/images/banners/Home_banner.webp";
+
 function HeroSection() {
   return (
     <section className="py-4">
       <div className=" container px-3 lg:px-6 overflow-hidden ">
-        <div
-          className="relative overflow-hidden rounded-xl bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${Banner.src})`,
-          }}
-        >
+        <div className="relative overflow-hidden rounded-xl bg-gray-900">
+          <Image
+            src={Banner}
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="(max-width: 1536px) 100vw, 1440px"
+            className="object-cover object-center"
+          />
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-black/45" />
 
@@ -39,19 +46,19 @@ function HeroSection() {
 
               {/* Buttons */}
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
+                <Link
                   href="/contact"
                   className="inline-flex min-w-[140px] items-center justify-center rounded-lg bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-orange-600"
                 >
                   Contact
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="/allproducts"
                   className="inline-flex min-w-[160px] items-center justify-center rounded-lg border-2 border-white bg-transparent px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-white hover:text-gray-900"
                 >
                   Browse Products
-                </a>
+                </Link>
               </div>
             </div>
           </div>

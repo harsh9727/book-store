@@ -23,7 +23,8 @@
 - Every delayed callback, subscription, or asynchronous browser integration created in an effect must be cancelled, deactivated, or detached in that effect's cleanup before its component can unmount.
 - Never access `ref.current` during render.
 - Reset filtered pagination in the filter/search event handler instead of calling a state setter from an effect.
-- Store imperative carousel instances in refs and access them only in callbacks or event handlers.
+- Prefer native overflow and CSS scroll snap for simple carousels; keep imperative scrolling in event handlers and avoid autoplay unless product requirements justify it.
+- Cached public repository routes must declare a deliberate revalidation window, and every successful admin content mutation must invalidate the affected storefront cache.
 - Prefer semantic HTML over generic containers.
 - Keep rich-text documents as typed/validated JSON. Render allow-listed nodes and marks as React elements; do not pass editor HTML directly to `dangerouslySetInnerHTML`.
 
@@ -46,7 +47,9 @@
 - Start mobile-first, then add responsive enhancements.
 - Use arbitrary values sparingly.
 - Maintain keyboard focus, contrast, and 40–44px touch targets.
-- Specify image dimensions to prevent layout shift.
+- Specify image dimensions to prevent layout shift. Every responsive `next/image` using `fill` must also declare a realistic `sizes` value.
+- Reserve `priority`/high fetch priority for above-the-fold LCP candidates; lazy-load content below the fold.
+- Provide a reduced-motion fallback for nonessential animation and scrolling.
 
 ## Forms and accessibility
 
@@ -56,6 +59,8 @@
 - Icon-only controls require `aria-label`.
 - Rich-text toolbar controls require `type="button"`, accessible labels, visible active/disabled states, and mobile wrapping.
 - Use `aria-current` for active navigation and semantic async status text.
+- Dialogs and lightboxes need a programmatic name, Escape behavior, focus management/return, and background scroll restoration.
+- Public pages expose a keyboard skip link to the primary content region.
 
 ## Errors
 
@@ -84,12 +89,15 @@ For changed files:
 npx eslint path/to/changed-file.tsx
 npx tsc --noEmit
 npm run test:admin-auth
+npm run test:content
+npm run test:site
 ```
 
 For releases or routing/config changes:
 
 ```bash
 npm run lint
+npm audit --omit=dev
 npm run build
 ```
 

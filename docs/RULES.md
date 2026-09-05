@@ -30,6 +30,10 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Dynamic routes must handle unknown IDs safely, normally through Next.js not-found behavior.
 - Products must reference an existing Category slug. Renaming a Category slug updates assigned Products atomically; Categories with assigned Products cannot be deleted.
 - Home catalog sections, all-products filtering, product detail routes, category cards, and sitemap entries read through the catalog repository rather than importing mutable runtime arrays.
+- Cart and Wishlist are explicitly browser-local conveniences. Stored records must remain bounded, validated, non-sensitive, and must never be described as reserved inventory or a completed order.
+- Checkout may prepare an itemized WhatsApp enquiry, but the UI must state that availability, shipping, and payment still require confirmation.
+- Customer login/registration controls must not imply success until a production identity backend exists.
+- Newsletter/contact actions must identify the actual delivery channel and surface configuration/provider failure instead of logging or claiming a false success.
 
 ## UI rules
 
@@ -38,7 +42,9 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Tables must scroll or transform on small screens.
 - Controls need focus/hover states, accessible names, and sufficient touch targets.
 - Prefer `next/image` for content images.
-- Preserve the GTBS language: Inter body, Fraunces display, orange accent, restrained neutrals.
+- Preserve the GTBS visual language: readable system sans/serif stacks, orange accent, and restrained neutrals.
+- Above-the-fold LCP images may use eager priority; below-the-fold images must remain lazy. Responsive `next/image` fill layouts require an accurate `sizes` value.
+- Modal/lightbox navigation must support Escape, visible focus, background scroll restoration, and an accessible dialog name. Respect `prefers-reduced-motion` for nonessential animation.
 
 ## Data and API rules
 

@@ -5,6 +5,7 @@ import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
 import { createTestimonial } from "@/lib/contentRepository";
 import { testimonialDraftSchema } from "@/lib/contentValidation";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 
 function response(body: object, status = 200) {
   return NextResponse.json(body, {
@@ -24,7 +25,9 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return response({ message: "Testimonial fields are invalid." }, 400);
     }
-    return response({ item: await createTestimonial(parsed.data) }, 201);
+    const item = await createTestimonial(parsed.data);
+    revalidateStorefront();
+    return response({ item }, 201);
   } catch (error) {
     if (error instanceof JsonBodyError) {
       return response({ message: error.message }, error.status);

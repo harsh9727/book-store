@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
 
@@ -18,10 +16,10 @@ const ContactSection = () => {
             </p>
 
             {/* Main Heading */}
-            <h2 className=" title text-4xl font-bold leading-[1.15] tracking-tight text-black sm:text-5xl">
+            <h1 className="title text-4xl font-bold leading-[1.15] tracking-tight text-black sm:text-5xl">
               We’d Love to <span className="text-orange-600">Hear</span> From
               You!
-            </h2>
+            </h1>
 
             {/* Description */}
             <p className="mt-5 description leading-7 text-gray-700 sm:text-lg">

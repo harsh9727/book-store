@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-fraunces);
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-display: Georgia, "Times New Roman", ui-serif, serif;
 }
 
 * {
@@ -14,8 +16,13 @@ html {
 }
 
 body {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-sans);
   top: 0 !important;
+}
+
+:focus-visible {
+  outline: 3px solid #f97316;
+  outline-offset: 3px;
 }
 
 /* Keep the translation service UI hidden; language is controlled in the header. */
@@ -34,11 +41,11 @@ body > .skiptranslate {
 }
 
 .title {
-  font-family: var(--font-fraunces), serif !important;
+  font-family: var(--font-display) !important;
 }
 
 .description {
-  font-family: var(--font-inter), sans-serif !important;
+  font-family: var(--font-sans) !important;
 }
 
 .number-input-no-spinner::-webkit-inner-spin-button,
@@ -65,6 +72,21 @@ body > .skiptranslate {
   background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .container {

@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import VisionMissionImage from "../../../public/images/about/VisionMission.webp";
@@ -79,7 +77,6 @@ const VisionMission = () => {
                 src={VisionMissionImage}
                 alt="Stack of books representing our vision and mission to connect readers with quality books"
                 fill
-                priority
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-700 hover:scale-105"
               />

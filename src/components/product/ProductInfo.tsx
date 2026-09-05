@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Minus, Plus, Share2 } from "lucide-react";
+import { Heart, ShoppingCart, Minus, Plus, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
+import {
+  addCartItem,
+  toggleWishlistItem,
+  useWishlist,
+} from "@/lib/storefrontStorage";
 
 interface ProductInfoProps {
   product: Product;
@@ -14,6 +19,7 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const { language } = useLanguage();
+  const { items: wishlistItems } = useWishlist();
   const localizedProduct = localizeProduct(product, language);
   const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
   const variantGroups = usesStoredGujarati
@@ -27,6 +33,16 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     number[]
   >(() => variantGroups.map(() => 0));
   const [quantity, setQuantity] = useState(1);
+  const isWishlisted = wishlistItems.some(
+    (item) => item.productId === product.id,
+  );
+
+  const productSnapshot = {
+    productId: product.id,
+    title: localizedProduct.title,
+    price: product.price,
+    image: product.image,
+  };
 
   const handleAddToCart = () => {
     const variantSummary = variantGroups
@@ -37,8 +53,27 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       )
       .filter(Boolean)
       .join(", ");
+    if (!addCartItem(productSnapshot, quantity, variantSummary)) {
+      toast.error("Your browser could not save the cart. Check storage permissions.");
+      return;
+    }
     toast.success(
       `Added ${quantity}x "${localizedProduct.title}"${variantSummary ? ` (${variantSummary})` : ""} to your cart!`,
+    );
+  };
+
+  const handleWishlist = () => {
+    const result = toggleWishlistItem(productSnapshot);
+    if (!result.success) {
+      toast.error(
+        "Your browser could not save the wishlist. Check storage permissions.",
+      );
+      return;
+    }
+    toast.success(
+      result.isWishlisted
+        ? `Saved "${localizedProduct.title}" to your wishlist.`
+        : `Removed "${localizedProduct.title}" from your wishlist.`,
     );
   };
 
@@ -94,7 +129,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Category & Breadcrumb link */}
       <div className="mb-2 flex items-center justify-between">
         <Link
-          href={`/shop?category=${product.category}`}
+          href={`/allproducts?category=${product.category}`}
           className="text-xs font-semibold uppercase tracking-wider text-orange-600 hover:underline"
         >
           {product.category}
@@ -184,6 +219,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <button
             type="button"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            aria-label="Decrease quantity"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Minus size={15} />
@@ -191,7 +227,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span className="font-semibold text-gray-900">{quantity}</span>
           <button
             type="button"
-            onClick={() => setQuantity(quantity + 1)}
+            onClick={() => setQuantity(Math.min(99, quantity + 1))}
+            aria-label="Increase quantity"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Plus size={15} />
@@ -206,6 +243,21 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         >
           <ShoppingCart size={18} />
           <span>Add to Cart</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleWishlist}
+          aria-pressed={isWishlisted}
+          className={`flex h-12 items-center justify-center gap-2 rounded-xl border px-5 font-semibold transition-colors ${
+            isWishlisted
+              ? "border-orange-600 bg-orange-50 text-orange-700"
+              : "border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:text-orange-700"
+          }`}
+        >
+          <Heart size={18} className={isWishlisted ? "fill-current" : ""} />
+          <span className="sm:sr-only">
+            {isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          </span>
         </button>
       </div>
     </div>

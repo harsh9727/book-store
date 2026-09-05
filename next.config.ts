@@ -27,6 +27,25 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/shop",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/product",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/profile",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     const baselineSecurityHeaders = [
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

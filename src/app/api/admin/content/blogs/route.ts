@@ -8,6 +8,7 @@ import {
   MAX_BLOG_DRAFT_BODY_BYTES,
 } from "@/lib/contentValidation";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 
 function response(body: object, status = 200) {
   return NextResponse.json(body, {
@@ -35,7 +36,9 @@ export async function POST(request: NextRequest) {
   if (!parsed.success)
     return response({ message: "Blog fields are invalid." }, 400);
   try {
-    return response({ item: await createBlog(parsed.data) }, 201);
+    const item = await createBlog(parsed.data);
+    revalidateStorefront();
+    return response({ item }, 201);
   } catch (error) {
     return response(
       {

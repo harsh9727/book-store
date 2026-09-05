@@ -15,6 +15,12 @@ This records implemented controls and known risks; it is not a formal security c
 - `UPLOADTHING_TOKEN` is server-only and must never be prefixed with `NEXT_PUBLIC_` or returned by an API.
 - Rotate a secret immediately if exposed in Git, logs, screenshots, chat, or docs.
 
+## Dependency baseline
+
+- Next.js and `eslint-config-next` are pinned to 16.3.3, which contains the upstream fixes for the August 2026 unauthenticated RCE advisories affecting earlier 16.x releases.
+- UploadThing currently permits an older transitive `effect` range, so `pnpm-workspace.yaml` overrides `effect` to patched 3.20.0 until the upstream dependency selects it directly.
+- The 2026-09-05 production dependency audit reported no known vulnerabilities. Keep the audit in CI/release checks because this result is time-sensitive.
+
 ## Implemented admin controls
 
 - Passwords are verified server-side against a memory-hard scrypt hash; the plaintext fallback is development-only.
@@ -51,6 +57,12 @@ This records implemented controls and known risks; it is not a formal security c
 - Google Translate is loaded only after Gujarati is selected and may then use its `googtrans` language cookie.
 - No analytics, advertising, or personalization cookies are implemented in the storefront.
 
+## Browser-local commerce data
+
+- Cart and Wishlist persist only bounded Product display data, selected variants, price, and quantity in `localStorage`; no credential, payment, session, or admin data belongs there.
+- Stored values are treated as untrusted and normalized on read. They remain client-controlled and must never become authoritative price, inventory, or order data for a future payment backend.
+- Checkout sends the prepared item list through an external WhatsApp link and explicitly requires business confirmation of availability, delivery, and payment.
+
 ## Known gaps before mature production use
 
 - Replace the single environment account with database identities when multiple admins or roles are required.
@@ -62,7 +74,9 @@ This records implemented controls and known risks; it is not a formal security c
 - Replace local `storage/content.json` with a shared database before serverless, read-only, multi-process, or multi-region deployment. The current in-process write queue cannot coordinate replicas.
 - Add an orphan-file reconciliation job if UploadThing usage grows; a successful upload followed by a rejected content mutation can leave an unreferenced provider file.
 - Review EmailJS quotas, abuse protection, and allowed origins.
-- Add dependency vulnerability scanning to CI.
+- Add server-side/contact-provider abuse protection if public form volume warrants it; EmailJS public identifiers are intentionally browser-visible and are not secrets.
+- Add dependency vulnerability scanning to CI even though the current production audit is clean.
+- Configure a real HTTPS `NEXT_PUBLIC_SITE_URL` in deployment. Without it, public canonical/social metadata falls back to localhost and production admin authentication rejects the configuration.
 
 ## Authentication invariants
 

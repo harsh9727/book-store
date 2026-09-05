@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   X,
@@ -25,9 +25,14 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
   const visiblePhotos = photos.slice(0, visibleCount);
   const hasMorePhotos = visibleCount < photos.length;
   const isLightboxOpen = selectedPhotoIndex !== null;
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!isLightboxOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -54,10 +59,15 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus();
+    };
   }, [isLightboxOpen, visiblePhotos.length]);
 
-  const openLightbox = (index: number) => {
+  const openLightbox = (index: number, trigger: HTMLElement) => {
+    triggerRef.current = trigger;
     setSelectedPhotoIndex(index);
   };
 
@@ -88,7 +98,16 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
         {visiblePhotos.map((photo, idx) => (
           <div
             key={photo.id}
-            onClick={() => openLightbox(idx)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Open photo: ${photo.title}`}
+            onClick={(event) => openLightbox(idx, event.currentTarget)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openLightbox(idx, event.currentTarget);
+              }
+            }}
             className="group relative cursor-pointer overflow-hidden rounded-2xl bg-gray-100 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10"
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -96,6 +115,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
                 src={photo.url}
                 alt={photo.title}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -145,10 +165,14 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
       {selectedPhotoIndex !== null && (
         <div
           onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="lightbox-title"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
         >
           {/* Close button */}
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={closeLightbox}
             aria-label="Close photo viewer"
@@ -187,11 +211,12 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
                 src={visiblePhotos[selectedPhotoIndex].url}
                 alt={visiblePhotos[selectedPhotoIndex].title}
                 fill
+                sizes="90vw"
                 className="object-contain"
               />
             </div>
             <div className="mt-4 text-center text-white">
-              <h3 className="title text-lg font-semibold">
+              <h3 id="lightbox-title" className="title text-lg font-semibold">
                 {visiblePhotos[selectedPhotoIndex].title}
               </h3>
               {visiblePhotos[selectedPhotoIndex].caption && (

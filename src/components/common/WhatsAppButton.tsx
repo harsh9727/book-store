@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaWhatsapp } from "react-icons/fa6";
+import { MessageCircle } from "lucide-react";
 
 export default function WhatsAppButton() {
   const phoneNumber = "917490028867";
@@ -28,7 +28,7 @@ export default function WhatsAppButton() {
         aria-label="Chat on WhatsApp with +91 7490028867"
         className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl shadow-emerald-600/30 transition-all duration-300 hover:scale-110 hover:bg-[#20bd5a] hover:shadow-2xl active:scale-95"
       >
-        <FaWhatsapp className="h-8 w-8 drop-shadow-sm" />
+        <MessageCircle className="h-8 w-8 drop-shadow-sm" />
       </Link>
     </div>
   );

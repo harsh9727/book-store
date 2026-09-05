@@ -1,23 +1,10 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
 
 import "./globals.css";
 
 import JsonLd from "@/components/seo/JsonLd";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -97,11 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${fraunces.variable}`}
-      data-scroll-behavior="smooth"
-    >
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="font-sans antialiased">
         <JsonLd data={storeStructuredData} />
         <SiteChrome>{children}</SiteChrome>

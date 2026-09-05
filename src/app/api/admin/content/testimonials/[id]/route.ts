@@ -5,6 +5,7 @@ import { verifyAdminApiRequest } from "@/lib/adminApiAuth";
 import { JsonBodyError, readBoundedJson } from "@/lib/boundedJson";
 import { deleteTestimonial, updateTestimonial } from "@/lib/contentRepository";
 import { testimonialDraftSchema } from "@/lib/contentValidation";
+import { revalidateStorefront } from "@/lib/storefrontRevalidation";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -31,6 +32,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     const { id } = await params;
     const item = await updateTestimonial(id, parsed.data);
     if (!item) return response({ message: "Testimonial not found." }, 404);
+    revalidateStorefront();
     return response({ item });
   } catch (error) {
     if (error instanceof JsonBodyError) {
@@ -55,5 +57,6 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const { id } = await params;
   const deleted = await deleteTestimonial(id);
   if (!deleted) return response({ message: "Testimonial not found." }, 404);
+  revalidateStorefront();
   return response({ success: true });
 }

@@ -268,6 +268,8 @@
 
 **Solution:** Prefer local assets. Otherwise add the narrowest trusted host/protocol rule, restart, and document the dependency/security impact.
 
+**Windows runtime variant observed 2026-09-05:** the configured UploadThing asset returned HTTP 200 directly, but `/_next/image` returned HTTP 500 because the local Node process did not inherit the trusted system CA chain. Start the local production server with PowerShell `$env:NODE_OPTIONS='--use-system-ca'; pnpm start`, or configure the approved CA through `NODE_EXTRA_CA_CERTS`. With the system CA enabled, the same optimized image returned HTTP 200. Do not disable TLS verification; production hosts must provide a valid trusted CA configuration.
+
 ## Contact form does not send
 
 **Likely causes:** Missing/incorrect `NEXT_PUBLIC_EMAILJS_*` configuration, origin restrictions, template mismatch, quota, or provider availability.
@@ -357,6 +359,54 @@
 ## Stale UI after changes
 
 Restart for environment changes. For stale generated output, stop the process and remove only the workspace `.next` directory, then restart. Never recursively delete a broad directory or workspace root.
+
+## Production build cannot download Google fonts
+
+**Symptom:** `next build` fails while resolving a `next/font/google` family even though application code compiled locally.
+
+**Cause resolved 2026-09-05:** the root layout made the build depend on an external Google Fonts request, which is unavailable in restricted/offline deployment builders.
+
+**Solution:** the storefront now uses local system sans/serif font stacks in `globals.css`; the root layout no longer imports remote font loaders. This removes the font request from the critical path and lets an offline builder compile the layout.
+
+**Prevention:** if custom typography returns, self-host reviewed font files and preload only the required subsets/weights.
+
+## Seed Product images return 404
+
+**Symptom:** a first-run catalog card requests a missing file under `/images/products/` and renders broken alt text.
+
+**Cause resolved 2026-09-05:** five seed records referenced cover files that were not committed to `public/images`.
+
+**Solution:** missing seed covers now use the committed code-native `book-placeholder.svg`. The site-integrity suite checks literal public image references before release.
+
+**Prevention:** run `pnpm test:site` whenever static asset paths or internal links change.
+
+## Catalog heading is absent from initial HTML
+
+**Symptom:** `/allproducts` looks correct after hydration but its first response has no `<h1>`, weakening non-JavaScript accessibility and SEO inspection.
+
+**Cause resolved 2026-09-05:** `useSearchParams` lived below a Suspense boundary whose route fallback was the only initial server output.
+
+**Solution:** the route Server Component now awaits `searchParams` and passes normalized initial filter values to the interactive catalog component. The heading and catalog content are rendered in the response.
+
+**Prevention:** keep URL parsing in the Server Component when the same values define initial server-rendered content.
+
+## Dependency audit cannot reach the registry on Windows
+
+**Symptom:** `pnpm audit --prod` retries the npm advisory endpoint with TLS or connection errors in the restricted shell.
+
+**Cause:** the environment either blocks registry network access or Node does not inherit the organization/system CA chain.
+
+**Resolved 2026-09-05:** run the audit from a permitted terminal with Node's system CA enabled, for example PowerShell `$env:NODE_OPTIONS='--use-system-ca'; pnpm audit --prod`. Keep TLS verification enabled. The verified run reported no known vulnerabilities.
+
+**Prevention:** give the CI audit explicit registry access and the approved CA configuration; never use `strict-ssl=false` or `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+## Node test scripts hit `spawn EPERM`
+
+**Symptom:** a package test command starts Node's test runner but Windows denies its isolated child process.
+
+**Cause:** the restricted environment blocks the default per-file test subprocess, matching the build-worker limitation documented above.
+
+**Workaround verified 2026-09-05:** run the same TypeScript tests in one process with `node --experimental-strip-types --test --experimental-test-isolation=none tests/admin-auth.test.ts tests/content-management.test.ts tests/site-integrity.test.ts`. This passed all 32 tests; still keep the normal package scripts for unrestricted CI.
 
 ## pnpm reports an unexpected store location
 

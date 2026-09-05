@@ -95,10 +95,13 @@ export default function SearchBar({
   return (
     <form
       onSubmit={handleSubmit}
+      role="search"
       className={`relative w-full overflow-hidden rounded-full border border-gray-300 bg-white transition-all duration-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 ${className}`}
     >
       <input
         type="text"
+        name="search"
+        autoComplete="off"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}

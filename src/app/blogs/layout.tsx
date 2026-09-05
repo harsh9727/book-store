@@ -6,7 +6,7 @@ export const metadata = createPageMetadata({
   description:
     "Read book recommendations, author insights, reading guides, literary news, and faith-focused articles from GTBS Book Store.",
   path: "/blogs",
-  image: "/images/blog/blog.jpg",
+  image: "/images/blog/blog.webp",
 });
 
 export default function BlogsLayout({ children }: { children: ReactNode }) {

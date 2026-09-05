@@ -15,7 +15,7 @@ import {
 } from "@/lib/seo";
 import { getProduct, getProducts } from "@/lib/contentRepository";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -52,10 +52,8 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const [product, products] = await Promise.all([
-    getProduct(id),
-    getProducts(),
-  ]);
+  const products = await getProducts();
+  const product = products.find((item) => item.id === id);
 
   if (!product) {
     notFound();

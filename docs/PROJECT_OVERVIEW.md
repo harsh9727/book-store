@@ -4,24 +4,14 @@
 
 GTBS Book Store is a responsive e-commerce website for Gujarat Tract Book Store. It presents Christian books, Bibles, devotionals, magazines, gifts, store information, editorial content, and a protected administration area.
 
-The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial/team repository. Cart and wishlist routes are static empty-state pages; checkout and customer-account routes are presentation UI. These commerce areas are not connected to a production database or backend.
+The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial/team repository. Cart and wishlist state is functional and versioned in the visitor's browser; checkout prepares an itemized WhatsApp order enquiry. Customer identity, server-side carts, payment capture, and persistent orders are not implemented.
 
 ## Technology stack
 
-- Next.js 16 App Router, React 19, and strict TypeScript
+- Next.js 16.3.3 App Router, React 19, and strict TypeScript
 - Tailwind CSS 4
-- Lucide React and React Icons
+- Lucide React
 - EmailJS for the contact form
-- Swiper for carousels
-- Zod for request and persisted-content validation
-
-## Technology stack
-
-- Next.js 16 App Router, React 19, and strict TypeScript
-- Tailwind CSS 4
-- Lucide React and React Icons
-- EmailJS for the contact form
-- Swiper for carousels
 - Zod for request and persisted-content validation
 - Tiptap 3 for the Blog admin rich-text editor
 - UploadThing server SDK for managed blog/gallery/product/team images
@@ -31,10 +21,10 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 
 | Area       | Routes                                                                                                                                            | Current state                                                                                                                                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Storefront | `/`, `/shop`, `/allproducts`, `/product/[id]`                                                                                                     | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository                                                                                                             |
+| Storefront | `/`, `/allproducts`, `/product/[id]`; legacy `/shop` and `/product` redirect to `/allproducts`                                                    | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository                                                                                                             |
 | Content    | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact`                                                                                     | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs                                                                                                                  |
-| Shopping   | `/cart`, `/wishlist`, `/checkout`                                                                                                                 | Responsive empty states and ordering assistance UI with direct WhatsApp inquiry integration                                                                                                                         |
-| Customer   | `/login`, `/register`, `/profile`                                                                                                                 | Responsive customer UI with admin gateway link; persistent identity backend pending                                                                                                                                 |
+| Shopping   | `/cart`, `/wishlist`, `/checkout`                                                                                                                 | Browser-local cart/wishlist with quantity controls and an itemized WhatsApp checkout handoff; no order/payment backend                                                                                               |
+| Customer   | `/login`, `/register`; `/profile` redirects to `/login`                                                                                           | Explicitly unavailable account UI with support links; no form implies that an identity was created                                                                                                                   |
 | Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
 | Admin      | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
 
@@ -44,11 +34,11 @@ Public Gallery detail pages show photos in a responsive 1/2/4-column grid. The f
 
 Gallery cards and canonical detail URLs use each album's stored title-derived slug. Legacy numeric Gallery URLs redirect to the matching slug route when the record still exists.
 
-Public Product, Blog, and Gallery index routes now read their initial repository data in route-level Server Components and pass it into focused interactive Client Components. Their cards and empty states are present in the first server response; hydration no longer triggers a second no-store content request or holds the page behind a client-only loading skeleton. The file-backed repository retains one validated in-memory snapshot per Node process, deduplicates concurrent initial reads, clones the snapshot before mutation, and replaces it only after the atomic write succeeds. This matches the existing single-process storage constraint and keeps successful admin changes immediately visible in that process.
+Public Product, Blog, and Gallery index routes read their initial repository data in route-level Server Components and pass it into focused interactive Client Components. Their cards and empty states are present in the first server response; hydration does not trigger a second content request. Public repository-backed pages use a 300-second revalidation window, and every successful admin content mutation invalidates the public layout cache. The file-backed repository also retains one validated in-memory snapshot per Node process, deduplicates concurrent initial reads, clones the snapshot before mutation, and replaces it only after the atomic write succeeds.
 
 ## Data
 
-Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static, and cart/wishlist have no state layer or persistence implementation.
+Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static. Cart and wishlist use bounded, validated, non-sensitive `localStorage` records and intentionally do not synchronize across devices.
 
 ## Local setup
 
@@ -64,6 +54,9 @@ Useful checks:
 npm run lint
 npx tsc --noEmit
 npm run test:admin-auth
+npm run test:content
+npm run test:site
+npm audit --omit=dev
 npm run build
 ```
 
@@ -103,5 +96,9 @@ npm run build
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
 - Password recovery prepares a support email; it does not issue an automated reset token.
-- There is no documented payment gateway or persistent order workflow.
-- Windows sandbox child-process restrictions can block the final build worker even after compilation; lint and standalone TypeScript checks pass.
+- Cart and wishlist are device-local browser state; they are not authenticated, inventory-reserved, server-validated, or synchronized across devices.
+- Checkout prepares a WhatsApp enquiry only. It does not confirm shipping, reserve stock, charge a payment method, or create a persistent order.
+- Customer sign-in and registration are intentionally unavailable until an identity backend is implemented.
+- Contact delivery depends on browser-side EmailJS configuration/provider availability and still needs deployment-level allowed-origin, quota, and abuse controls.
+- A real HTTPS `NEXT_PUBLIC_SITE_URL` must be set before deployment; otherwise canonical and social metadata fall back to localhost and production admin auth fails closed.
+- Windows sandbox child-process restrictions can block build/test workers; use the documented direct in-process test fallback for diagnosis and require an exit-0 production build before release.

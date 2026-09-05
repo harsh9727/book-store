@@ -20,10 +20,12 @@ import {
 import Logo from "../../../public/images/logo/logo.webp";
 import SearchBar from "@/components/common/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/lib/storefrontStorage";
 
 function Header() {
   const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
+  const { itemCount: cartItemCount } = useCart();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
@@ -50,6 +52,22 @@ function Header() {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsSidebarOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSidebarOpen]);
 
   /* =========================================================
      NAVIGATION ITEMS
@@ -143,9 +161,10 @@ function Header() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const isCategoryActive = categories.some((category) =>
-    isActive(category.href),
-  );
+  const isCategoryActive =
+    pathname === "/allproducts" ||
+    pathname === "/shop" ||
+    pathname.startsWith("/product/");
 
   /* =========================================================
      CLOSE SIDEBAR
@@ -197,13 +216,13 @@ function Header() {
                 +91 9265429338
               </Link>
 
-              <span className="text-white/40">|</span>
+              <span className="hidden text-white/40 md:inline">|</span>
 
               <Link
                 href="tel:+917490028867"
                 title="Call +91 7490028867"
                 aria-label="Call +91 7490028867"
-                className="transition-colors duration-200 hover:text-amber-400"
+                className="hidden transition-colors duration-200 hover:text-amber-400 md:inline"
               >
                 +91 7490028867
               </Link>
@@ -369,10 +388,16 @@ function Header() {
 
               <Link
                 href="/cart"
-                className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
-                aria-label="Open cart"
+                className="relative flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
+                aria-label={`Open cart${cartItemCount ? `, ${cartItemCount} items` : ""}`}
               >
                 <ShoppingBag className="h-5 w-5" />
+
+                {cartItemCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1 text-[10px] font-bold text-white">
+                    {cartItemCount > 99 ? "99+" : cartItemCount}
+                  </span>
+                )}
 
                 <span className="hidden sm:inline">Cart</span>
               </Link>
@@ -531,6 +556,7 @@ function Header() {
       ===================================================== */}
 
       <div
+        aria-hidden={!isSidebarOpen}
         className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
           isSidebarOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
@@ -542,6 +568,9 @@ function Header() {
       ===================================================== */}
 
       <aside
+        aria-label="Mobile navigation"
+        aria-hidden={!isSidebarOpen}
+        inert={!isSidebarOpen}
         className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}

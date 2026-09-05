@@ -39,6 +39,7 @@ export default function ProductImages({
                 src={img}
                 alt={`${title} thumbnail ${idx + 1}`}
                 fill
+                sizes="64px"
                 className="object-cover"
               />
             </button>
@@ -60,6 +61,7 @@ export default function ProductImages({
             alt={title}
             fill
             priority
+            sizes="(max-width: 1024px) 100vw, 42vw"
             className="object-contain drop-shadow-xl transition-transform duration-300 hover:scale-105"
           />
         </div>
