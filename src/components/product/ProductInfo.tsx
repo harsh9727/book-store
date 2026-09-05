@@ -168,7 +168,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
               ? `${variant.name} પસંદ કરો`
               : `Select ${variant.name}`}
           </p>
-          <div className="mt-2.5 flex flex-wrap gap-2.5">
+          <div className="mt-2 flex flex-wrap gap-2">
             {variant.options.map((option, optionIndex) => (
               <button
                 key={option}
@@ -182,7 +182,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     ),
                   )
                 }
-                className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200 ${
                   (selectedVariantIndexes[variantIndex] ?? 0) === optionIndex
                     ? "border-orange-600 bg-orange-50/70 text-orange-700 shadow-sm ring-1 ring-orange-600"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
@@ -207,14 +207,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       )}
 
       {/* Quantity & CTA Buttons */}
-      <div className="mt-8 grid gap-3 sm:grid-cols-[128px_minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
+      <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {/* Quantity Stepper */}
-        <div className="flex h-12 w-32 items-center justify-between rounded-xl border border-gray-200 bg-gray-50/80 px-3">
+        <div className="flex h-11 w-28 items-center justify-between rounded-lg border border-gray-200 bg-gray-50/80 px-2.5">
           <button
             type="button"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             aria-label="Decrease quantity"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Minus size={15} />
           </button>
@@ -223,28 +223,30 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             type="button"
             onClick={() => setQuantity(Math.min(99, quantity + 1))}
             aria-label="Increase quantity"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-white hover:shadow-sm"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Plus size={15} />
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className="flex h-12 items-center justify-center gap-2 rounded-xl border border-orange-600 bg-white px-4 font-semibold text-orange-700 transition-colors hover:bg-orange-50 active:scale-[0.98]"
-        >
-          <ShoppingCart size={19} aria-hidden="true" />
-          <span>Add to Cart</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleBuyNow}
-          className="flex h-12 items-center justify-center rounded-xl bg-gray-900 px-4 font-semibold text-white shadow-md transition-colors hover:bg-orange-600 active:scale-[0.98]"
-          aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
-        >
-          <span>Buy Now</span>
-        </button>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-orange-600 bg-white px-3 text-sm font-semibold text-orange-700 transition-colors hover:bg-orange-50 active:scale-[0.98] sm:min-w-36 sm:px-5"
+          >
+            <ShoppingCart size={17} aria-hidden="true" />
+            <span>Add to Cart</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg bg-gray-900 px-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 active:scale-[0.98] sm:min-w-32 sm:px-5"
+            aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
+          >
+            <span>Buy Now</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -172,11 +172,6 @@ function Header() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const isCategoryActive =
-    pathname === "/allproducts" ||
-    pathname === "/shop" ||
-    pathname.startsWith("/product/");
-
   /* =========================================================
      CLOSE SIDEBAR
   ========================================================= */
@@ -467,8 +462,10 @@ function Header() {
             <button
               type="button"
               onClick={() => setIsCategoryMenuOpen((open) => !open)}
+              aria-expanded={isCategoryMenuOpen}
+              aria-haspopup="menu"
               className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all duration-200 ${
-                isCategoryActive
+                isCategoryMenuOpen
                   ? "border-orange-500 bg-orange-500 text-white"
                   : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
               }`}
@@ -620,8 +617,9 @@ function Header() {
             <button
               type="button"
               onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
+              aria-expanded={isMobileCategoriesOpen}
               className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-                isCategoryActive
+                isMobileCategoriesOpen
                   ? "bg-orange-500 text-white"
                   : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
               }`}

@@ -88,6 +88,57 @@ test("visible catalog links use the canonical All Products route", () => {
   );
 });
 
+test("Product detail thumbnails render horizontally below the main image", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "product", "ProductImages.tsx"),
+    "utf8",
+  );
+  const mainImagePosition = source.indexOf("{/* Main Image Stage */}");
+  const thumbnailPosition = source.indexOf("{/* Horizontal Thumbnails */}");
+
+  assert.notEqual(mainImagePosition, -1);
+  assert.notEqual(thumbnailPosition, -1);
+  assert.equal(mainImagePosition < thumbnailPosition, true);
+  assert.match(source, /relative aspect-square w-full/);
+  assert.match(source, /flex max-w-full gap-3 overflow-x-auto pb-2/);
+  assert.match(source, /relative h-20 w-20 shrink-0/);
+  assert.doesNotMatch(source, /aspect-\[3\/4\]|h-20 w-16|h-16 w-16/);
+  assert.doesNotMatch(source, /md:flex-col/);
+});
+
+test("Product detail purchase controls remain compact and balanced", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "product", "ProductInfo.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /mt-7 flex flex-col gap-3 sm:flex-row/);
+  assert.match(source, /grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto/);
+  assert.match(source, /h-11 w-28/);
+  assert.match(source, /sm:min-w-36/);
+  assert.match(source, /sm:min-w-32/);
+  assert.doesNotMatch(source, /sm:grid-cols-\[128px_minmax/);
+});
+
+test("Header Categories controls use route-independent styling", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "layout", "Header.tsx"),
+    "utf8",
+  );
+
+  assert.doesNotMatch(source, /isCategoryActive/);
+  assert.match(
+    source,
+    /isCategoryMenuOpen\s*\? "border-orange-500 bg-orange-500 text-white"/,
+  );
+  assert.match(
+    source,
+    /isMobileCategoriesOpen\s*\? "bg-orange-500 text-white"/,
+  );
+  assert.match(source, /aria-expanded=\{isCategoryMenuOpen\}/);
+  assert.match(source, /aria-expanded=\{isMobileCategoriesOpen\}/);
+});
+
 test("client modules do not reference server-only secrets", () => {
   const exposed: string[] = [];
   const serverOnlyName =

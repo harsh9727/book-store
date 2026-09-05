@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 37 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 40 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,30 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Consistent Header Categories trigger
+
+- Outcome: removed route-dependent styling from the Header Categories controls. The closed desktop trigger now stays white/outlined on every page and turns orange only when its dropdown is open; the mobile trigger follows the same interaction rule for its expandable panel. Added accurate expanded-state semantics to both controls.
+- Main files/areas: responsive Header navigation, storefront interaction rules, troubleshooting, integrity coverage, project overview, and progress documentation.
+- Data/API/security impact: none; category links, filtering, and catalog data are unchanged.
+- Verification and exact result: focused ESLint passed for Header and the updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 11/11, including the new route-independent Categories trigger assertion; the approved `pnpm build` compiled in 3.2 seconds, completed TypeScript in 6.7 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: category link highlighting inside the expanded menu remains separate from the trigger's open-state styling.
+
+### 2026-09-05 - Compact Product-detail controls
+
+- Outcome: tightened Product variant chips and redesigned the oversized purchase row. The quantity stepper is now 112 by 44 pixels, while Add to Cart and Buy Now use 44-pixel height and bounded desktop widths instead of splitting all available space. Mobile keeps both CTAs in a balanced two-column row with smaller type, padding, radius, icon, and shadow.
+- Main files/areas: Product detail information/actions, responsive Product rules, troubleshooting, integrity coverage, project overview, and progress documentation.
+- Data/API/security impact: none; quantity bounds, Cart persistence, selected variants, and WhatsApp Buy Now behavior are unchanged.
+- Verification and exact result: focused ESLint passed for Product detail information and the updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 10/10, including the new compact responsive action-group assertion; the approved `pnpm build` compiled in 3.4 seconds, completed TypeScript in 7.4 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: very long translated CTA labels may require future locale-specific sizing; current English labels remain single-line at supported widths.
+
+### 2026-09-05 - Compact Product gallery with larger horizontal square thumbnails
+
+- Outcome: reduced the tall Product main-image stage from a 3:4 portrait box to a compact square while preserving uncropped `object-contain` rendering. Moved the multiple-image list from the desktop left rail to one horizontal strip of enlarged 80-by-80-pixel square thumbnails directly below the main image at every breakpoint. The strip scrolls horizontally when needed, preserves selected-image highlighting/switching, and adds explicit thumbnail button labels and pressed state.
+- Main files/areas: Product detail image gallery, responsive Product rules/architecture, troubleshooting, integrity coverage, project overview, and progress documentation.
+- Data/API/security impact: none; saved Product image records and upload behavior are unchanged.
+- Verification and exact result: focused ESLint passed for the Product gallery and updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 9/9, including assertions for main-image-first order, a square main stage, 80-pixel square thumbnails, horizontal overflow, and no legacy portrait/desktop-column utilities; the final approved `pnpm build` compiled in 3.1 seconds, completed TypeScript in 6.8 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the strip uses native horizontal scrolling; no separate arrow controls are added for the maximum seven supported images.
 
 ### 2026-09-05 - Canonical Products breadcrumb and links
 

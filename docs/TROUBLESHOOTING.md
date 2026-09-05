@@ -8,6 +8,36 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Categories button design changes between pages
+
+**Symptom:** the closed Header Categories button appears orange on All Products/Product detail but white and outlined on Home or other pages.
+
+**Cause resolved 2026-09-05:** the trigger's visual state was tied to catalog route detection, so page navigation changed the control design even when its menu was closed.
+
+**Solution:** desktop and mobile triggers now use route-independent closed styling and switch to orange only while their own category menu is expanded. Both controls expose their expanded state to assistive technology.
+
+**Prevention:** keep navigation-route highlighting separate from disclosure open/closed styling; do not reintroduce pathname checks into the Categories trigger classes.
+
+## Product-detail action buttons stretch across the full panel
+
+**Symptom:** Add to Cart and Buy Now become very wide on desktop, making the Product information section look heavy and unbalanced.
+
+**Cause resolved 2026-09-05:** the purchase row assigned both CTAs flexible `1fr` grid columns, so each button consumed half of all remaining horizontal space.
+
+**Solution:** variant chips use tighter spacing, the quantity stepper is compact, and the two CTAs now use bounded content widths on larger screens. On mobile they remain touch-safe and share an equal two-column row.
+
+**Prevention:** do not place Product-detail CTAs in unrestricted `minmax(0, 1fr)` desktop columns; preserve the compact responsive action group and its 44-pixel control height.
+
+## Product thumbnails move into a left-side vertical column
+
+**Symptom:** multiple Product images appear vertically beside the main image on tablet/desktop instead of horizontally underneath it.
+
+**Cause resolved 2026-09-05:** `ProductImages.tsx` changed its flex direction to a row at the `md` breakpoint and changed the thumbnail container to a vertical column.
+
+**Solution:** a compact square main-image stage now precedes a horizontal, overflow-scrollable row of 80-pixel square thumbnails at every breakpoint. The main image retains `object-contain`, while selecting a thumbnail still replaces it and exposes pressed-state semantics.
+
+**Prevention:** keep the Product gallery wrapper in column flow and do not apply breakpoint-specific `flex-row` or thumbnail `flex-col` utilities.
+
 ## Homepage shows fake Magazines that are not in Admin Products
 
 **Symptom:** the homepage displays Faith & Life Magazine, Christian Living Digest, or The Good News Monthly even though those Products do not exist in the admin catalog.
