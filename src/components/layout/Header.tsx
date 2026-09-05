@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Mail,
   Phone,
-  ShoppingBag,
+  ShoppingCart,
   ChevronDown,
   Headset,
   Languages,
@@ -20,12 +20,17 @@ import {
 import Logo from "../../../public/images/logo/logo.webp";
 import SearchBar from "@/components/common/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useCart } from "@/lib/storefrontStorage";
+import {
+  markCartAsViewed,
+  useCart,
+  useCartNotification,
+} from "@/lib/storefrontStorage";
 
 function Header() {
   const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
   const { itemCount: cartItemCount } = useCart();
+  const hasUnreadCartChanges = useCartNotification();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
@@ -68,6 +73,12 @@ function Header() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isSidebarOpen]);
+
+  useEffect(() => {
+    if (pathname === "/cart" && hasUnreadCartChanges) {
+      markCartAsViewed();
+    }
+  }, [hasUnreadCartChanges, pathname]);
 
   /* =========================================================
      NAVIGATION ITEMS
@@ -391,13 +402,15 @@ function Header() {
                 className="relative flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
                 aria-label={`Open cart${cartItemCount ? `, ${cartItemCount} items` : ""}`}
               >
-                <ShoppingBag className="h-5 w-5" />
+                <ShoppingCart className="h-5 w-5" aria-hidden="true" />
 
-                {cartItemCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1 text-[10px] font-bold text-white">
-                    {cartItemCount > 99 ? "99+" : cartItemCount}
-                  </span>
-                )}
+                {pathname !== "/cart" &&
+                  hasUnreadCartChanges &&
+                  cartItemCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1 text-[10px] font-bold text-white">
+                      {cartItemCount > 99 ? "99+" : cartItemCount}
+                    </span>
+                  )}
 
                 <span className="hidden sm:inline">Cart</span>
               </Link>

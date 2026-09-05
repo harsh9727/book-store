@@ -3,7 +3,7 @@
 import Image from "next/image";
 import type { ImageProps } from "next/image";
 import Link from "next/link";
-import { ListPlus } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
@@ -130,7 +130,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             onClick={handleBuyNow}
-            className="flex min-h-10 items-center justify-center rounded-xl bg-gray-900 px-2 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-orange-600 sm:text-sm"
+            className="flex h-12 min-w-0 items-center justify-center whitespace-nowrap rounded-xl bg-gray-900 px-2 text-xs font-semibold text-white transition-colors hover:bg-orange-600 2xl:text-sm"
             aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
           >
             <span>Buy Now</span>
@@ -138,10 +138,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className="flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-orange-600 bg-white px-2 py-2.5 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-50 sm:text-sm"
+            className="flex h-12 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl border border-orange-600 bg-white px-1.5 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-50 2xl:text-sm"
             aria-label={`Add ${localizedProduct.title} to cart`}
           >
-            <ListPlus size={17} />
+            <ShoppingCart className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>Add to Cart</span>
           </button>
         </div>

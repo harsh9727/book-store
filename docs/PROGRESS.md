@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 34 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 35 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,30 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Consistent Add to Cart icon
+
+- Outcome: replaced the ListPlus glyph on Product-card and Product-detail Add to Cart actions with the same ShoppingCart glyph used by the Header Cart action. Button labels, sizing, responsive layout, accessible names, and Cart behavior are unchanged.
+- Main files/areas: Product Card, Product detail actions, storefront rules, and progress documentation.
+- Data/API/security impact: none; this is an icon-only presentation change.
+- Verification and exact result: focused ESLint passed for both changed Product components; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 6/6; `git diff --check` passed with repository line-ending notices only; source search confirmed ShoppingCart is used consistently by Header, Product Card, and Product detail with no remaining Product-action ListPlus usage.
+- Known limitations or next step: none.
+
+### 2026-09-05 - Header Cart icon and acknowledged notification badge
+
+- Outcome: replaced the Header's bag outline with a conventional shopping-cart icon. Changed the orange count from a permanently visible total into an unread Cart-update badge: a successful Add to Cart displays the current quantity, opening `/cart` acknowledges and hides the badge, navigating elsewhere keeps it hidden, and adding another Product displays it again. Viewing the Cart does not remove or alter any item.
+- Main files/areas: Header Cart action, browser-local storefront storage, site-integrity coverage, Cart architecture/product/security/rules documentation, and troubleshooting guidance.
+- Data/API/security impact: added one non-sensitive `localStorage` read/unread marker with same-tab and cross-tab notification events; existing validated Cart records, WhatsApp order flow, and server APIs are unchanged.
+- Verification and exact result: focused ESLint passed for Header, storefront storage, and the updated test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 6/6, including the new add-then-view notification-state case; the sandboxed build compiled but its worker was blocked by the documented `spawn EPERM`, then the approved full `pnpm build` rerun completed TypeScript, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the badge acknowledgement is browser-local like the Cart itself and does not synchronize between devices.
+
+### 2026-09-05 - Product-card CTA alignment and WhatsApp glyph
+
+- Outcome: fixed Product-card Buy Now and Add to Cart actions to stay equal-height and single-line across supported card widths, preventing the Add to Cart label from wrapping and stretching the action row. Replaced the floating helper's generic chat bubble with a recognizable WhatsApp glyph while preserving its destination, tooltip, responsive visibility, and accessible label.
+- Main files/areas: shared Product Card actions, site-wide floating WhatsApp helper, storefront rules, and progress documentation.
+- Data/API/security impact: none; Cart behavior and WhatsApp URLs/messages are unchanged.
+- Verification and exact result: focused ESLint passed for both changed components; `pnpm exec tsc --noEmit` passed; the standard `pnpm test:site` wrapper was blocked by the documented Windows sandbox `spawn EPERM`, so the direct single-process fallback `node --experimental-strip-types tests/site-integrity.test.ts` was run and passed 5/5 tests; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: browser-level visual verification is still pending; the floating helper remains intentionally hidden below the `sm` breakpoint so it does not cover mobile Product actions.
 
 ### 2026-09-05 - Text-only Buy Now actions
 

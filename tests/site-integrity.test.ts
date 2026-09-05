@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import {
+  addCartItem,
+  markCartAsViewed,
+} from "../src/lib/storefrontStorage.ts";
 import { createWhatsAppOrderUrl } from "../src/lib/whatsappOrder.ts";
 
 const root = process.cwd();
@@ -74,6 +78,45 @@ test("client modules do not reference server-only secrets", () => {
   }
 
   assert.deepEqual(exposed, []);
+});
+
+test("cart notification is unread after adding and acknowledged after viewing", () => {
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+  const storedValues = new Map<string, string>();
+  const browserWindow = new EventTarget() as EventTarget & {
+    localStorage: Pick<Storage, "getItem" | "setItem">;
+  };
+  browserWindow.localStorage = {
+    getItem: (key) => storedValues.get(key) ?? null,
+    setItem: (key, value) => storedValues.set(key, value),
+  };
+
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: browserWindow,
+  });
+
+  try {
+    assert.equal(
+      addCartItem({
+        productId: "notification-test",
+        title: "Notification test product",
+        price: 100,
+        image: "/images/products/book-placeholder.svg",
+      }),
+      true,
+    );
+    assert.equal(storedValues.get("gtbs-cart-notification-v1"), "1");
+
+    assert.equal(markCartAsViewed(), true);
+    assert.equal(storedValues.get("gtbs-cart-notification-v1"), "0");
+  } finally {
+    if (originalWindow) {
+      Object.defineProperty(globalThis, "window", originalWindow);
+    } else {
+      Reflect.deleteProperty(globalThis, "window");
+    }
+  }
 });
 
 test("single-Product WhatsApp orders include greeting, quantity, details, and link", () => {

@@ -59,7 +59,7 @@ This records implemented controls and known risks; it is not a formal security c
 
 ## Browser-local Cart data
 
-- Cart persists only bounded Product display data, selected variants, price, and quantity in `localStorage`; no credential, payment, session, or admin data belongs there.
+- Cart persists only bounded Product display data, selected variants, price, quantity, and a non-sensitive read/unread header-badge marker in `localStorage`; no credential, payment, session, or admin data belongs there.
 - Stored values are treated as untrusted and normalized on read. They remain client-controlled and must never become authoritative price, inventory, or order data for a future payment backend.
 - Product Buy Now and Cart send prepared item details through an external WhatsApp link and explicitly require business confirmation of availability, delivery, final total, and payment. The site itself never collects payment credentials.
 

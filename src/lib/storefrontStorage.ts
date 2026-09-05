@@ -4,6 +4,8 @@ import { useMemo, useSyncExternalStore } from "react";
 
 const CART_STORAGE_KEY = "gtbs-cart-v1";
 const CART_EVENT = "gtbs-cart-change";
+const CART_NOTIFICATION_STORAGE_KEY = "gtbs-cart-notification-v1";
+const CART_NOTIFICATION_EVENT = "gtbs-cart-notification-change";
 const EMPTY_SNAPSHOT = "[]";
 
 export interface StorefrontProductSnapshot {
@@ -87,12 +89,12 @@ function createSubscription(storageKey: string, eventName: string) {
   };
 }
 
-function createSnapshotReader(storageKey: string) {
+function createSnapshotReader(storageKey: string, fallback = EMPTY_SNAPSHOT) {
   return () => {
     try {
-      return window.localStorage.getItem(storageKey) ?? EMPTY_SNAPSHOT;
+      return window.localStorage.getItem(storageKey) ?? fallback;
     } catch {
-      return EMPTY_SNAPSHOT;
+      return fallback;
     }
   };
 }
@@ -100,6 +102,15 @@ function createSnapshotReader(storageKey: string) {
 const subscribeToCart = createSubscription(CART_STORAGE_KEY, CART_EVENT);
 const getCartSnapshot = createSnapshotReader(CART_STORAGE_KEY);
 const getServerSnapshot = () => EMPTY_SNAPSHOT;
+const subscribeToCartNotification = createSubscription(
+  CART_NOTIFICATION_STORAGE_KEY,
+  CART_NOTIFICATION_EVENT,
+);
+const getCartNotificationSnapshot = createSnapshotReader(
+  CART_NOTIFICATION_STORAGE_KEY,
+  "unread",
+);
+const getServerCartNotificationSnapshot = () => "0";
 
 function writeSnapshot(storageKey: string, eventName: string, value: unknown) {
   try {
@@ -109,6 +120,36 @@ function writeSnapshot(storageKey: string, eventName: string, value: unknown) {
   } catch {
     return false;
   }
+}
+
+function writeStringSnapshot(
+  storageKey: string,
+  eventName: string,
+  value: string,
+) {
+  try {
+    window.localStorage.setItem(storageKey, value);
+    window.dispatchEvent(new Event(eventName));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function markCartAsChanged() {
+  return writeStringSnapshot(
+    CART_NOTIFICATION_STORAGE_KEY,
+    CART_NOTIFICATION_EVENT,
+    "1",
+  );
+}
+
+export function markCartAsViewed() {
+  return writeStringSnapshot(
+    CART_NOTIFICATION_STORAGE_KEY,
+    CART_NOTIFICATION_EVENT,
+    "0",
+  );
 }
 
 export function addCartItem(
@@ -136,7 +177,9 @@ export function addCartItem(
     });
   }
 
-  return writeSnapshot(CART_STORAGE_KEY, CART_EVENT, cart);
+  const cartUpdated = writeSnapshot(CART_STORAGE_KEY, CART_EVENT, cart);
+  if (cartUpdated) markCartAsChanged();
+  return cartUpdated;
 }
 
 export function updateCartItemQuantity(key: string, quantity: number) {
@@ -173,4 +216,14 @@ export function useCart() {
   );
 
   return { items, itemCount, subtotal };
+}
+
+export function useCartNotification() {
+  const snapshot = useSyncExternalStore(
+    subscribeToCartNotification,
+    getCartNotificationSnapshot,
+    getServerCartNotificationSnapshot,
+  );
+
+  return snapshot !== "0";
 }

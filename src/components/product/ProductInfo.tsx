@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ListPlus, Minus, Plus, Share2 } from "lucide-react";
+import { Minus, Plus, Share2, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -234,7 +234,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           onClick={handleAddToCart}
           className="flex h-12 items-center justify-center gap-2 rounded-xl border border-orange-600 bg-white px-4 font-semibold text-orange-700 transition-colors hover:bg-orange-50 active:scale-[0.98]"
         >
-          <ListPlus size={19} />
+          <ShoppingCart size={19} aria-hidden="true" />
           <span>Add to Cart</span>
         </button>
         <button

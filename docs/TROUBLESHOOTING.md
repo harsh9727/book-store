@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Header Cart badge returns after leaving the Cart page
+
+**Symptom:** the orange Cart count remains visible, or reappears on another page, even after the shopper has opened `/cart` and reviewed the current items.
+
+**Cause resolved 2026-09-05:** the header rendered the badge whenever Cart quantity was greater than zero, so it represented total stored items rather than an unread Cart update.
+
+**Solution:** Add to Cart now sets a separate browser-local unread marker. Opening `/cart` acknowledges that marker without removing any Cart line, so the badge stays hidden on later navigation until another Product is added.
+
+**Prevention:** keep Cart contents and notification acknowledgement as separate state; changing badge visibility must never clear or mutate the shopper's Cart.
+
 ## Broken navigation links return 404 (e.g., /books/* or /magazines/*)
 
 **Symptom:** Clicking category links in Header or Magazine cards on the homepage returns a 404 Not Found page.
