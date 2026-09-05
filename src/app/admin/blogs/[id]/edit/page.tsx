@@ -25,7 +25,6 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
 
   return (
     <AdminContentShell
-      active="blogs"
       title="Edit blog"
       description="Update this public journal article."
     >

@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Admin sidebar navigation looks like a full-screen refresh
+
+**Symptom:** selecting Products, Categories, Blogs, Gallery, Testimonials, Team, or Overview makes the entire Admin screen—including sidebar/header—disappear and redraw.
+
+**Cause resolved 2026-09-05:** every page instantiated its own complete `AdminContentShell`, so a route transition replaced the navigation chrome together with page content. The Admin-level loading fallback also occupied that replaceable child boundary, intensifying the full-refresh effect.
+
+**Solution:** `/admin/layout.tsx` now owns a persistent pathname-aware `AdminPanelShell`. Page-level `AdminContentShell` renders only headings/content, and the loading skeleton stays inside the stable main area. Navigation remains Next.js `Link`-based and prefetchable; only the destination content changes.
+
+**Prevention:** keep shared route chrome in the nearest persistent layout, do not move the sidebar/header back into individual Admin pages, and keep protected server authorization independent from client-side pathname styling.
+
 ## Admin Product Features require newline-separated textarea content
 
 **Symptom:** Product Features are authored in one `Features, one per line` textarea, so an admin cannot add or delete feature fields individually.

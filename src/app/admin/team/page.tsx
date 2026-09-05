@@ -20,7 +20,6 @@ export default async function AdminTeamPage() {
 
   return (
     <AdminContentShell
-      active="team"
       title="Team"
       description="Manage the bilingual team section shown on the About page."
     >

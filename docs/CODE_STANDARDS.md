@@ -34,6 +34,7 @@
 - Feature components live in their domain; generic primitives live in `ui` or `common`.
 - Group admin feature components under `src/components/admin/<feature>/`; keep only genuinely cross-feature admin components at `src/components/admin/`.
 - Pages focus on composition, loading, authorization, and route concerns.
+- Put route chrome that must survive navigation in the nearest shared Next.js layout. Admin pages must not recreate the sidebar/header; they compose page headings/content through `AdminContentShell`, while `AdminPanelShell` owns pathname-based navigation state.
 - Flexible Product specifications and variants use typed arrays of bounded objects, not unvalidated arbitrary records. Specifications may use a local `{ name, values[] }` draft solely to provide the grouped editor, but must flatten to the canonical `{ name, value }` domain type before submission. Render specification values, variant options, and Product features as individual controlled inputs with accessible add/delete controls; do not parse them from a multiline textarea. Client forms identify partial groups, trim/drop wholly blank entries, and collapse duplicate variant option/feature text before sending; strict server schemas remain authoritative.
 - Product and Gallery multi-image forms store pending `File` objects separately from persisted image records, revoke every object URL on removal/unmount, and never treat a local preview as proof of provider upload.
 - Extract repeated/stateful dashboard behavior before adding more admin modules.

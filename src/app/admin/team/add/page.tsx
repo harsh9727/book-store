@@ -17,7 +17,6 @@ export default async function AddTeamMemberPage() {
 
   return (
     <AdminContentShell
-      active="team"
       title="Add team member"
       description="Create an English and Gujarati team profile."
     >

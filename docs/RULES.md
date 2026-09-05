@@ -99,6 +99,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - While the public Gallery lightbox is open, Left Arrow and Right Arrow navigate the revealed photo set and Escape closes it; keyboard listeners must be removed whenever the viewer is closed.
 - Public Gallery detail links and SEO URLs must use the stored title-derived slug. A resolvable non-canonical identifier must redirect to that slug URL; an unknown identifier returns not found.
 - Admin sidebars expose only implemented destinations: Overview, Products, Categories, Blogs, Gallery, Testimonials, and Team. Do not show placeholder navigation for unavailable modules.
+- The Admin sidebar/header must live in the shared `/admin` layout and persist across protected route transitions. Page modules render only their heading/content; active navigation is derived from the current pathname, and loading fallbacks must replace only the main content panel. Login remains visually outside the panel shell, while server authorization remains mandatory on every protected page.
 - Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
 - Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.

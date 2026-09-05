@@ -15,7 +15,6 @@ export default async function AddGalleryPage() {
 
   return (
     <AdminContentShell
-      active="galleries"
       title="Add gallery"
       description="Create a new public gallery album."
     >

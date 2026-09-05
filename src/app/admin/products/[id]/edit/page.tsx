@@ -26,7 +26,6 @@ export default async function EditProductPage({ params }: Props) {
   if (!product) notFound();
   return (
     <AdminContentShell
-      active="products"
       title="Edit product"
       description="Update storefront product details."
     >

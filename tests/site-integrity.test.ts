@@ -214,6 +214,28 @@ test("Admin Product features use individual addable and removable inputs", () =>
   assert.match(source, /normalizeFeatures\(gujaratiFeatures\)/);
 });
 
+test("Admin navigation lives in the persistent route layout", () => {
+  const layout = readFileSync(
+    path.join(root, "src", "app", "admin", "layout.tsx"),
+    "utf8",
+  );
+  const panelShell = readFileSync(
+    path.join(root, "src", "components", "admin", "AdminPanelShell.tsx"),
+    "utf8",
+  );
+  const contentShell = readFileSync(
+    path.join(root, "src", "components", "admin", "AdminContentShell.tsx"),
+    "utf8",
+  );
+
+  assert.match(layout, /<AdminPanelShell>\{children\}<\/AdminPanelShell>/);
+  assert.match(panelShell, /usePathname\(\)/);
+  assert.match(panelShell, /<aside /);
+  assert.match(panelShell, /pathname\.startsWith\(`\$\{href\}\/`\)/);
+  assert.doesNotMatch(panelShell, /window\.location|location\.href/);
+  assert.doesNotMatch(contentShell, /<aside |Admin navigation|min-h-screen/);
+});
+
 test("client modules do not reference server-only secrets", () => {
   const exposed: string[] = [];
   const serverOnlyName =

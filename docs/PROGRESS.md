@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 43 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 44 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,14 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Persistent Admin navigation shell
+
+- Outcome: moved the responsive Admin sidebar, top bar, Storefront/Logout controls, and active-route navigation into the shared `/admin` route layout. Sidebar links continue to use Next.js `Link` with prefetching, while pathname-based matching highlights list/add/edit routes without page-owned active props. Page-level `AdminContentShell` now renders only the current page heading/content, and the Admin loading fallback appears inside the persistent main panel. Navigating between Overview, Products, Categories, Blogs, Gallery, Testimonials, and Team now replaces only page content instead of remounting the whole visible Admin screen. The login route intentionally renders without the protected-panel chrome.
+- Main files/areas: Admin route layout/loading boundary, persistent panel shell, page content wrapper, every protected Admin page composition, navigation regression coverage, project architecture/rules/security, troubleshooting, and progress documentation.
+- Data/API/security impact: no content, API, session, cookie, or authorization change. Every protected page and mutation continues to verify authorization server-side; pathname-based shell visibility and active styling are presentation behavior only.
+- Verification and exact result: repository-wide `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 44/44 (7 admin-auth, 22 content-management, and 15 site-integrity), including the new persistent-layout assertion. The final approved `pnpm build` compiled in 3.0 seconds, completed TypeScript in 9.6 seconds, generated 33/33 pages including all Admin destinations, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: dynamic Admin destinations still fetch their server-owned data on navigation; the fix keeps chrome stable but does not cache or optimistically reuse protected page content.
 
 ### 2026-09-05 - Row-based Product specification and variant editors
 

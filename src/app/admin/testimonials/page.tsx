@@ -18,7 +18,6 @@ export default async function AdminTestimonialsPage() {
 
   return (
     <AdminContentShell
-      active="testimonials"
       title="Testimonial management"
       description="Manage bilingual customer testimonials shown on the homepage."
     >

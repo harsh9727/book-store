@@ -15,7 +15,6 @@ export default async function AddBlogPage() {
 
   return (
     <AdminContentShell
-      active="blogs"
       title="Add blog"
       description="Create a new public journal article."
     >

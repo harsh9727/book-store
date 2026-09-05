@@ -134,7 +134,7 @@ export default async function AdminDashboardPage() {
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
-    <AdminContentShell active="overview">
+    <AdminContentShell>
       <div className="mx-auto max-w-[1500px]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>

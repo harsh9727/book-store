@@ -16,7 +16,6 @@ export default async function AdminBlogsPage() {
     redirect("/admin/login");
   return (
     <AdminContentShell
-      active="blogs"
       title="Blog management"
       description="Create, edit, and remove public journal articles."
     >

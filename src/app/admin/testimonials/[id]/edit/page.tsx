@@ -28,7 +28,6 @@ export default async function EditTestimonialPage({
 
   return (
     <AdminContentShell
-      active="testimonials"
       title="Edit testimonial"
       description="Update this bilingual homepage testimonial."
     >

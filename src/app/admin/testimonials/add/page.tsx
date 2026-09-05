@@ -16,7 +16,6 @@ export default async function AddTestimonialPage() {
 
   return (
     <AdminContentShell
-      active="testimonials"
       title="Add testimonial"
       description="Create a new bilingual homepage testimonial."
     >

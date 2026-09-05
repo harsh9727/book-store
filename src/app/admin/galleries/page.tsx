@@ -16,7 +16,6 @@ export default async function AdminGalleriesPage() {
     redirect("/admin/login");
   return (
     <AdminContentShell
-      active="galleries"
       title="Gallery management"
       description="Manage albums, cover images, and up to 12 photos per album."
     >

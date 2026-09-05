@@ -27,7 +27,6 @@ export default async function EditGalleryPage({
 
   return (
     <AdminContentShell
-      active="galleries"
       title="Edit gallery"
       description="Update this public gallery album."
     >

@@ -26,7 +26,6 @@ export default async function EditTeamMemberPage({
 
   return (
     <AdminContentShell
-      active="team"
       title="Edit team member"
       description="Update the shared image and bilingual profile details."
     >

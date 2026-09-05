@@ -15,7 +15,6 @@ export default async function AddProductPage() {
     redirect("/admin/login");
   return (
     <AdminContentShell
-      active="products"
       title="Add product"
       description="Create a new storefront product."
     >

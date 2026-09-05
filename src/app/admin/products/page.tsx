@@ -20,7 +20,6 @@ export default async function AdminProductsPage() {
   ]);
   return (
     <AdminContentShell
-      active="products"
       title="Product management"
       description="Create, edit, and remove storefront products."
     >

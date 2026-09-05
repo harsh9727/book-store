@@ -20,7 +20,6 @@ export default async function AdminCategoriesPage() {
   ]);
   return (
     <AdminContentShell
-      active="categories"
       title="Category management"
       description="Maintain the category list used by products."
     >
