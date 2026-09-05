@@ -8,6 +8,36 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Admin Product Features require newline-separated textarea content
+
+**Symptom:** Product Features are authored in one `Features, one per line` textarea, so an admin cannot add or delete feature fields individually.
+
+**Cause resolved 2026-09-05:** the Product form converted uncontrolled textarea content into an array only during submission.
+
+**Solution:** English and Gujarati Features now use controlled individual inputs with plus and trash icons. Plus inserts a blank field directly after the selected row, trash removes that row, saved values reload separately, and submission retains the existing trimming, duplicate collapse, and 30-item API limit.
+
+**Prevention:** keep Product feature drafts as controlled string arrays and preserve the individual add/remove controls instead of reintroducing newline parsing.
+
+## Admin Product inputs show a thick orange double outline
+
+**Symptom:** focusing a Product-form input, especially Variant name, displays a prominent orange outline and ring around the complete field.
+
+**Cause resolved 2026-09-05:** Product-form classes originally added an orange focus border/ring while the global `:focus-visible` rule added a second orange outline. Replacing only the Tailwind focus utilities was insufficient because the later unlayered global rule still won the CSS cascade.
+
+**Solution:** every Product-form text input/textarea uses the dedicated `admin-product-input` class, and a later scoped global rule explicitly sets its focus-visible outline to none. The form keeps one subtle slate border/ring focus state, so keyboard focus remains visible without the orange highlight.
+
+**Prevention:** keep the Product form's shared input/textarea classes and individual variant-option class aligned; do not re-add orange focus utilities without accounting for the global focus-visible rule.
+
+## Admin Product specifications or variant options are difficult to add
+
+**Symptom:** Add specification appears ineffective, an incomplete row fails only after submission, or variant options must be typed into one `Options, one per line` textarea without individual delete controls.
+
+**Cause resolved 2026-09-05:** the Product form relied on the final strict API validation for partial specification/variant data, and variant options were represented as newline-split textarea content rather than independently controlled fields.
+
+**Solution:** Specifications now use the same card structure as Variants: a full-width name input, divided Values section, Add value action, and individual value inputs with delete icons. Existing repeated names such as Material are grouped for editing and flattened back into the unchanged `{ name, value }` schema on save. Every Variant group uses the equivalent individual Options controls. The client reports incomplete English or Gujarati groups before changing steps or saving, while the API schema remains authoritative.
+
+**Prevention:** keep specifications and nested variant options as controlled typed arrays, preserve accessible labels on icon-only delete buttons, and retain the pre-submit partial-row checks when changing the editor layout.
+
 ## Categories button design changes between pages
 
 **Symptom:** the closed Header Categories button appears orange on All Products/Product detail but white and outlined on Home or other pages.

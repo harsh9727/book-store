@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 40 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 43 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,14 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Row-based Product specification and variant editors
+
+- Outcome: fixed the Admin Product specification/variant/feature authoring flow and removed the `Options, one per line` and `Features, one per line` textareas. Specifications now mirror the Variant card design: one full-width Specification name input, a divided Values area, an Add value button, and individual two-column value inputs with delete icons. The client groups existing repeated names such as Material for editing and flattens grouped values back into the existing `{ name, value }` records on submission, so the API and storefront remain compatible. Variants use the equivalent name/options layout with individually addable/removable option inputs. Features now render as individual two-column inputs; the plus icon beside a row inserts the next field immediately after it, and its trash icon removes only that field. New Products start with one blank English and Gujarati feature input, saved feature arrays reload into their own fields, exact duplicates are still collapsed on save, and the 30-feature schema limit is enforced in the UI. English/Gujarati drafts remain separate, collection limits disable further additions, and incomplete specification/variant groups show a language-specific form error before advancing or saving. Product-form inputs no longer display the heavy orange browser/global focus outline and instead use a subtle neutral slate focus state.
+- Main files/areas: Admin Product form, scoped global focus override, editor integrity coverage, Product authoring rules/architecture, troubleshooting, project overview, code standards, and progress documentation.
+- Data/API/security impact: no API or persisted-schema change; submissions still trim blank rows, collapse duplicate option values, and pass through the existing bounded strict Product schemas. No authentication, secret, upload, or authorization behavior changed.
+- Verification and exact result: focused ESLint passed for the Admin Product form and site-integrity test; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 43/43 (7 admin-auth, 22 content-management, and 14 site-integrity), including the individual-option, grouped-specification, individual-feature, and scoped focus-style regressions. The standard `pnpm test:admin-auth` wrapper hit the documented restricted-Windows `spawn EPERM`, while direct execution of the same file passed 7/7. The final approved `pnpm build` compiled in 3.2 seconds, completed TypeScript in 7.6 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: variants continue to define labels/options only; per-option or per-combination price, SKU, stock, and images are not modeled.
 
 ### 2026-09-05 - Consistent Header Categories trigger
 

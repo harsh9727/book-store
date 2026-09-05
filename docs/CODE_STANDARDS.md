@@ -34,7 +34,7 @@
 - Feature components live in their domain; generic primitives live in `ui` or `common`.
 - Group admin feature components under `src/components/admin/<feature>/`; keep only genuinely cross-feature admin components at `src/components/admin/`.
 - Pages focus on composition, loading, authorization, and route concerns.
-- Flexible Product specifications and variants use typed arrays of bounded objects, not unvalidated arbitrary records. Client forms trim/drop blank rows and duplicate option text before sending; strict server schemas remain authoritative.
+- Flexible Product specifications and variants use typed arrays of bounded objects, not unvalidated arbitrary records. Specifications may use a local `{ name, values[] }` draft solely to provide the grouped editor, but must flatten to the canonical `{ name, value }` domain type before submission. Render specification values, variant options, and Product features as individual controlled inputs with accessible add/delete controls; do not parse them from a multiline textarea. Client forms identify partial groups, trim/drop wholly blank entries, and collapse duplicate variant option/feature text before sending; strict server schemas remain authoritative.
 - Product and Gallery multi-image forms store pending `File` objects separately from persisted image records, revoke every object URL on removal/unmount, and never treat a local preview as proof of provider upload.
 - Extract repeated/stateful dashboard behavior before adding more admin modules.
 - Avoid abstractions that do not clarify reuse, domain, or server/client boundaries.
@@ -47,7 +47,7 @@
 - Prefer Tailwind utilities and existing visual conventions.
 - Start mobile-first, then add responsive enhancements.
 - Use arbitrary values sparingly.
-- Maintain keyboard focus, contrast, and 40–44px touch targets.
+- Maintain keyboard focus, contrast, and 40–44px touch targets. When a feature removes the global orange input outline, use a dedicated scoped class that overrides the unlayered global `:focus-visible` rule and replace it with a visible neutral focus state rather than removing keyboard focus indication entirely.
 - Specify image dimensions to prevent layout shift. Every responsive `next/image` using `fill` must also declare a realistic `sizes` value.
 - Reserve `priority`/high fetch priority for above-the-fold LCP candidates; lazy-load content below the fold.
 - Provide a reduced-motion fallback for nonessential animation and scrolling.

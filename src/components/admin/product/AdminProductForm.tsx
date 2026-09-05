@@ -38,10 +38,47 @@ interface NewDetailImagePreview {
   previewUrl: string;
 }
 
+interface ProductSpecificationDraft {
+  name: string;
+  values: string[];
+}
+
 const inputClass =
-  "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
+  "admin-product-input mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-1 focus:ring-slate-200";
 const textareaClass =
-  "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10";
+  "admin-product-input mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-300 focus:ring-1 focus:ring-slate-200";
+const compactInputClass =
+  "admin-product-input h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-1 focus:ring-slate-200";
+const MAX_PRODUCT_SPECIFICATIONS = 50;
+const MAX_PRODUCT_VARIANTS = 20;
+const MAX_VARIANT_OPTIONS = 50;
+const MAX_PRODUCT_FEATURES = 30;
+
+function getCollectionError(
+  specifications: ProductSpecificationDraft[],
+  variants: ProductVariant[],
+  language: string,
+): string {
+  const incompleteSpecification = specifications.findIndex((item) => {
+    const hasName = Boolean(item.name.trim());
+    const hasValues = item.values.some((value) => value.trim());
+    return hasName !== hasValues;
+  });
+  if (incompleteSpecification >= 0) {
+    return `${language} specification ${incompleteSpecification + 1} needs both a name and value.`;
+  }
+
+  const incompleteVariant = variants.findIndex((variant) => {
+    const hasName = Boolean(variant.name.trim());
+    const hasOptions = variant.options.some((option) => option.trim());
+    return hasName !== hasOptions;
+  });
+  if (incompleteVariant >= 0) {
+    return `${language} variant ${incompleteVariant + 1} needs both a name and at least one option.`;
+  }
+
+  return "";
+}
 
 function normalizeBadge(value?: string): ProductBadge | "" {
   const normalized = value?.toLowerCase() || "";
@@ -57,10 +94,43 @@ function normalizeBadge(value?: string): ProductBadge | "" {
   return "";
 }
 
-function initialSpecifications(product?: Product): ProductSpecification[] {
-  if (product?.specifications?.length) return product.specifications;
+function groupSpecifications(
+  specifications: ProductSpecification[],
+): ProductSpecificationDraft[] {
+  return specifications.reduce<ProductSpecificationDraft[]>((groups, item) => {
+    const currentGroup = groups.find((group) => group.name === item.name);
+    if (currentGroup) currentGroup.values.push(item.value);
+    else groups.push({ name: item.name, values: [item.value] });
+    return groups;
+  }, []);
+}
+
+function flattenSpecifications(
+  specifications: ProductSpecificationDraft[],
+): ProductSpecification[] {
+  return specifications.flatMap((item) => {
+    const name = item.name.trim();
+    return item.values
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => ({ name, value }));
+  });
+}
+
+function initialFeatures(features?: string[]): string[] {
+  return features?.length ? [...features] : [""];
+}
+
+function normalizeFeatures(features: string[]): string[] {
+  return [...new Set(features.map((value) => value.trim()).filter(Boolean))];
+}
+
+function initialSpecifications(product?: Product): ProductSpecificationDraft[] {
+  if (product?.specifications?.length) {
+    return groupSpecifications(product.specifications);
+  }
   if (!product) return [];
-  return [
+  const legacySpecifications = [
     product.publisher ? { name: "Publisher", value: product.publisher } : null,
     product.publishedDate
       ? { name: "Publication date", value: product.publishedDate }
@@ -72,6 +142,7 @@ function initialSpecifications(product?: Product): ProductSpecification[] {
       ? { name: "Dimensions", value: product.dimensions }
       : null,
   ].filter((item): item is ProductSpecification => item !== null);
+  return groupSpecifications(legacySpecifications);
 }
 
 function initialVariants(product?: Product): ProductVariant[] {
@@ -109,17 +180,23 @@ export default function AdminProductForm({
   const [newCategorySlug, setNewCategorySlug] = useState("");
   const [categoryBusy, setCategoryBusy] = useState(false);
   const [categoryError, setCategoryError] = useState("");
-  const [specifications, setSpecifications] = useState<ProductSpecification[]>(
-    () => initialSpecifications(initialItem),
-  );
+  const [specifications, setSpecifications] = useState<
+    ProductSpecificationDraft[]
+  >(() => initialSpecifications(initialItem));
   const [variants, setVariants] = useState<ProductVariant[]>(() =>
     initialVariants(initialItem),
   );
   const [gujaratiSpecifications, setGujaratiSpecifications] = useState<
-    ProductSpecification[]
-  >(() => initialItem?.gujarati?.specifications || []);
+    ProductSpecificationDraft[]
+  >(() => groupSpecifications(initialItem?.gujarati?.specifications || []));
   const [gujaratiVariants, setGujaratiVariants] = useState<ProductVariant[]>(
     () => initialItem?.gujarati?.variants || [],
+  );
+  const [features, setFeatures] = useState<string[]>(() =>
+    initialFeatures(initialItem?.features),
+  );
+  const [gujaratiFeatures, setGujaratiFeatures] = useState<string[]>(() =>
+    initialFeatures(initialItem?.gujarati?.features),
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [newDetailImages, setNewDetailImages] = useState<
@@ -136,8 +213,15 @@ export default function AdminProductForm({
   const activeSpecifications =
     formLanguage === "gu" ? gujaratiSpecifications : specifications;
   const activeVariants = formLanguage === "gu" ? gujaratiVariants : variants;
+  const activeFeatures = formLanguage === "gu" ? gujaratiFeatures : features;
+  const activeSpecificationValueCount = activeSpecifications.reduce(
+    (total, specification) => total + specification.values.length,
+    0,
+  );
   const updateActiveSpecifications = (
-    update: (current: ProductSpecification[]) => ProductSpecification[],
+    update: (
+      current: ProductSpecificationDraft[],
+    ) => ProductSpecificationDraft[],
   ) => {
     if (formLanguage === "gu") setGujaratiSpecifications(update);
     else setSpecifications(update);
@@ -147,6 +231,10 @@ export default function AdminProductForm({
   ) => {
     if (formLanguage === "gu") setGujaratiVariants(update);
     else setVariants(update);
+  };
+  const updateActiveFeatures = (update: (current: string[]) => string[]) => {
+    if (formLanguage === "gu") setGujaratiFeatures(update);
+    else setFeatures(update);
   };
 
   useEffect(() => {
@@ -254,6 +342,16 @@ export default function AdminProductForm({
       setError("Enter the English product title before continuing.");
       return;
     }
+    const englishCollectionError = getCollectionError(
+      specifications,
+      variants,
+      "English",
+    );
+    if (englishCollectionError) {
+      setFormLanguage("en");
+      setError(englishCollectionError);
+      return;
+    }
     if (formLanguage === "en") {
       setFormLanguage("gu");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -263,6 +361,15 @@ export default function AdminProductForm({
     const gujaratiTitle = String(values.get("gujaratiTitle") || "").trim();
     if (!gujaratiTitle) {
       setError("Enter the Gujarati product title before saving.");
+      return;
+    }
+    const gujaratiCollectionError = getCollectionError(
+      gujaratiSpecifications,
+      gujaratiVariants,
+      "Gujarati",
+    );
+    if (gujaratiCollectionError) {
+      setError(gujaratiCollectionError);
       return;
     }
 
@@ -302,9 +409,7 @@ export default function AdminProductForm({
         detailImages,
         category: selectedCategory,
         badge: String(values.get("badge") || "").trim() || undefined,
-        specifications: specifications
-          .map((item) => ({ name: item.name.trim(), value: item.value.trim() }))
-          .filter((item) => item.name || item.value),
+        specifications: flattenSpecifications(specifications),
         variants: variants
           .map((variant) => ({
             name: variant.name.trim(),
@@ -318,22 +423,10 @@ export default function AdminProductForm({
         description:
           String(values.get("description") || "").trim() || undefined,
         synopsis: String(values.get("synopsis") || "").trim() || undefined,
-        features: [
-          ...new Set(
-            String(values.get("features") || "")
-              .split(/\r?\n/gu)
-              .map((value) => value.trim())
-              .filter(Boolean),
-          ),
-        ],
+        features: normalizeFeatures(features),
         gujarati: {
           title: gujaratiTitle,
-          specifications: gujaratiSpecifications
-            .map((item) => ({
-              name: item.name.trim(),
-              value: item.value.trim(),
-            }))
-            .filter((item) => item.name || item.value),
+          specifications: flattenSpecifications(gujaratiSpecifications),
           variants: gujaratiVariants
             .map((variant) => ({
               name: variant.name.trim(),
@@ -350,14 +443,7 @@ export default function AdminProductForm({
             String(values.get("gujaratiDescription") || "").trim() || undefined,
           synopsis:
             String(values.get("gujaratiSynopsis") || "").trim() || undefined,
-          features: [
-            ...new Set(
-              String(values.get("gujaratiFeatures") || "")
-                .split(/\r?\n/gu)
-                .map((value) => value.trim())
-                .filter(Boolean),
-            ),
-          ],
+          features: normalizeFeatures(gujaratiFeatures),
         },
       };
       const url = initialItem
@@ -655,13 +741,17 @@ export default function AdminProductForm({
             </p>
             <button
               type="button"
+              disabled={
+                activeSpecifications.length >= MAX_PRODUCT_SPECIFICATIONS ||
+                activeSpecificationValueCount >= MAX_PRODUCT_SPECIFICATIONS
+              }
               onClick={() =>
                 updateActiveSpecifications((current) => [
                   ...current,
-                  { name: "", value: "" },
+                  { name: "", values: [""] },
                 ])
               }
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"
+              className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={15} />
               Add specification
@@ -672,58 +762,130 @@ export default function AdminProductForm({
               {activeSpecifications.map((specification, index) => (
                 <div
                   key={`specification-${formLanguage}-${index}`}
-                  className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
+                  className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"
                 >
-                  <label className="text-xs font-semibold">
-                    Name
-                    <input
-                      lang={formLanguage}
-                      value={specification.name}
-                      onChange={(event) =>
+                  <div className="flex items-end gap-2">
+                    <label className="min-w-0 flex-1 text-xs font-semibold">
+                      Specification name
+                      <input
+                        lang={formLanguage}
+                        value={specification.name}
+                        onChange={(event) =>
+                          updateActiveSpecifications((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, name: event.target.value }
+                                : item,
+                            ),
+                          )
+                        }
+                        maxLength={100}
+                        placeholder="e.g. Material"
+                        className={inputClass}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
                         updateActiveSpecifications((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, name: event.target.value }
-                              : item,
-                          ),
+                          current.filter((_, itemIndex) => itemIndex !== index),
                         )
                       }
-                      maxLength={100}
-                      placeholder="e.g. Material"
-                      className={inputClass}
-                    />
-                  </label>
-                  <label className="text-xs font-semibold">
-                    Value
-                    <input
-                      lang={formLanguage}
-                      value={specification.value}
-                      onChange={(event) =>
-                        updateActiveSpecifications((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, value: event.target.value }
-                              : item,
-                          ),
-                        )
-                      }
-                      maxLength={500}
-                      placeholder="e.g. Stainless steel"
-                      className={inputClass}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateActiveSpecifications((current) =>
-                        current.filter((_, itemIndex) => itemIndex !== index),
-                      )
-                    }
-                    className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
-                    aria-label={`Remove specification ${index + 1}`}
-                  >
-                    <Trash2 size={17} />
-                  </button>
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
+                      aria-label={`Remove specification ${index + 1}`}
+                      title="Delete specification"
+                    >
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
+
+                  <div className="mt-3 border-t border-slate-200 pt-3">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold">Values</p>
+                      <button
+                        type="button"
+                        disabled={
+                          activeSpecificationValueCount >=
+                          MAX_PRODUCT_SPECIFICATIONS
+                        }
+                        onClick={() =>
+                          updateActiveSpecifications((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, values: [...item.values, ""] }
+                                : item,
+                            ),
+                          )
+                        }
+                        className="inline-flex h-10 items-center gap-1 rounded-lg border border-orange-200 px-2.5 text-xs font-semibold text-orange-600 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Plus size={14} />
+                        Add value
+                      </button>
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {specification.values.map((value, valueIndex) => (
+                        <div
+                          key={`specification-${formLanguage}-${index}-value-${valueIndex}`}
+                          className="flex items-center gap-2"
+                        >
+                          <input
+                            lang={formLanguage}
+                            value={value}
+                            onChange={(event) =>
+                              updateActiveSpecifications((current) =>
+                                current.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? {
+                                        ...item,
+                                        values: item.values.map(
+                                          (currentValue, currentValueIndex) =>
+                                            currentValueIndex === valueIndex
+                                              ? event.target.value
+                                              : currentValue,
+                                        ),
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                            maxLength={500}
+                            placeholder={`Value ${valueIndex + 1}`}
+                            aria-label={`Specification ${index + 1} value ${valueIndex + 1}`}
+                            className={compactInputClass}
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateActiveSpecifications((current) =>
+                                current.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? {
+                                        ...item,
+                                        values: item.values.filter(
+                                          (_, currentValueIndex) =>
+                                            currentValueIndex !== valueIndex,
+                                        ),
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
+                            aria-label={`Remove value ${valueIndex + 1} from specification ${index + 1}`}
+                            title="Delete value"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {!specification.values.length && (
+                      <p className="text-xs text-slate-500">
+                        Add at least one value for this specification.
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -744,13 +906,14 @@ export default function AdminProductForm({
             </p>
             <button
               type="button"
+              disabled={activeVariants.length >= MAX_PRODUCT_VARIANTS}
               onClick={() =>
                 updateActiveVariants((current) => [
                   ...current,
-                  { name: "", options: [] },
+                  { name: "", options: [""] },
                 ])
               }
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"
+              className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={15} />
               Add variant
@@ -761,61 +924,127 @@ export default function AdminProductForm({
               {activeVariants.map((variant, index) => (
                 <div
                   key={`variant-${formLanguage}-${index}`}
-                  className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
+                  className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"
                 >
-                  <label className="text-xs font-semibold">
-                    Variant name
-                    <input
-                      lang={formLanguage}
-                      value={variant.name}
-                      onChange={(event) =>
+                  <div className="flex items-end gap-2">
+                    <label className="min-w-0 flex-1 text-xs font-semibold">
+                      Variant name
+                      <input
+                        lang={formLanguage}
+                        value={variant.name}
+                        onChange={(event) =>
+                          updateActiveVariants((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, name: event.target.value }
+                                : item,
+                            ),
+                          )
+                        }
+                        maxLength={100}
+                        placeholder="e.g. Color"
+                        className={inputClass}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
                         updateActiveVariants((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, name: event.target.value }
-                              : item,
-                          ),
+                          current.filter((_, itemIndex) => itemIndex !== index),
                         )
                       }
-                      maxLength={100}
-                      placeholder="e.g. Color"
-                      className={inputClass}
-                    />
-                  </label>
-                  <label className="text-xs font-semibold">
-                    Options, one per line
-                    <textarea
-                      lang={formLanguage}
-                      value={variant.options.join("\n")}
-                      onChange={(event) =>
-                        updateActiveVariants((current) =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? {
-                                  ...item,
-                                  options: event.target.value.split(/\r?\n/gu),
-                                }
-                              : item,
-                          ),
-                        )
-                      }
-                      rows={3}
-                      placeholder={"Black\nWhite\nOrange"}
-                      className={textareaClass}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateActiveVariants((current) =>
-                        current.filter((_, itemIndex) => itemIndex !== index),
-                      )
-                    }
-                    className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
-                    aria-label={`Remove variant ${index + 1}`}
-                  >
-                    <Trash2 size={17} />
-                  </button>
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
+                      aria-label={`Remove variant ${index + 1}`}
+                      title="Delete variant"
+                    >
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
+
+                  <div className="mt-3 border-t border-slate-200 pt-3">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold">Options</p>
+                      <button
+                        type="button"
+                        disabled={variant.options.length >= MAX_VARIANT_OPTIONS}
+                        onClick={() =>
+                          updateActiveVariants((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, options: [...item.options, ""] }
+                                : item,
+                            ),
+                          )
+                        }
+                        className="inline-flex h-10 items-center gap-1 rounded-lg border border-orange-200 px-2.5 text-xs font-semibold text-orange-600 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Plus size={14} />
+                        Add option
+                      </button>
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {variant.options.map((option, optionIndex) => (
+                        <div
+                          key={`variant-${formLanguage}-${index}-option-${optionIndex}`}
+                          className="flex items-center gap-2"
+                        >
+                          <input
+                            lang={formLanguage}
+                            value={option}
+                            onChange={(event) =>
+                              updateActiveVariants((current) =>
+                                current.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? {
+                                        ...item,
+                                        options: item.options.map(
+                                          (currentOption, currentOptionIndex) =>
+                                            currentOptionIndex === optionIndex
+                                              ? event.target.value
+                                              : currentOption,
+                                        ),
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                            maxLength={160}
+                            placeholder={`Option ${optionIndex + 1}`}
+                            aria-label={`Variant ${index + 1} option ${optionIndex + 1}`}
+                            className={compactInputClass}
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateActiveVariants((current) =>
+                                current.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? {
+                                        ...item,
+                                        options: item.options.filter(
+                                          (_, currentOptionIndex) =>
+                                            currentOptionIndex !== optionIndex,
+                                        ),
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
+                            aria-label={`Remove option ${optionIndex + 1} from variant ${index + 1}`}
+                            title="Delete option"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {!variant.options.length && (
+                      <p className="text-xs text-slate-500">
+                        Add at least one option for this variant.
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -851,15 +1080,6 @@ export default function AdminProductForm({
                 className={textareaClass}
               />
             </label>
-            <label className="text-sm font-semibold">
-              Features, one per line
-              <textarea
-                name="features"
-                rows={5}
-                defaultValue={initialItem?.features?.join("\n")}
-                className={textareaClass}
-              />
-            </label>
           </div>
           <div
             className={formLanguage === "gu" ? "grid gap-4" : "hidden"}
@@ -885,15 +1105,76 @@ export default function AdminProductForm({
                 className={textareaClass}
               />
             </label>
-            <label className="text-sm font-semibold">
-              Gujarati features, one per line
-              <textarea
-                name="gujaratiFeatures"
-                rows={5}
-                defaultValue={initialItem?.gujarati?.features?.join("\n")}
-                className={textareaClass}
-              />
-            </label>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">
+              {formLanguage === "gu" ? "Gujarati features" : "Features"}
+            </p>
+            {activeFeatures.length ? (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {activeFeatures.map((feature, index) => (
+                  <div
+                    key={`feature-${formLanguage}-${index}`}
+                    className="flex items-center gap-1.5"
+                  >
+                    <input
+                      lang={formLanguage}
+                      value={feature}
+                      onChange={(event) =>
+                        updateActiveFeatures((current) =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index ? event.target.value : item,
+                          ),
+                        )
+                      }
+                      maxLength={500}
+                      placeholder={`Feature ${index + 1}`}
+                      aria-label={`${formLanguage === "gu" ? "Gujarati " : ""}feature ${index + 1}`}
+                      className={compactInputClass}
+                    />
+                    <button
+                      type="button"
+                      disabled={activeFeatures.length >= MAX_PRODUCT_FEATURES}
+                      onClick={() =>
+                        updateActiveFeatures((current) => [
+                          ...current.slice(0, index + 1),
+                          "",
+                          ...current.slice(index + 1),
+                        ])
+                      }
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-200 text-orange-600 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={`Add another feature after ${index + 1}`}
+                      title="Add feature"
+                    >
+                      <Plus size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateActiveFeatures((current) =>
+                          current.filter((_, itemIndex) => itemIndex !== index),
+                        )
+                      }
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-red-600 hover:bg-red-50"
+                      aria-label={`Remove feature ${index + 1}`}
+                      title="Delete feature"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => updateActiveFeatures(() => [""])}
+                className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-orange-200 px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50"
+              >
+                <Plus size={15} />
+                Add feature
+              </button>
+            )}
           </div>
         </fieldset>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end lg:col-span-2">

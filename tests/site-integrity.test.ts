@@ -139,6 +139,81 @@ test("Header Categories controls use route-independent styling", () => {
   assert.match(source, /aria-expanded=\{isMobileCategoriesOpen\}/);
 });
 
+test("Admin Product variants use individual option inputs", () => {
+  const source = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "product",
+      "AdminProductForm.tsx",
+    ),
+    "utf8",
+  );
+
+  assert.doesNotMatch(source, /Options, one per line/);
+  assert.match(source, />\s*Add option\s*</);
+  assert.match(source, /aria-label=\{`Remove option /);
+  assert.match(source, /\{ name: "", options: \[""\] \}/);
+  assert.match(source, /getCollectionError\(/);
+  assert.doesNotMatch(source, /focus:border-orange-500|focus:ring-2 focus:ring-orange/);
+  assert.match(source, /admin-product-input/);
+
+  const globalStyles = readFileSync(
+    path.join(root, "src", "app", "globals.css"),
+    "utf8",
+  );
+  assert.match(
+    globalStyles,
+    /\.admin-product-input:focus-visible\s*\{\s*outline: none;/,
+  );
+});
+
+test("Admin Product specifications use grouped individual value inputs", () => {
+  const source = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "product",
+      "AdminProductForm.tsx",
+    ),
+    "utf8",
+  );
+
+  assert.match(source, />\s*Specification name\s*<input/);
+  assert.match(source, />\s*Values\s*</);
+  assert.match(source, />\s*Add value\s*</);
+  assert.match(source, /aria-label=\{`Remove value /);
+  assert.match(source, /flattenSpecifications\(specifications\)/);
+  assert.match(source, /\{ name: "", values: \[""\] \}/);
+});
+
+test("Admin Product features use individual addable and removable inputs", () => {
+  const source = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "product",
+      "AdminProductForm.tsx",
+    ),
+    "utf8",
+  );
+
+  assert.doesNotMatch(
+    source,
+    /Features, one per line|Gujarati features, one per line/,
+  );
+  assert.match(source, /aria-label=\{`Add another feature after /);
+  assert.match(source, /aria-label=\{`Remove feature /);
+  assert.match(source, /normalizeFeatures\(features\)/);
+  assert.match(source, /normalizeFeatures\(gujaratiFeatures\)/);
+});
+
 test("client modules do not reference server-only secrets", () => {
   const exposed: string[] = [];
   const serverOnlyName =
