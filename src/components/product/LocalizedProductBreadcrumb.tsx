@@ -24,13 +24,13 @@ export default function LocalizedProductBreadcrumb({
             skipTranslation: usesStoredGujarati,
           },
           {
-            label: usesStoredGujarati ? "ઉત્પાદનો" : "Shop",
-            href: "/shop",
+            label: usesStoredGujarati ? "ઉત્પાદનો" : "Products",
+            href: "/allproducts",
             skipTranslation: usesStoredGujarati,
           },
           {
             label: product.category,
-            href: `/shop?category=${product.category}`,
+            href: `/allproducts?category=${product.category}`,
           },
           {
             label: localizedProduct.title,

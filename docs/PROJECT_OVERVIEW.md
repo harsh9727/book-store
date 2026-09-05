@@ -28,6 +28,8 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 | Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
 | Admin      | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
 
+All visible storefront catalog links and Product breadcrumbs use `/allproducts`. `/shop` remains only as a permanent backward-compatible redirect that preserves supported category, collection, and search parameters.
+
 The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script.
 
 Public Gallery detail pages show photos in a responsive 1/2/4-column grid. The first 8 are visible initially; View more reveals the remaining batch and expands the photos available to the lightbox. The viewer supports click controls plus Left Arrow, Right Arrow, and Escape keyboard controls.

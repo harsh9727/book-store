@@ -34,9 +34,9 @@
 
 **Cause:** Legacy template anchor tags pointed to static placeholder paths like `/books/bibles` or `/magazines/faith-life` that did not exist in the App Router.
 
-**Solution:** Route category and collection links through the dynamic catalog query routes: `/allproducts?category=${slug}` and `/allproducts`. Connect dynamic homepage sections (e.g. Magazines) to `getProducts()` filtered by category/badge.
+**Solution:** Route category and collection links through the dynamic catalog query routes: `/allproducts?category=${slug}` and `/allproducts`. Product breadcrumbs label the catalog level as Products and use the same canonical route. Connect dynamic homepage sections (e.g. Magazines) to `getProducts()` filtered by category/badge.
 
-**Prevention:** Always verify link destinations against the active `src/app` route tree and use dynamic catalog filters rather than hardcoding static mock paths.
+**Prevention:** Always verify link destinations against the active `src/app` route tree and use dynamic catalog filters rather than hardcoding static mock paths. Keep `/shop` only as the backward-compatible redirect; do not use it in visible links or canonical metadata.
 
 ## Buy Now opens WhatsApp without quantity or Product details
 

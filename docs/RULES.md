@@ -28,6 +28,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Static or browser-local features must be labeled mock, demo, or local in documentation.
 - Placeholder actions must not be described as complete functionality.
 - Dynamic routes must handle unknown IDs safely, normally through Next.js not-found behavior.
+- Visible catalog links and Product breadcrumbs must use `/allproducts`; `/shop` is a legacy redirect only and must not be emitted by current storefront UI.
 - Products must reference an existing Category slug. Renaming a Category slug updates assigned Products atomically; Categories with assigned Products cannot be deleted.
 - Home catalog sections, all-products filtering, product detail routes, category cards, and sitemap entries read through the catalog repository rather than importing mutable runtime arrays.
 - The homepage Magazine section must source only admin-managed Products assigned to the `magazines` Category. It must not infer membership from Product titles/badges or render fallback Magazine cards. When the Category has no Products, retain the section heading, View All action, and standard dashed empty-collection message.

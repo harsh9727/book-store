@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 36 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 37 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,14 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Canonical Products breadcrumb and links
+
+- Outcome: changed the Product-detail breadcrumb label from Shop to Products and replaced its catalog/category destinations with `/allproducts`. Updated the remaining visible 404 and Blog catalog CTAs plus Product layout metadata to the same canonical route. The old `/shop` URL remains a permanent backward-compatible redirect only.
+- Main files/areas: localized Product breadcrumb, public fallback/Blog links, Product metadata, canonical-route regression coverage, project overview, storefront rules, troubleshooting, and progress documentation.
+- Data/API/security impact: none; this is navigation, labeling, and metadata cleanup.
+- Verification and exact result: focused ESLint passed for the breadcrumb, 404 page, Blog detail, Product metadata, and updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 8/8, including the new canonical visible-catalog-link assertion; the approved `pnpm build` compiled in 1.768 seconds, completed TypeScript in 5.8 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: external bookmarks may still request `/shop`, but they continue to redirect permanently to `/allproducts` with supported query parameters preserved.
 
 ### 2026-09-05 - Visible Magazine empty state
 

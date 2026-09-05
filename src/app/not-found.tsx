@@ -37,7 +37,7 @@ export default function NotFound() {
             Home
           </Link>
           <Link
-            href="/shop"
+            href="/allproducts"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-gray-300 px-5 text-sm font-semibold text-gray-800 transition-colors hover:border-orange-300 hover:text-orange-600"
           >
             <ArrowLeft size={17} />

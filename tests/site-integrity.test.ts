@@ -66,6 +66,28 @@ test("literal internal links target an App Router page", () => {
   assert.deepEqual(broken, []);
 });
 
+test("visible catalog links use the canonical All Products route", () => {
+  const files = [
+    path.join(root, "src", "components", "product", "LocalizedProductBreadcrumb.tsx"),
+    path.join(root, "src", "app", "not-found.tsx"),
+    path.join(root, "src", "app", "blogs", "[id]", "page.tsx"),
+    path.join(root, "src", "app", "product", "layout.tsx"),
+  ];
+
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    assert.doesNotMatch(source, /(?:href=|path:)\s*["']\/shop(?:[?"'])/);
+  }
+
+  const breadcrumb = readFileSync(files[0], "utf8");
+  assert.match(breadcrumb, /label: usesStoredGujarati \? .+ : "Products"/);
+  assert.match(breadcrumb, /href: "\/allproducts"/);
+  assert.match(
+    breadcrumb,
+    /href: `\/allproducts\?category=\$\{product\.category\}`/,
+  );
+});
+
 test("client modules do not reference server-only secrets", () => {
   const exposed: string[] = [];
   const serverOnlyName =

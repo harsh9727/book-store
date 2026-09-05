@@ -177,7 +177,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             </div>
 
             <Link
-              href="/shop"
+              href="/allproducts"
               className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
             >
               <ShoppingBag size={18} />
