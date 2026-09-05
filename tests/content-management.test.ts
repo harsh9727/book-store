@@ -25,6 +25,10 @@ import { localizeTestimonial } from "../src/lib/localizedTestimonial.ts";
 import { localizeTeamMember } from "../src/lib/localizedTeam.ts";
 import { JsonBodyError, readBoundedJson } from "../src/lib/boundedJson.ts";
 import { hasInitializedCatalog } from "../src/lib/catalogMigration.ts";
+import {
+  createUniqueContentSlug,
+  slugifyContentTitle,
+} from "../src/lib/contentSlug.ts";
 import type { BlogPost } from "../src/types/blog.ts";
 import type { GalleryItem } from "../src/types/gallery.ts";
 import type { Product } from "../src/types/product.ts";
@@ -33,7 +37,6 @@ import type { TeamMember } from "../src/types/team.ts";
 
 const blogDraft = {
   title: "A valid article",
-  slug: "a-valid-article",
   category: "News",
   date: "2026-09-01",
   image: "https://example.com/banner.webp",
@@ -80,7 +83,6 @@ const richContent = {
 };
 
 const galleryDraft = {
-  slug: "community-event",
   title: "Community event",
   category: "Events",
   date: "2026-09-01",
@@ -100,11 +102,9 @@ const galleryDraft = {
 
 const categoryDraft = {
   name: "Devotionals",
-  slug: "devotionals",
 };
 
 const productDraft = {
-  id: "daily-devotional",
   title: "Daily Devotional",
   price: 499,
   image: "/images/products/atomic-habits.jpg",
@@ -158,6 +158,20 @@ test("accepts valid blog and gallery drafts", () => {
 test("accepts valid category and product drafts", () => {
   assert.equal(categoryDraftSchema.safeParse(categoryDraft).success, true);
   assert.equal(productDraftSchema.safeParse(productDraft).success, true);
+});
+
+test("creates bounded collision-safe slugs from backend content titles", () => {
+  assert.equal(slugifyContentTitle("  Daily Devotional!  "), "daily-devotional");
+  assert.equal(
+    createUniqueContentSlug(
+      "Daily Devotional",
+      ["daily-devotional", "daily-devotional-2"],
+      "product",
+    ),
+    "daily-devotional-3",
+  );
+  assert.equal(createUniqueContentSlug("ગુજરાતી", [], "blog"), "blog");
+  assert.ok(slugifyContentTitle("a".repeat(300)).length <= 220);
 });
 
 test("requires Gujarati Product content and selects it without changing shared fields", () => {
@@ -260,6 +274,11 @@ test("accepts the seeded bilingual Team in the persisted store schema", () => {
 });
 
 test("rejects malformed catalog fields", () => {
+  assert.equal(
+    productDraftSchema.safeParse({ ...productDraft, id: "client-product-id" })
+      .success,
+    false,
+  );
   assert.equal(
     categoryDraftSchema.safeParse({ ...categoryDraft, slug: "Bad Category" })
       .success,
@@ -368,7 +387,7 @@ test("requires Gujarati Gallery content and rejects the removed Subtitle field",
 test("selects stored Gujarati Gallery content without changing shared fields", () => {
   const storedGallery: GalleryItem = {
     id: "gallery-1",
-    slug: galleryDraft.slug,
+    slug: "community-event",
     title: galleryDraft.title,
     category: galleryDraft.category,
     date: galleryDraft.date,
@@ -426,7 +445,7 @@ test("selects stored Gujarati blog content without changing shared fields", () =
   const storedBlog: BlogPost = {
     id: "blog-1",
     title: blogDraft.title,
-    slug: blogDraft.slug,
+    slug: "a-valid-article",
     category: blogDraft.category,
     date: blogDraft.date,
     image: blogDraft.image,
@@ -589,9 +608,14 @@ test("distinguishes legacy empty catalogs from intentionally initialized empty c
   );
 });
 
-test("rejects invalid slugs and dates", () => {
+test("rejects client-owned identifiers and invalid dates", () => {
   assert.equal(
     blogDraftSchema.safeParse({ ...blogDraft, slug: "Bad Slug" }).success,
+    false,
+  );
+  assert.equal(
+    galleryDraftSchema.safeParse({ ...galleryDraft, slug: "client-gallery" })
+      .success,
     false,
   );
   assert.equal(

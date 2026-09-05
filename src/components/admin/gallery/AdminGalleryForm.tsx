@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import type { GalleryItem, GalleryPhoto } from "@/types/gallery";
 import {
   adminJsonRequest,
-  slugify,
   uploadAdminImages,
   validateClientImages,
 } from "@/lib/adminContentClient";
@@ -165,9 +164,7 @@ export default function AdminGalleryForm({
         })),
       ];
       const title = String(values.get("title") || "").trim();
-      const enteredSlug = String(values.get("slug") || "").trim();
       const payload = {
-        slug: slugify(enteredSlug || title),
         title,
         category: String(values.get("category") || "").trim(),
         date: String(values.get("date") || "").trim(),
@@ -250,16 +247,7 @@ export default function AdminGalleryForm({
           <p className="sm:col-span-2 text-xs text-slate-500">
             These values are shared by the English and Gujarati versions.
           </p>
-          <label className="text-sm font-semibold">
-            Slug
-            <input
-              name="slug"
-              defaultValue={initialItem?.slug}
-              placeholder="auto-from-title"
-              className={inputClass}
-            />
-          </label>
-          <label className="text-sm font-semibold">
+          <label className="text-sm font-semibold sm:col-span-2">
             Date
             <input
               name="date"

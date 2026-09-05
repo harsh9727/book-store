@@ -230,11 +230,6 @@ const blogPostSchema = z
 export const blogDraftSchema = z
   .object({
     title: z.string().trim().min(1).max(220),
-    slug: z
-      .string()
-      .trim()
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
-      .max(220),
     category: z.string().trim().min(1).max(100),
     date: dateTextSchema,
     image: imageReferenceSchema,
@@ -298,7 +293,7 @@ const galleryItemSchema = z
   .strict();
 
 export const galleryDraftSchema = galleryItemSchema
-  .omit({ id: true, subtitle: true, gujarati: true })
+  .omit({ id: true, slug: true, subtitle: true, gujarati: true })
   .extend({ gujarati: galleryLocalizedContentSchema });
 
 const slugSchema = z
@@ -318,6 +313,7 @@ const categorySchema = z
 
 export const categoryDraftSchema = categorySchema.omit({
   id: true,
+  slug: true,
   description: true,
 });
 
@@ -408,6 +404,7 @@ const productSchema = z
 
 export const productDraftSchema = productSchema
   .omit({
+    id: true,
     originalPrice: true,
     discount: true,
     badge: true,

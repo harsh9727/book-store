@@ -43,7 +43,6 @@ export default function AdminGalleryManager({
     const matchesCategory = category === "all" || gallery.category === category;
     const searchableText = [
       gallery.title,
-      gallery.slug,
       gallery.category,
       gallery.location,
       gallery.organizer,
@@ -199,9 +198,6 @@ export default function AdminGalleryManager({
                     <td className="max-w-[300px] px-4 py-3">
                       <p className="line-clamp-2 font-semibold text-slate-900">
                         {gallery.title}
-                      </p>
-                      <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
-                        {gallery.slug}
                       </p>
                     </td>
                     <td className="px-4 py-3">

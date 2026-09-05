@@ -20,7 +20,6 @@ import {
 } from "@/lib/blogRichText";
 import {
   adminJsonRequest,
-  slugify,
   uploadAdminImages,
   validateClientImages,
 } from "@/lib/adminContentClient";
@@ -163,10 +162,8 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       }
 
       const title = String(values.get("title") || "").trim();
-      const enteredSlug = String(values.get("slug") || "").trim();
       const payload = {
         title,
-        slug: slugify(enteredSlug || title),
         category: String(values.get("category") || "").trim(),
         date: String(values.get("date") || "").trim(),
         image,
@@ -256,17 +253,7 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
           <p className="sm:col-span-2 text-xs text-slate-500">
             These values are shared by the English and Gujarati versions.
           </p>
-          <label className="min-w-0 text-sm font-semibold">
-            Slug
-            <input
-              name="slug"
-              maxLength={220}
-              defaultValue={initialItem?.slug}
-              placeholder="auto-from-title"
-              className={inputClass}
-            />
-          </label>
-          <label className="min-w-0 text-sm font-semibold">
+          <label className="min-w-0 text-sm font-semibold sm:col-span-2">
             Date
             <input
               name="date"

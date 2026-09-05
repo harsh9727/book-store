@@ -5,7 +5,7 @@ import { Edit3, FolderPlus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import ConfirmDeleteModal from "@/components/admin/ConfirmDeleteModal";
-import { adminJsonRequest, slugify } from "@/lib/adminContentClient";
+import { adminJsonRequest } from "@/lib/adminContentClient";
 import type { Category } from "@/types/category";
 import type { Product } from "@/types/product";
 
@@ -22,7 +22,6 @@ export default function AdminCategoryManager({
   products,
 }: Props) {
   const [items, setItems] = useState(initialItems);
-  const [assignedProducts, setAssignedProducts] = useState(products);
   const [editing, setEditing] = useState<Category | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
   const [busy, setBusy] = useState(false);
@@ -31,11 +30,11 @@ export default function AdminCategoryManager({
       new Map(
         items.map((item) => [
           item.slug,
-          assignedProducts.filter((product) => product.category === item.slug)
+          products.filter((product) => product.category === item.slug)
             .length,
         ]),
       ),
-    [items, assignedProducts],
+    [items, products],
   );
 
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -43,10 +42,7 @@ export default function AdminCategoryManager({
     const form = event.currentTarget;
     const values = new FormData(form);
     const name = String(values.get("name") || "").trim();
-    const payload = {
-      name,
-      slug: slugify(String(values.get("slug") || "").trim() || name),
-    };
+    const payload = { name };
     setBusy(true);
     try {
       const url = editing
@@ -57,15 +53,6 @@ export default function AdminCategoryManager({
         editing ? "PUT" : "POST",
         payload,
       );
-      if (editing && editing.slug !== result.item.slug) {
-        setAssignedProducts((current) =>
-          current.map((product) =>
-            product.category === editing.slug
-              ? { ...product, category: result.item.slug }
-              : product,
-          ),
-        );
-      }
       setItems((current) =>
         editing
           ? current
@@ -124,7 +111,7 @@ export default function AdminCategoryManager({
               {editing ? "Edit category" : "Add category"}
             </h2>
             <p className="text-xs text-slate-500">
-              Products use the category slug.
+              Use a clear name for the product catalog.
             </p>
           </div>
           {editing ? (
@@ -150,16 +137,6 @@ export default function AdminCategoryManager({
             className={`mt-1.5 ${inputClass}`}
           />
         </label>
-        <label className="block text-sm font-semibold">
-          Slug
-          <input
-            name="slug"
-            maxLength={220}
-            defaultValue={editing?.slug}
-            placeholder="auto-from-name"
-            className={`mt-1.5 ${inputClass}`}
-          />
-        </label>
         <button
           disabled={busy}
           className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
@@ -175,11 +152,10 @@ export default function AdminCategoryManager({
           <p className="text-xs text-slate-500">{items.length} categories</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] text-left text-sm">
+          <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-5 py-3">Name</th>
-                <th className="px-5 py-3">Slug</th>
                 <th className="px-5 py-3">Products</th>
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
@@ -190,7 +166,6 @@ export default function AdminCategoryManager({
                   <td className="px-5 py-4">
                     <strong>{item.name}</strong>
                   </td>
-                  <td className="px-5 py-4 text-slate-600">{item.slug}</td>
                   <td className="px-5 py-4">{counts.get(item.slug) || 0}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">

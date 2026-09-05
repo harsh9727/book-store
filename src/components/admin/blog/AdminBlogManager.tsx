@@ -42,7 +42,6 @@ export default function AdminBlogManager({
     const matchesCategory = category === "all" || blog.category === category;
     const searchableText = [
       blog.title,
-      blog.slug,
       blog.category,
       blog.author.name,
     ]

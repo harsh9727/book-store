@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 import {
   adminJsonRequest,
-  slugify,
   uploadAdminImages,
   validateClientImages,
 } from "@/lib/adminContentClient";
@@ -177,7 +176,6 @@ export default function AdminProductForm({
   );
   const [categoryCreatorOpen, setCategoryCreatorOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategorySlug, setNewCategorySlug] = useState("");
   const [categoryBusy, setCategoryBusy] = useState(false);
   const [categoryError, setCategoryError] = useState("");
   const [specifications, setSpecifications] = useState<
@@ -297,8 +295,7 @@ export default function AdminProductForm({
 
   const createCategory = async () => {
     const name = newCategoryName.trim();
-    const slug = slugify(newCategorySlug.trim() || name);
-    if (!name || !slug) {
+    if (!name) {
       setCategoryError("Enter a category name.");
       return;
     }
@@ -308,7 +305,7 @@ export default function AdminProductForm({
       const result = await adminJsonRequest<{ item: Category }>(
         "/api/admin/content/categories",
         "POST",
-        { name, slug },
+        { name },
       );
       setCategoryOptions((current) =>
         [...current, result.item].sort((left, right) =>
@@ -317,7 +314,6 @@ export default function AdminProductForm({
       );
       setSelectedCategory(result.item.slug);
       setNewCategoryName("");
-      setNewCategorySlug("");
       setCategoryCreatorOpen(false);
       toast.success("Category created and selected.");
     } catch (createError) {
@@ -401,7 +397,6 @@ export default function AdminProductForm({
         })),
       ];
       const payload = {
-        id: slugify(String(values.get("slug") || "").trim() || title),
         title,
         price: Number(values.get("price")),
         image,
@@ -522,17 +517,7 @@ export default function AdminProductForm({
               className={inputClass}
             />
           </label>
-          <label className="min-w-0 text-sm font-semibold">
-            Slug
-            <input
-              name="slug"
-              maxLength={220}
-              defaultValue={initialItem?.id}
-              placeholder="auto-from-title"
-              className={inputClass}
-            />
-          </label>
-          <div className="min-w-0">
+          <div className="min-w-0 sm:col-span-2">
             <div className="flex items-center justify-between gap-3">
               <label
                 htmlFor="product-category"
@@ -1272,16 +1257,6 @@ export default function AdminProductForm({
                   value={newCategoryName}
                   onChange={(event) => setNewCategoryName(event.target.value)}
                   maxLength={120}
-                  className={inputClass}
-                />
-              </label>
-              <label className="block text-sm font-semibold">
-                Slug
-                <input
-                  value={newCategorySlug}
-                  onChange={(event) => setNewCategorySlug(event.target.value)}
-                  maxLength={220}
-                  placeholder={slugify(newCategoryName) || "auto-from-name"}
                   className={inputClass}
                 />
               </label>

@@ -236,6 +236,27 @@ test("Admin navigation lives in the persistent route layout", () => {
   assert.doesNotMatch(contentShell, /<aside |Admin navigation|min-h-screen/);
 });
 
+test("Admin CRUD leaves content identifiers to the backend", () => {
+  const adminComponentRoot = path.join(root, "src", "components", "admin");
+  const formFiles = [
+    ["blog", "AdminBlogForm.tsx"],
+    ["gallery", "AdminGalleryForm.tsx"],
+    ["product", "AdminProductForm.tsx"],
+    ["category", "AdminCategoryManager.tsx"],
+  ].map((segments) => path.join(adminComponentRoot, ...segments));
+
+  for (const file of formFiles) {
+    const source = readFileSync(file, "utf8");
+    assert.doesNotMatch(source, /name=["']slug["']|>\s*Slug\s*</);
+  }
+
+  const clientHelpers = readFileSync(
+    path.join(root, "src", "lib", "adminContentClient.ts"),
+    "utf8",
+  );
+  assert.doesNotMatch(clientHelpers, /export function slugify/);
+});
+
 test("client modules do not reference server-only secrets", () => {
   const exposed: string[] = [];
   const serverOnlyName =

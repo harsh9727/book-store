@@ -33,7 +33,7 @@ export default function AdminProductManager({
       items.filter((item) => {
         const matchesCategory =
           category === "all" || item.category === category;
-        const text = `${item.title} ${item.id}`.toLowerCase();
+        const text = item.title.toLowerCase();
         return (
           matchesCategory &&
           (!query.trim() || text.includes(query.trim().toLowerCase()))
@@ -78,7 +78,7 @@ export default function AdminProductManager({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search title or slug"
+            placeholder="Search product title"
             className="h-11 w-full rounded-xl border border-slate-200 pl-10 pr-3 text-sm outline-none focus:border-orange-500"
           />
         </label>

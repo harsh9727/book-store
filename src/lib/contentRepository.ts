@@ -14,6 +14,7 @@ import { testimonials as seededTestimonials } from "@/data/testimonials";
 import { teamMembers as seededTeamMembers } from "@/data/team";
 import { plainTextToBlogRichText } from "@/lib/blogRichText";
 import { hasInitializedCatalog } from "@/lib/catalogMigration";
+import { createUniqueContentSlug } from "@/lib/contentSlug";
 import {
   blogDraftSchema,
   categoryDraftSchema,
@@ -140,6 +141,7 @@ function mutateStore<T>(
 
 function blogFromDraft(
   id: string,
+  slug: string,
   draft: BlogDraft,
   previous?: BlogPost,
 ): BlogPost {
@@ -161,7 +163,7 @@ function blogFromDraft(
   return {
     id,
     title: parsed.title,
-    slug: parsed.slug,
+    slug,
     category: parsed.category,
     date: parsed.date,
     image: parsed.image,
@@ -202,10 +204,13 @@ export async function getBlog(identifier: string) {
 
 export function createBlog(draft: BlogDraft) {
   return mutateStore((store) => {
-    if (store.blogs.some((blog) => blog.slug === draft.slug)) {
-      throw new Error("A blog with this slug already exists.");
-    }
-    const blog = blogFromDraft(randomUUID(), draft);
+    const parsed = blogDraftSchema.parse(draft);
+    const slug = createUniqueContentSlug(
+      parsed.title,
+      store.blogs.map((blog) => blog.slug),
+      "blog",
+    );
+    const blog = blogFromDraft(randomUUID(), slug, parsed);
     store.blogs.unshift(blog);
     return blog;
   });
@@ -215,15 +220,9 @@ export function updateBlog(id: string, draft: BlogDraft) {
   return mutateStore((store) => {
     const index = store.blogs.findIndex((blog) => String(blog.id) === id);
     if (index < 0) return null;
-    if (
-      store.blogs.some(
-        (blog, itemIndex) => itemIndex !== index && blog.slug === draft.slug,
-      )
-    ) {
-      throw new Error("A blog with this slug already exists.");
-    }
     const blog = blogFromDraft(
       String(store.blogs[index].id),
+      store.blogs[index].slug,
       draft,
       store.blogs[index],
     );
@@ -254,10 +253,12 @@ export async function getGallery(identifier: string) {
 export function createGallery(draft: GalleryDraft) {
   return mutateStore((store) => {
     const parsed = galleryDraftSchema.parse(draft);
-    if (store.galleries.some((gallery) => gallery.slug === parsed.slug)) {
-      throw new Error("A gallery with this slug already exists.");
-    }
-    const gallery: GalleryItem = { ...parsed, id: randomUUID() };
+    const slug = createUniqueContentSlug(
+      parsed.title,
+      store.galleries.map((gallery) => gallery.slug),
+      "gallery",
+    );
+    const gallery: GalleryItem = { ...parsed, id: randomUUID(), slug };
     store.galleries.unshift(gallery);
     return gallery;
   });
@@ -270,17 +271,10 @@ export function updateGallery(id: string, draft: GalleryDraft) {
     );
     if (index < 0) return null;
     const parsed = galleryDraftSchema.parse(draft);
-    if (
-      store.galleries.some(
-        (gallery, itemIndex) =>
-          itemIndex !== index && gallery.slug === parsed.slug,
-      )
-    ) {
-      throw new Error("A gallery with this slug already exists.");
-    }
     const gallery: GalleryItem = {
       ...parsed,
       id: String(store.galleries[index].id),
+      slug: store.galleries[index].slug,
     };
     store.galleries[index] = gallery;
     return gallery;
@@ -376,9 +370,9 @@ export function deleteTeamMember(id: string) {
   });
 }
 
-function productFromDraft(draft: ProductDraft): Product {
+function productFromDraft(id: string, draft: ProductDraft): Product {
   const parsed = productDraftSchema.parse(draft);
-  return { ...parsed };
+  return { ...parsed, id };
 }
 
 export async function getProducts() {
@@ -392,15 +386,17 @@ export async function getProduct(id: string) {
 export function createProduct(draft: ProductDraft) {
   return mutateStore((store) => {
     const parsed = productDraftSchema.parse(draft);
-    if (store.products.some((product) => product.id === parsed.id)) {
-      throw new Error("A product with this slug already exists.");
-    }
     if (
       !store.categories.some((category) => category.slug === parsed.category)
     ) {
       throw new Error("Choose an existing category.");
     }
-    const product = productFromDraft(parsed);
+    const id = createUniqueContentSlug(
+      parsed.title,
+      store.products.map((product) => product.id),
+      "product",
+    );
+    const product = productFromDraft(id, parsed);
     store.products.unshift(product);
     return product;
   });
@@ -412,18 +408,11 @@ export function updateProduct(id: string, draft: ProductDraft) {
     if (index < 0) return null;
     const parsed = productDraftSchema.parse(draft);
     if (
-      store.products.some(
-        (product, itemIndex) => itemIndex !== index && product.id === parsed.id,
-      )
-    ) {
-      throw new Error("A product with this slug already exists.");
-    }
-    if (
       !store.categories.some((category) => category.slug === parsed.category)
     ) {
       throw new Error("Choose an existing category.");
     }
-    const product = productFromDraft(parsed);
+    const product = productFromDraft(store.products[index].id, parsed);
     store.products[index] = {
       ...product,
       reviews: store.products[index].reviews,
@@ -447,10 +436,12 @@ export async function getCategories() {
 export function createCategory(draft: CategoryDraft) {
   return mutateStore((store) => {
     const parsed = categoryDraftSchema.parse(draft);
-    if (store.categories.some((category) => category.slug === parsed.slug)) {
-      throw new Error("A category with this slug already exists.");
-    }
-    const category: Category = { ...parsed, id: randomUUID() };
+    const slug = createUniqueContentSlug(
+      parsed.name,
+      store.categories.map((category) => category.slug),
+      "category",
+    );
+    const category: Category = { ...parsed, id: randomUUID(), slug };
     store.categories.push(category);
     store.categories.sort((left, right) => left.name.localeCompare(right.name));
     return category;
@@ -462,24 +453,12 @@ export function updateCategory(id: string, draft: CategoryDraft) {
     const index = store.categories.findIndex((category) => category.id === id);
     if (index < 0) return null;
     const parsed = categoryDraftSchema.parse(draft);
-    if (
-      store.categories.some(
-        (category, itemIndex) =>
-          itemIndex !== index && category.slug === parsed.slug,
-      )
-    ) {
-      throw new Error("A category with this slug already exists.");
-    }
-    const previousSlug = store.categories[index].slug;
-    const category: Category = { ...parsed, id: store.categories[index].id };
+    const category: Category = {
+      ...parsed,
+      id: store.categories[index].id,
+      slug: store.categories[index].slug,
+    };
     store.categories[index] = category;
-    if (previousSlug !== parsed.slug) {
-      store.products = store.products.map((product) =>
-        product.category === previousSlug
-          ? { ...product, category: parsed.slug }
-          : product,
-      );
-    }
     store.categories.sort((left, right) => left.name.localeCompare(right.name));
     return category;
   });

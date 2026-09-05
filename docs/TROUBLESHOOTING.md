@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Admin CRUD asks for slugs or reports duplicate slugs
+
+**Symptom:** Product, Category, Blog, or Gallery create/edit asks the admin to understand a route slug, exposes that internal value in a list, or rejects a create because an admin-entered slug already exists.
+
+**Cause resolved 2026-09-05:** those identifiers were authored and normalized in browser forms even though they are persistence/routing concerns. Renaming a Category slug also required rewriting assigned Product relations.
+
+**Solution:** Admin mutation drafts no longer accept Product `id` or Category/Blog/Gallery `slug`. The repository derives a bounded lowercase key from the validated English title/name during create, appends a numeric suffix when needed, and retains the stored identifier on update. Public URLs and Category relationships therefore remain stable when visible content is edited.
+
+**Prevention:** keep route-key generation in `contentSlug.ts` and repository create mutations. Do not reintroduce Slug controls, client slug helpers, or identifier fields in mutation schemas; continue using stored keys internally for routes and relations.
+
 ## Admin sidebar navigation looks like a full-screen refresh
 
 **Symptom:** selecting Products, Categories, Blogs, Gallery, Testimonials, Team, or Overview makes the entire Admin screen—including sidebar/header—disappear and redraw.

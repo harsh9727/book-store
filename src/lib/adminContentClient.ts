@@ -7,14 +7,6 @@ interface UploadedImage {
   size: number;
 }
 
-export function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "");
-}
-
 export function validateClientImages(files: File[]) {
   for (const file of files) {
     const error = validateImageSelection(file);

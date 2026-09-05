@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 44 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 46 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,14 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Backend-generated Admin content slugs
+
+- Outcome: removed Slug controls from Product, Category, Blog, and Gallery create/edit interfaces, removed exposed slug text/search behavior from their Admin lists, and stopped sending Product IDs or content slugs from browser mutation payloads. Create mutations now derive a normalized, bounded route key from the English title/name inside the repository and resolve collisions deterministically with `-2`, `-3`, and later suffixes. Updates retain the existing key so published Product, Blog, Gallery, and Category URLs and Product-to-Category assignments remain stable when a title/name changes. Testimonial and Team CRUD already used backend UUIDs and required no UI change.
+- Main files/areas: Admin Product/Category/Blog/Gallery forms and lists, strict content draft schemas, repository identifier generation, client helper cleanup, content/site regression coverage, architecture/rules/security/troubleshooting, project overview, code standards, and progress documentation.
+- Data/API/security impact: Product create/update bodies no longer accept `id`; Category, Blog, and Gallery create/update bodies no longer accept `slug`. The strict schemas reject attempts to override those backend-owned identifiers. Persisted records still contain their route keys, existing public routes remain compatible, and authorized create mutations generate a unique key within the relevant collection before the atomic store write.
+- Verification and exact result: repository-wide `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 46/46 (7 admin-auth, 23 content-management, and 16 site-integrity), including backend normalization, collision suffixes, fallback, length bounding, strict client-owned-identifier rejection, and absence of Admin Slug controls/client helpers. The approved `pnpm build` compiled in 4.8 seconds, completed TypeScript in 11.1 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: generated slugs use ASCII lowercase route keys; an English title/name with no ASCII letters or digits uses the content-type fallback (`product`, `category`, `blog`, or `gallery`) plus a collision suffix when required. Existing identifiers are deliberately immutable through current Admin CRUD.
 
 ### 2026-09-05 - Persistent Admin navigation shell
 
