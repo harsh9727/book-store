@@ -11,7 +11,7 @@ export default function WhatsAppButton() {
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${defaultMessage}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center group">
+    <div className="group fixed bottom-6 right-6 z-50 hidden items-center sm:flex">
       {/* Tooltip on hover */}
       <span className="pointer-events-none absolute right-16 hidden rounded-lg bg-gray-900/90 px-3 py-1.5 text-xs font-semibold text-white shadow-md backdrop-blur-sm transition-all duration-200 group-hover:block whitespace-nowrap">
         Chat with us on WhatsApp

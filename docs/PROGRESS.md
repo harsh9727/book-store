@@ -6,24 +6,40 @@
 | ----------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Public storefront | Functional baseline                 | Main pages work; catalog/editorial content is file-backed and public cache revalidation is implemented               |
 | Product catalog   | Dynamic filesystem baseline         | Admin CRUD, category relation, storefront feeds, and product detail UI                                               |
-| Cart/wishlist     | Browser-local implemented           | Validated versioned local storage, live counts, quantity/remove controls, and cross-tab updates                       |
-| Checkout/payments | WhatsApp enquiry only               | Itemized order handoff works; no inventory reservation, payment capture, or persistent order                         |
-| Customer auth     | Not implemented                     | Routes explicitly state unavailability; profile redirects to login                                                   |
+| Cart              | Browser-local implemented           | Multi-Product list, live count, quantity/remove controls, cross-tab updates, and WhatsApp handoff                     |
+| Product sales     | WhatsApp-assisted                    | Card/detail Buy Now and Cart send itemized requests; GTBS confirms availability, delivery, total, and payment         |
+| Customer utilities | Intentionally out of scope         | No Wishlist, Checkout, customer account, profile, or order-history pages                                              |
 | Admin auth        | Production-hardened baseline        | Single environment-backed admin, scrypt + TOTP, signed cookie                                                        |
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 32 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 34 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
 1. Configure and verify the real HTTPS `NEXT_PUBLIC_SITE_URL`, production secrets, provider origins, and shared WAF rate limiting.
 2. Replace single-instance filesystem content storage with a shared production database.
-3. Define and implement customer identity, server-authoritative cart, checkout, inventory, payment, and order architecture.
-4. Build a functional admin Orders module and replace dashboard presentation figures with repository data.
+3. Operationally verify WhatsApp order handling, current Product availability, delivery pricing, and payment-confirmation procedures.
+4. Replace dashboard presentation figures with repository data where those figures remain in scope.
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Text-only Buy Now actions
+
+- Outcome: simplified every purchase CTA on Product cards, Product detail, and the multi-Product Cart to display only `Buy Now`. Removed the WhatsApp icon and visible `Buy on WhatsApp` wording without changing the prepared WhatsApp redirect, quantities, variants, Product links, or Cart total.
+- Main files/areas: Product Card, Product detail information/actions, Cart order summary, and storefront interaction rules.
+- Data/API/security impact: none; this is a presentation-only change and the existing external WhatsApp handoff remains unchanged.
+- Verification and exact result: focused ESLint passed for all three changed components; `pnpm exec tsc --noEmit` passed; the five site-integrity tests passed 5/5, including unchanged single- and multi-Product WhatsApp message coverage; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the accessible labels still identify WhatsApp as the action destination for screen-reader clarity; only the visible button content is intentionally limited to `Buy Now`.
+
+### 2026-09-05 - WhatsApp-only Product sales and simplified Cart scope
+
+- Outcome: aligned the storefront with the confirmed sales model. Product cards now expose exactly two action buttons: Buy Now and outlined Add to Cart with the new ListPlus icon; the former View, Wishlist-heart, and standalone WhatsApp icon actions were removed while image/title links still open Product detail. Product-detail Buy Now uses the selected quantity and variants. The Cart remains the only shopper utility page, lists multiple selected lines, and sends the complete selection directly to WhatsApp. A shared builder supplies the greeting, Product title, quantity, optional variant details, calculated line price, absolute Product link, and Cart total. Wishlist, Checkout, customer login, registration, and profile route implementations/components were removed; old URLs redirect to Cart or All Products. Marketing FAQs, homepage features, Privacy, Terms, and Shipping copy now describe the real WhatsApp confirmation flow instead of accounts, real-time inventory, online checkout, or website payment processing. The floating generic WhatsApp helper is hidden below `sm` so it cannot cover Product-card actions on mobile.
+- Main files/areas: Product Card and Product detail actions, browser-local Cart storage/UI, shared WhatsApp order builder, Next redirects/robots, removed shopper/customer routes, homepage features/FAQs, public policy pages, site-integrity tests, README, and all affected project documentation.
+- Data/API/security impact: Wishlist local-storage code was removed. Cart continues to store only bounded non-sensitive display data; it is not authoritative for availability, price, inventory, payment, or order acceptance. The website does not collect payment credentials. WhatsApp remains an external handoff that the user reviews and sends; GTBS must confirm availability, delivery, final total, and payment instructions.
+- Verification and exact result: `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed after `pnpm exec next typegen` refreshed the intentionally removed route graph; direct single-process tests passed 34/34, including new single- and multi-Product WhatsApp message assertions; `git diff --check` passed with line-ending notices only. Final `pnpm build` on Next.js 16.3.3 compiled in 2.3 seconds, completed TypeScript in 6.8 seconds, generated 33/33 pages in 1.649 seconds, omitted all five removed route implementations, and exited 0. A fresh 375-pixel Chrome profile confirmed the Product card contains only `Buy Now` and `Add to Cart`, both actions fit without horizontal overflow (`scrollWidth=375`), the floating helper no longer obscures them, one-Product Buy Now included greeting/quantity/link, Product-detail Buy Now carried quantity 2/link, Add to Cart persisted the selections, and the two-line Cart with total quantity 3 produced a WhatsApp message containing Product links and the aggregate total with no Checkout link. Production HTTP checks returned 200 with one `<h1>` for All Products, Product detail, and Cart; `/checkout` redirects 308 to `/cart`, while `/wishlist`, `/login`, `/register`, and `/profile` redirect 308 to `/allproducts`.
+- Known limitations or next step: WhatsApp opening and message construction are verified, but no real message was sent during automated testing. GTBS still needs to validate the receiving phone/account and operational confirmation procedure on the deployed HTTPS origin. Cart remains browser-local and does not synchronize across devices or reserve inventory.
 
 ### 2026-09-05 - Full website audit, prioritized remediation, and production-readiness review
 

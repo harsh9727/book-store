@@ -18,6 +18,22 @@
 
 **Prevention:** Always verify link destinations against the active `src/app` route tree and use dynamic catalog filters rather than hardcoding static mock paths.
 
+## Buy Now opens WhatsApp without quantity or Product details
+
+**Symptom:** a Product action opens a generic WhatsApp enquiry that omits the selected quantity, variants, price, or Product link.
+
+**Cause resolved 2026-09-05:** Product cards, Product detail, and the former Checkout surface constructed separate message formats.
+
+**Solution:** all sale actions now use `src/lib/whatsappOrder.ts`. Product Buy Now includes one selected Product; Cart includes every selected line and the aggregate total. Both flows include the greeting, quantity, price, variant details when present, and absolute Product links.
+
+**Prevention:** add or change WhatsApp order fields only in the shared builder, then browser-test both one-Product and multi-Product flows.
+
+## Removed shopper utility URL is requested
+
+**Symptom:** an old bookmark requests `/checkout`, `/wishlist`, `/login`, `/register`, or `/profile` even though those pages are no longer part of the storefront scope.
+
+**Resolved 2026-09-05:** the route implementations were removed. Next.js redirects Checkout to Cart and the Wishlist/customer URLs to All Products, so visitors re-enter the supported Product → WhatsApp flow without a 404.
+
 ## Product, Blog, or Gallery lists stay on skeletons and feel slow
 
 **Symptom:** The route shell appears, but actual cards wait for hydration and a later `/api/content/catalog`, `/api/content/blogs`, or `/api/content/galleries` request. Repeated dynamic requests also reread and revalidate the same content JSON.

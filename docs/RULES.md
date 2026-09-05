@@ -30,9 +30,11 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Dynamic routes must handle unknown IDs safely, normally through Next.js not-found behavior.
 - Products must reference an existing Category slug. Renaming a Category slug updates assigned Products atomically; Categories with assigned Products cannot be deleted.
 - Home catalog sections, all-products filtering, product detail routes, category cards, and sitemap entries read through the catalog repository rather than importing mutable runtime arrays.
-- Cart and Wishlist are explicitly browser-local conveniences. Stored records must remain bounded, validated, non-sensitive, and must never be described as reserved inventory or a completed order.
-- Checkout may prepare an itemized WhatsApp enquiry, but the UI must state that availability, shipping, and payment still require confirmation.
-- Customer login/registration controls must not imply success until a production identity backend exists.
+- Cart is an explicitly browser-local convenience. Stored records must remain bounded, validated, non-sensitive, and must never be described as reserved inventory or a completed order.
+- Product-card and Product-detail Buy Now actions must open WhatsApp with a greeting, title, quantity, price, selected variant details when present, and an absolute Product link. Cart must prepare the same details for every selected Product plus the aggregate total.
+- Product cards expose only two explicit action buttons: Buy Now and Add to Cart. The Buy Now label must remain text-only, without a WhatsApp icon or visible WhatsApp wording, while its action continues to open the prepared WhatsApp request. Do not add separate View, Wishlist, or WhatsApp-icon actions; the image/title may continue linking to Product detail.
+- The only shopper utility page is Cart. Wishlist, Checkout, customer login, registration, profile, and order-history pages are outside product scope; legacy URLs redirect to Cart or All Products.
+- WhatsApp requests must state that availability, shipping, final total, and payment still require GTBS confirmation.
 - Newsletter/contact actions must identify the actual delivery channel and surface configuration/provider failure instead of logging or claiming a false success.
 
 ## UI rules

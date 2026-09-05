@@ -6,7 +6,7 @@ import { createPageMetadata } from "@/lib/seo";
 export const metadata = createPageMetadata({
   title: "Terms & Conditions",
   description:
-    "Read the terms that govern use of the Gujarat Tract Book Store website and online purchases.",
+    "Read the terms that govern use of the Gujarat Tract Book Store website and WhatsApp-assisted purchases.",
   path: "/terms-and-conditions",
 });
 
@@ -30,17 +30,15 @@ const priceFactors = [
 ];
 
 const orderConditions = [
-  "You will receive an order confirmation via email or SMS.",
-  "Orders are processed after successful payment verification.",
-  "We reserve the right to cancel orders due to pricing errors, stock shortages, suspected fraud, or technical issues.",
+  "Buy Now and the Cart prepare a WhatsApp message that you review and send to GTBS.",
+  "A WhatsApp request becomes an accepted order only after GTBS confirms availability, delivery charges, final total, and payment instructions.",
+  "We may decline or cancel an order due to pricing errors, stock shortages, suspected fraud, or delivery limitations.",
 ];
 
-const paymentMethods = [
-  "UPI",
-  "Credit cards",
-  "Debit cards",
-  "Net banking",
-  "Digital wallets",
+const paymentConditions = [
+  "The website does not collect or process a payment.",
+  "GTBS provides the available payment method and instructions only after confirming the order in WhatsApp.",
+  "Never send a UPI PIN, card PIN, password, or banking credential through the website or WhatsApp.",
 ];
 
 const delayReasons = [
@@ -58,10 +56,10 @@ const returnConditions = [
   "Meet the eligibility requirements described in our Return Policy",
 ];
 
-const accountResponsibilities = [
-  "Keep your login credentials confidential.",
-  "Provide accurate information.",
-  "Notify us immediately of any unauthorized account activity.",
+const cartConditions = [
+  "The Cart is stored only in your current browser and is not a customer account.",
+  "Adding a Product to the Cart does not reserve stock or lock its price.",
+  "Review Product names, quantities, variants, and links before sending the prepared WhatsApp message.",
 ];
 
 const protectedContent = [
@@ -162,10 +160,10 @@ export default function TermsAndConditionsPage() {
           </h1>
           <p className="description mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
             The terms governing your use of Gujarat Tract Book Store and
-            purchases made through our online store.
+            purchases requested through WhatsApp.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
-            Effective date: August 29, 2026
+            Effective date: September 5, 2026
           </p>
         </div>
       </header>
@@ -174,8 +172,8 @@ export default function TermsAndConditionsPage() {
         <div className="description border-b border-gray-200 pb-8 text-sm leading-7 text-gray-600 sm:text-base sm:leading-8">
           <p>
             Welcome to Gujarat Tract Book Store. These Terms &amp; Conditions
-            govern your use of our website and the purchase of products through
-            our online store.
+            govern your use of our website and Product requests sent to GTBS
+            through WhatsApp.
           </p>
           <p className="mt-3 font-medium text-gray-800">
             By accessing or using our website, you agree to comply with these
@@ -197,14 +195,15 @@ export default function TermsAndConditionsPage() {
 
         <TermsSection number={2} title="Acceptance of Terms">
           <p>
-            By visiting our website, creating an account, placing an order, or
-            using any of our services, you acknowledge that you have read,
-            understood, and accepted these Terms &amp; Conditions.
+            By visiting our website, adding Products to the browser-local Cart,
+            sending a WhatsApp request, or using any of our services, you
+            acknowledge that you have read, understood, and accepted these Terms
+            &amp; Conditions.
           </p>
         </TermsSection>
 
         <TermsSection number={3} title="Eligibility">
-          <p>To place an order through our website, you must:</p>
+          <p>To request an order through WhatsApp, you must:</p>
           <BulletList items={eligibility} />
         </TermsSection>
 
@@ -223,12 +222,13 @@ export default function TermsAndConditionsPage() {
           </p>
           <BulletList items={priceFactors} />
           <p className="mt-4">
-            The final price will be displayed during checkout before payment.
+            GTBS confirms the final Product total and delivery charges in
+            WhatsApp before payment.
           </p>
         </TermsSection>
 
         <TermsSection number={6} title="Orders">
-          <p>After placing an order:</p>
+          <p>When requesting an order:</p>
           <BulletList items={orderConditions} />
           <p className="mt-4">
             If an order is cancelled after payment, the applicable refund will
@@ -238,13 +238,10 @@ export default function TermsAndConditionsPage() {
 
         <TermsSection number={7} title="Payments">
           <p>
-            We accept secure online payments through trusted payment providers.
-            Accepted payment methods may include:
+            Payment is arranged only after GTBS has reviewed and confirmed the
+            WhatsApp request:
           </p>
-          <BulletList items={paymentMethods} />
-          <p className="mt-4">
-            Gujarat Tract Book Store does not store your payment card details.
-          </p>
+          <BulletList items={paymentConditions} />
         </TermsSection>
 
         <TermsSection number={8} title="Shipping & Delivery">
@@ -272,13 +269,9 @@ export default function TermsAndConditionsPage() {
           </p>
         </TermsSection>
 
-        <TermsSection number={10} title="User Accounts">
-          <p>When creating an account, you agree to:</p>
-          <BulletList items={accountResponsibilities} />
-          <p className="mt-4">
-            You are responsible for all activities performed through your
-            account.
-          </p>
+        <TermsSection number={10} title="Browser-local Cart">
+          <p>The website does not provide customer accounts:</p>
+          <BulletList items={cartConditions} />
         </TermsSection>
 
         <TermsSection number={11} title="Intellectual Property">

@@ -23,19 +23,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/contact"), changeFrequency: "yearly", priority: 0.6 },
     {
       url: absoluteUrl("/privacy-policy"),
-      lastModified: new Date("2026-08-29"),
+      lastModified: new Date("2026-09-05"),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: absoluteUrl("/terms-and-conditions"),
-      lastModified: new Date("2026-08-29"),
+      lastModified: new Date("2026-09-05"),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: absoluteUrl("/shipping-and-delivery-policy"),
-      lastModified: new Date("2026-08-29"),
+      lastModified: new Date("2026-09-05"),
       changeFrequency: "yearly",
       priority: 0.4,
     },

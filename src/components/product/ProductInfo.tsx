@@ -2,16 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, ShoppingCart, Minus, Plus, Share2 } from "lucide-react";
+import { ListPlus, Minus, Plus, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
-import {
-  addCartItem,
-  toggleWishlistItem,
-  useWishlist,
-} from "@/lib/storefrontStorage";
+import { addCartItem } from "@/lib/storefrontStorage";
+import { createWhatsAppOrderUrl } from "@/lib/whatsappOrder";
 
 interface ProductInfoProps {
   product: Product;
@@ -19,7 +16,6 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const { language } = useLanguage();
-  const { items: wishlistItems } = useWishlist();
   const localizedProduct = localizeProduct(product, language);
   const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
   const variantGroups = usesStoredGujarati
@@ -33,10 +29,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     number[]
   >(() => variantGroups.map(() => 0));
   const [quantity, setQuantity] = useState(1);
-  const isWishlisted = wishlistItems.some(
-    (item) => item.productId === product.id,
-  );
-
   const productSnapshot = {
     productId: product.id,
     title: localizedProduct.title,
@@ -44,8 +36,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     image: product.image,
   };
 
-  const handleAddToCart = () => {
-    const variantSummary = variantGroups
+  const getVariantSummary = () =>
+    variantGroups
       .map((variant, index) =>
         variant.options[selectedVariantIndexes[index] ?? 0]
           ? `${variant.name}: ${variant.options[selectedVariantIndexes[index] ?? 0]}`
@@ -53,6 +45,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       )
       .filter(Boolean)
       .join(", ");
+
+  const handleAddToCart = () => {
+    const variantSummary = getVariantSummary();
     if (!addCartItem(productSnapshot, quantity, variantSummary)) {
       toast.error("Your browser could not save the cart. Check storage permissions.");
       return;
@@ -62,19 +57,18 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     );
   };
 
-  const handleWishlist = () => {
-    const result = toggleWishlistItem(productSnapshot);
-    if (!result.success) {
-      toast.error(
-        "Your browser could not save the wishlist. Check storage permissions.",
-      );
-      return;
-    }
-    toast.success(
-      result.isWishlisted
-        ? `Saved "${localizedProduct.title}" to your wishlist.`
-        : `Removed "${localizedProduct.title}" from your wishlist.`,
-    );
+  const handleBuyNow = () => {
+    const variantSummary = getVariantSummary();
+    const whatsappUrl = createWhatsAppOrderUrl([
+      {
+        title: localizedProduct.title,
+        quantity,
+        unitPrice: product.price,
+        productUrl: window.location.href,
+        ...(variantSummary ? { variantSummary } : {}),
+      },
+    ]);
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   const copyProductLink = async (url: string) => {
@@ -213,7 +207,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       )}
 
       {/* Quantity & CTA Buttons */}
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="mt-8 grid gap-3 sm:grid-cols-[128px_minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
         {/* Quantity Stepper */}
         <div className="flex h-12 w-32 items-center justify-between rounded-xl border border-gray-200 bg-gray-50/80 px-3">
           <button
@@ -235,29 +229,21 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           </button>
         </div>
 
-        {/* Add to Cart */}
         <button
           type="button"
           onClick={handleAddToCart}
-          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98]"
+          className="flex h-12 items-center justify-center gap-2 rounded-xl border border-orange-600 bg-white px-4 font-semibold text-orange-700 transition-colors hover:bg-orange-50 active:scale-[0.98]"
         >
-          <ShoppingCart size={18} />
+          <ListPlus size={19} />
           <span>Add to Cart</span>
         </button>
         <button
           type="button"
-          onClick={handleWishlist}
-          aria-pressed={isWishlisted}
-          className={`flex h-12 items-center justify-center gap-2 rounded-xl border px-5 font-semibold transition-colors ${
-            isWishlisted
-              ? "border-orange-600 bg-orange-50 text-orange-700"
-              : "border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:text-orange-700"
-          }`}
+          onClick={handleBuyNow}
+          className="flex h-12 items-center justify-center rounded-xl bg-gray-900 px-4 font-semibold text-white shadow-md transition-colors hover:bg-orange-600 active:scale-[0.98]"
+          aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
         >
-          <Heart size={18} className={isWishlisted ? "fill-current" : ""} />
-          <span className="sm:sr-only">
-            {isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          </span>
+          <span>Buy Now</span>
         </button>
       </div>
     </div>

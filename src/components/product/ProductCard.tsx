@@ -1,18 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import type { ImageProps } from "next/image";
-import { Heart, MessageCircle, ShoppingBag, Eye } from "lucide-react";
+import Link from "next/link";
+import { ListPlus } from "lucide-react";
 import { toast } from "sonner";
-import { Product } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
-import {
-  addCartItem,
-  toggleWishlistItem,
-  useWishlist,
-} from "@/lib/storefrontStorage";
+import { addCartItem } from "@/lib/storefrontStorage";
+import { createWhatsAppOrderUrl } from "@/lib/whatsappOrder";
+import type { Product } from "@/types/product";
 
 interface ProductCardProps {
   product:
@@ -31,7 +28,6 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { language } = useLanguage();
-  const { items: wishlistItems } = useWishlist();
   const localizedProduct = localizeProduct(product as Product, language);
   const usesStoredGujarati =
     language === "gu" && "gujarati" in product && Boolean(product.gujarati);
@@ -59,13 +55,10 @@ export default function ProductCard({ product }: ProductCardProps) {
             : coverSrc.default.src
           : "/images/products/book-placeholder.svg",
   };
-  const isWishlisted = wishlistItems.some(
-    (item) => item.productId === storageProduct.productId,
-  );
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleAddToCart = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (addCartItem(storageProduct)) {
       toast.success(`Added "${localizedProduct.title}" to your cart.`);
     } else {
@@ -73,65 +66,35 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const result = toggleWishlistItem(storageProduct);
-    if (!result.success) {
-      toast.error(
-        "Your browser could not save the wishlist. Check storage permissions.",
-      );
-      return;
-    }
-    toast.success(
-      result.isWishlisted
-        ? `Saved "${localizedProduct.title}" to your wishlist.`
-        : `Removed "${localizedProduct.title}" from your wishlist.`,
-    );
-  };
-
-  const handleWhatsApp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleBuyNow = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     const productUrl = new URL(productHref, window.location.origin).toString();
-    const message = encodeURIComponent(
-      `Hello GTBS Book Store, I am interested in "${localizedProduct.title}". Product link: ${productUrl}`,
-    );
-    window.open(
-      `https://wa.me/917490028867?text=${message}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    const whatsappUrl = createWhatsAppOrderUrl([
+      {
+        title: localizedProduct.title,
+        quantity: 1,
+        unitPrice: product.price,
+        productUrl,
+      },
+    ]);
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 p-1 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">
-      {/* Cover Image Container */}
-      <div className="relative aspect-[4/4] w-full overflow-hidden rounded-xl bg-gray-50">
-        {/* Badge */}
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-1 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/10">
+      <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-50">
         {product.badge && (
-          <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-orange-600 px-2.5 py-1 text-xs description tracking-wide font-semibold text-white shadow-sm">
+          <span className="description absolute left-2.5 top-2.5 z-10 rounded-full bg-orange-600 px-2.5 py-1 text-xs font-semibold tracking-wide text-white shadow-sm">
             {product.badge}
           </span>
         )}
 
-        <button
-          type="button"
-          onClick={handleWishlist}
-          aria-label={`${isWishlisted ? "Remove" : "Add"} ${localizedProduct.title} ${isWishlisted ? "from" : "to"} wishlist`}
-          aria-pressed={isWishlisted}
-          className={`absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-colors ${
-            isWishlisted
-              ? "bg-orange-600 text-white"
-              : "bg-white/95 text-gray-600 hover:text-orange-600"
-          }`}
+        <Link
+          href={productHref}
+          className="relative block h-full w-full"
+          aria-label={`View details for ${localizedProduct.title}`}
         >
-          <Heart size={17} className={isWishlisted ? "fill-current" : ""} />
-        </button>
-
-        {/* Link / Image */}
-        <Link href={productHref} className="relative block h-full w-full">
           {coverSrc && (
             <Image
               src={coverSrc}
@@ -144,15 +107,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-      {/* Product Metadata */}
       <div className="flex flex-1 flex-col p-3.5">
-        <span className="text-[13px] description tracking-wide font-semibold text-orange-600">
+        <span className="description text-[13px] font-semibold tracking-wide text-orange-600">
           {product.category || "Products"}
         </span>
 
         <Link href={productHref}>
           <h3
-            className={`line-clamp-2 mt-1 text-md title font-semibold text-gray-900 transition-colors hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`}
+            className={`title mt-1 line-clamp-2 text-md font-semibold text-gray-900 transition-colors hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`}
             translate={usesStoredGujarati ? "no" : undefined}
             lang={usesStoredGujarati ? "gu" : undefined}
           >
@@ -160,44 +122,30 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
         </Link>
 
-        {/* Price & Product Actions */}
-        <div className="mt-auto flex items-center justify-between pt-3.5">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-base font-bold text-gray-900">
-              ₹{product.price.toFixed(2)}
-            </span>
-          </div>
+        <p className="mt-auto pt-4 text-base font-bold text-gray-900">
+          &#8377;{product.price.toFixed(2)}
+        </p>
 
-          <div className="flex items-center gap-1.5">
-            <Link
-              href={productHref}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-900 hover:text-white"
-              aria-label={`View details for ${localizedProduct.title}`}
-              title="View details"
-            >
-              <Eye size={15} />
-            </Link>
-            <button
-              type="button"
-              onClick={handleWhatsApp}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors hover:bg-emerald-600 hover:text-white"
-              aria-label={`Ask about ${localizedProduct.title} on WhatsApp`}
-              title="Ask on WhatsApp"
-            >
-              <MessageCircle size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-colors hover:bg-orange-600 hover:text-white"
-              aria-label={`Add ${localizedProduct.title} to cart`}
-              title="Add to cart"
-            >
-              <ShoppingBag size={15} />
-            </button>
-          </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="flex min-h-10 items-center justify-center rounded-xl bg-gray-900 px-2 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-orange-600 sm:text-sm"
+            aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
+          >
+            <span>Buy Now</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-orange-600 bg-white px-2 py-2.5 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-50 sm:text-sm"
+            aria-label={`Add ${localizedProduct.title} to cart`}
+          >
+            <ListPlus size={17} />
+            <span>Add to Cart</span>
+          </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

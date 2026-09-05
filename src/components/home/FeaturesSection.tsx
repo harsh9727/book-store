@@ -1,4 +1,4 @@
-import { BookOpen, Truck, ShoppingCart, WalletCards } from "lucide-react";
+import { BookOpen, MessageCircle, Truck, WalletCards } from "lucide-react";
 
 const features = [
   {
@@ -14,10 +14,10 @@ const features = [
       "Enjoy quick and reliable delivery across India with secure packaging to keep every order safe.",
   },
   {
-    icon: ShoppingCart,
-    title: "Secure Checkout",
+    icon: MessageCircle,
+    title: "Order on WhatsApp",
     description:
-      "Shop with confidence using trusted payment methods protected by advanced security.",
+      "Send a product or your complete cart to GTBS on WhatsApp for availability, delivery, and payment confirmation.",
   },
   {
     icon: WalletCards,

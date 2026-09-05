@@ -45,7 +45,7 @@ Product and Category records flow through `contentRepository.ts`. The home catal
 
 Catalog, blog, gallery, and testimonial filter/search handlers reset pagination within the same user event, avoiding state-mirroring effects. Home Product and Testimonial carousels use native horizontal overflow plus CSS scroll snap and button-driven `scrollBy`, avoiding a dedicated carousel runtime and autoplay work.
 
-`storefrontStorage.ts` owns browser-local Cart and Wishlist records. It validates and bounds data on every read, exposes React snapshots with `useSyncExternalStore`, notifies same-tab consumers with a custom event, and listens for browser `storage` events across tabs. Cart lines include only Product display data, selected variants, price, and bounded quantity; no secrets or payment data are stored. Checkout reads that cart and builds an itemized WhatsApp enquiry. The receiving business must still confirm availability, shipping, and payment, and no order is persisted server-side.
+`storefrontStorage.ts` owns browser-local Cart records. It validates and bounds data on every read, exposes React snapshots with `useSyncExternalStore`, notifies same-tab consumers with a custom event, and listens for browser `storage` events across tabs. Cart lines include only Product display data, selected variants, price, and bounded quantity; no secrets or payment data are stored. `whatsappOrder.ts` is the single message builder used by Product-card Buy Now, Product-detail Buy Now, and the multi-Product Cart. Messages contain a greeting, Product title/link, quantity, price, optional variant details, and an aggregate total when applicable. The receiving business must still confirm availability, shipping, and payment, and no order is persisted server-side.
 
 ## Catalog and editorial content flow
 
@@ -122,7 +122,7 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 
 - **Status:** Superseded for catalog runtime reads; retained for seeds
 - **Reason:** Existing Product/Category data must survive the transition to dynamic administration without forcing a one-off migration command.
-- **Consequence:** Missing legacy catalog keys hydrate from committed seeds, while persisted arrays become authoritative. Analytics and orders remain non-persistent; Cart/Wishlist data exists only in the visitor's browser.
+- **Consequence:** Missing legacy catalog keys hydrate from committed seeds, while persisted arrays become authoritative. Analytics and orders remain non-persistent; Cart data exists only in the visitor's browser.
 
 ### ADR-003: Environment-backed single admin
 

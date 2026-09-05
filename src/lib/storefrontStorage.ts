@@ -3,9 +3,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 
 const CART_STORAGE_KEY = "gtbs-cart-v1";
-const WISHLIST_STORAGE_KEY = "gtbs-wishlist-v1";
 const CART_EVENT = "gtbs-cart-change";
-const WISHLIST_EVENT = "gtbs-wishlist-change";
 const EMPTY_SNAPSHOT = "[]";
 
 export interface StorefrontProductSnapshot {
@@ -20,8 +18,6 @@ export interface CartItem extends StorefrontProductSnapshot {
   quantity: number;
   variantSummary?: string;
 }
-
-export type WishlistItem = StorefrontProductSnapshot;
 
 function isSafeImageReference(value: unknown): value is string {
   return (
@@ -76,17 +72,6 @@ function parseCart(raw: string): CartItem[] {
   }
 }
 
-function parseWishlist(raw: string): WishlistItem[] {
-  try {
-    const value: unknown = JSON.parse(raw);
-    return Array.isArray(value)
-      ? value.slice(0, 100).filter(isProductSnapshot)
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 function createSubscription(storageKey: string, eventName: string) {
   return (callback: () => void) => {
     const handleStorage = (event: StorageEvent) => {
@@ -113,12 +98,7 @@ function createSnapshotReader(storageKey: string) {
 }
 
 const subscribeToCart = createSubscription(CART_STORAGE_KEY, CART_EVENT);
-const subscribeToWishlist = createSubscription(
-  WISHLIST_STORAGE_KEY,
-  WISHLIST_EVENT,
-);
 const getCartSnapshot = createSnapshotReader(CART_STORAGE_KEY);
-const getWishlistSnapshot = createSnapshotReader(WISHLIST_STORAGE_KEY);
 const getServerSnapshot = () => EMPTY_SNAPSHOT;
 
 function writeSnapshot(storageKey: string, eventName: string, value: unknown) {
@@ -179,20 +159,6 @@ export function clearCart() {
   return writeSnapshot(CART_STORAGE_KEY, CART_EVENT, []);
 }
 
-export function toggleWishlistItem(product: StorefrontProductSnapshot) {
-  const wishlist = parseWishlist(getWishlistSnapshot());
-  const exists = wishlist.some((item) => item.productId === product.productId);
-  const nextWishlist = exists
-    ? wishlist.filter((item) => item.productId !== product.productId)
-    : [...wishlist, product];
-  const success = writeSnapshot(
-    WISHLIST_STORAGE_KEY,
-    WISHLIST_EVENT,
-    nextWishlist,
-  );
-  return { success, isWishlisted: success ? !exists : exists };
-}
-
 export function useCart() {
   const snapshot = useSyncExternalStore(
     subscribeToCart,
@@ -207,14 +173,4 @@ export function useCart() {
   );
 
   return { items, itemCount, subtotal };
-}
-
-export function useWishlist() {
-  const snapshot = useSyncExternalStore(
-    subscribeToWishlist,
-    getWishlistSnapshot,
-    getServerSnapshot,
-  );
-  const items = useMemo(() => parseWishlist(snapshot), [snapshot]);
-  return { items, itemCount: items.length };
 }

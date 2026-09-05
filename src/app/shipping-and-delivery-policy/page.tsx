@@ -31,7 +31,7 @@ const shippingFactors = [
 
 const freeShippingDetails = [
   "Free shipping may be available on eligible orders that meet the minimum purchase value.",
-  "If applicable, the free shipping offer will be automatically applied during checkout.",
+  "GTBS will confirm any applicable free-shipping offer in WhatsApp before accepting the order.",
 ];
 
 const failedDeliveryReasons = [
@@ -56,7 +56,7 @@ const delayReasons = [
 ];
 
 const addressResponsibilities = [
-  "Customers are responsible for providing accurate shipping details at checkout.",
+  "Customers are responsible for providing accurate shipping details during the WhatsApp order confirmation.",
   "Gujarat Tract Book Store is not responsible for delays or failed deliveries resulting from incorrect or incomplete addresses or contact information.",
   "If you notice an error after placing your order, please contact us immediately. We will do our best to update the information before the order is dispatched.",
 ];
@@ -141,7 +141,7 @@ export default function ShippingAndDeliveryPolicyPage() {
             Store orders.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
-            Effective date: August 29, 2026
+            Effective date: September 5, 2026
           </p>
         </div>
       </header>
@@ -215,7 +215,7 @@ export default function ShippingAndDeliveryPolicyPage() {
         </ShippingSection>
 
         <ShippingSection number={4} title="Shipping Charges">
-          <p>Shipping charges are calculated during checkout based on:</p>
+          <p>Shipping charges are confirmed in WhatsApp based on:</p>
           <BulletList items={shippingFactors} />
           <p className="mt-4">
             Any applicable shipping charges will be clearly displayed before you

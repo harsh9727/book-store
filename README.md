@@ -2,6 +2,8 @@
 
 Responsive e-commerce storefront and administration workspace for Gujarat Tract Book Store, built with Next.js, React, TypeScript, and Tailwind CSS.
 
+Product sales are WhatsApp-assisted: Buy Now sends one Product with quantity/details/link, while the browser-local Cart sends multiple selected Products in one itemized message. Wishlist, Checkout, and customer-account pages are intentionally outside the storefront scope.
+
 ## Start locally
 
 ```bash

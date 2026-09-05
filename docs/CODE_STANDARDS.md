@@ -40,6 +40,7 @@
 - Avoid abstractions that do not clarify reuse, domain, or server/client boundaries.
 - Avoid one-use components that only forward fixed props into a shared component; compose the shared component at the page or feature boundary unless the wrapper owns meaningful behavior or domain semantics.
 - Export only declarations consumed outside their module. Keep implementation-only props, helper types, constants, and schemas module-private.
+- Build every Product/Card/Cart WhatsApp sale URL through `src/lib/whatsappOrder.ts`; do not duplicate greeting, quantity, variant, price, or Product-link formatting inside components.
 
 ## Styling
 

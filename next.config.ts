@@ -40,9 +40,29 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/checkout",
+        destination: "/cart",
+        permanent: true,
+      },
+      {
+        source: "/wishlist",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/login",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/register",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
         source: "/profile",
-        destination: "/login",
-        permanent: false,
+        destination: "/allproducts",
+        permanent: true,
       },
     ];
   },

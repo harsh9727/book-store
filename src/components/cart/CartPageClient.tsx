@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   clearCart,
@@ -10,6 +16,7 @@ import {
   updateCartItemQuantity,
   useCart,
 } from "@/lib/storefrontStorage";
+import { createWhatsAppOrderUrl } from "@/lib/whatsappOrder";
 
 const formatPrice = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -24,6 +31,24 @@ export default function CartPageClient() {
     if (!change()) {
       toast.error("Your browser could not update the cart. Check storage permissions.");
     }
+  };
+  const handleBuyCart = () => {
+    const whatsappUrl = createWhatsAppOrderUrl(
+      items.map((item) => ({
+        title: item.title,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        productUrl: new URL(
+          `/product/${encodeURIComponent(item.productId)}`,
+          window.location.origin,
+        ).toString(),
+        ...(item.variantSummary
+          ? { variantSummary: item.variantSummary }
+          : {}),
+      })),
+      subtotal,
+    );
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -167,13 +192,14 @@ export default function CartPageClient() {
               <p className="mt-4 text-xs leading-5 text-gray-600">
                 Shipping and availability are confirmed by the bookstore before payment.
               </p>
-              <Link
-                href="/checkout"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700"
+              <button
+                type="button"
+                onClick={handleBuyCart}
+                className="mt-5 flex w-full items-center justify-center rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700"
+                aria-label="Buy all selected products on WhatsApp"
               >
-                Continue to order
-                <ArrowRight size={16} />
-              </Link>
+                Buy Now
+              </button>
               <Link
                 href="/allproducts"
                 className="mt-3 block text-center text-sm font-semibold text-orange-700 hover:underline"

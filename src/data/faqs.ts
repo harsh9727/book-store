@@ -7,7 +7,7 @@ export const homeFaqs: FaqItem[] = [
   {
     question: "How long does shipping take?",
     answer:
-      "Most domestic orders are delivered within 3–7 business days depending on your location. Express delivery options are also available at checkout.",
+      "Most domestic orders are delivered within 3–7 business days depending on your location. GTBS confirms the available delivery options in WhatsApp before accepting the order.",
   },
   {
     question: "Do you offer international shipping?",
@@ -150,7 +150,7 @@ export const shopFaqs: FaqItem[] = [
   {
     question: "How do I know if a book is in stock?",
     answer:
-      "Each book page displays real-time inventory status. If a title is temporarily out of stock, you can sign up for instant restock alerts.",
+      "Use Buy Now or send your Cart on WhatsApp. GTBS confirms current availability before accepting the order.",
   },
   {
     question: "Do you offer discounts on bundle purchases?",
@@ -160,6 +160,6 @@ export const shopFaqs: FaqItem[] = [
   {
     question: "What payment methods are supported?",
     answer:
-      "We accept all major credit/debit cards, Net Banking, UPI (Google Pay, PhonePe, Paytm), and Cash on Delivery for eligible locations.",
+      "Payment options are confirmed by GTBS on WhatsApp after product availability, delivery location, and the final total are verified. The website itself does not collect payment.",
   },
 ];

@@ -4,7 +4,7 @@
 
 GTBS Book Store is a responsive e-commerce website for Gujarat Tract Book Store. It presents Christian books, Bibles, devotionals, magazines, gifts, store information, editorial content, and a protected administration area.
 
-The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial/team repository. Cart and wishlist state is functional and versioned in the visitor's browser; checkout prepares an itemized WhatsApp order enquiry. Customer identity, server-side carts, payment capture, and persistent orders are not implemented.
+The repository currently implements a frontend-led storefront with a dynamic, file-backed product/category/blog/gallery/testimonial/team repository. Product sales are WhatsApp-assisted: Buy Now sends one Product immediately, while the browser-local Cart collects multiple Products and sends one itemized request. There is intentionally no Wishlist, Checkout, customer-account, payment-capture, or persistent-order page.
 
 ## Technology stack
 
@@ -23,8 +23,8 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Storefront | `/`, `/allproducts`, `/product/[id]`; legacy `/shop` and `/product` redirect to `/allproducts`                                                    | Dynamic Product/Category catalog, Magazines, and homepage Testimonials served by the content repository                                                                                                             |
 | Content    | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact`                                                                                     | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs                                                                                                                  |
-| Shopping   | `/cart`, `/wishlist`, `/checkout`                                                                                                                 | Browser-local cart/wishlist with quantity controls and an itemized WhatsApp checkout handoff; no order/payment backend                                                                                               |
-| Customer   | `/login`, `/register`; `/profile` redirects to `/login`                                                                                           | Explicitly unavailable account UI with support links; no form implies that an identity was created                                                                                                                   |
+| Shopping   | `/cart`                                                                                                                                           | Browser-local multi-Product Cart with quantity controls and a direct itemized WhatsApp handoff                                                                                                                        |
+| Removed commerce aliases | `/checkout`, `/wishlist`, `/login`, `/register`, `/profile`                                                                                  | No page implementation; old URLs redirect to Cart or All Products                                                                                                                                                    |
 | Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
 | Admin      | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected dashboard, catalog, and content workspaces share one responsive sidebar/header; Products, Blogs, Gallery, Testimonials, and Team use list-first management while Categories use a dedicated inline module |
 
@@ -38,7 +38,7 @@ Public Product, Blog, and Gallery index routes read their initial repository dat
 
 ## Data
 
-Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static. Cart and wishlist use bounded, validated, non-sensitive `localStorage` records and intentionally do not synchronize across devices.
+Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static. Cart uses bounded, validated, non-sensitive `localStorage` records and intentionally does not synchronize across devices.
 
 ## Local setup
 
@@ -96,9 +96,9 @@ npm run build
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
 - Password recovery prepares a support email; it does not issue an automated reset token.
-- Cart and wishlist are device-local browser state; they are not authenticated, inventory-reserved, server-validated, or synchronized across devices.
-- Checkout prepares a WhatsApp enquiry only. It does not confirm shipping, reserve stock, charge a payment method, or create a persistent order.
-- Customer sign-in and registration are intentionally unavailable until an identity backend is implemented.
+- Cart is device-local browser state; it is not authenticated, inventory-reserved, server-validated, or synchronized across devices.
+- Buy Now and Cart prepare WhatsApp enquiries only. They do not confirm shipping, reserve stock, charge a payment method, or create a persistent order.
+- Wishlist, Checkout, customer sign-in, registration, and profile pages are intentionally absent from the product scope.
 - Contact delivery depends on browser-side EmailJS configuration/provider availability and still needs deployment-level allowed-origin, quota, and abuse controls.
 - A real HTTPS `NEXT_PUBLIC_SITE_URL` must be set before deployment; otherwise canonical and social metadata fall back to localhost and production admin auth fails closed.
 - Windows sandbox child-process restrictions can block build/test workers; use the documented direct in-process test fallback for diagnosis and require an exit-0 production build before release.

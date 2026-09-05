@@ -17,18 +17,16 @@ const informationGroups = [
       "Full name",
       "Email address",
       "Phone number",
-      "Billing address",
       "Shipping address",
-      "Account login information",
     ],
   },
   {
-    title: "Order information",
+    title: "Browser-local Cart information",
     items: [
-      "Products purchased",
-      "Order history",
-      "Payment status",
-      "Delivery details",
+      "Selected Products",
+      "Selected quantities and variants",
+      "Displayed prices",
+      "Product links",
     ],
   },
   {
@@ -46,8 +44,7 @@ const informationGroups = [
 ];
 
 const uses = [
-  "Process and deliver your orders.",
-  "Create and manage your customer account.",
+  "Respond to order requests that you choose to send through WhatsApp.",
   "Provide customer support.",
   "Respond to your inquiries and requests.",
   "Send order confirmations and shipping updates.",
@@ -58,8 +55,9 @@ const uses = [
 ];
 
 const sharingPartners = [
+  "WhatsApp/Meta when you choose Buy Now or send your Cart",
+  "EmailJS when you submit the Contact form",
   "Delivery and courier partners",
-  "Payment gateway providers",
   "Website hosting and technology providers",
   "Government authorities when required by law",
 ];
@@ -67,7 +65,7 @@ const sharingPartners = [
 const rights = [
   "Access your personal information.",
   "Update or correct inaccurate information.",
-  "Request deletion of your account, subject to legal obligations.",
+  "Request deletion of inquiry information, subject to legal obligations.",
   "Withdraw consent for marketing communications.",
   "Request information regarding the personal data we hold about you.",
 ];
@@ -82,7 +80,7 @@ const marketingContent = [
 
 const retentionReasons = [
   "Complete your orders.",
-  "Maintain your account.",
+  "Respond to your inquiries.",
   "Comply with legal and tax obligations.",
   "Resolve disputes.",
   "Enforce our agreements.",
@@ -151,7 +149,7 @@ export default function PrivacyPolicyPage() {
             your information.
           </p>
           <p className="description mt-3 text-xs font-medium text-gray-500">
-            Effective date: August 30, 2026
+            Effective date: September 5, 2026
           </p>
         </div>
       </header>
@@ -162,7 +160,8 @@ export default function PrivacyPolicyPage() {
             At Gujarat Tract Book Store, we value your privacy and are committed
             to protecting your personal information. This Privacy Policy
             explains how we collect, use, store, and safeguard your information
-            when you visit our website, create an account, or make a purchase.
+            when you visit our website, submit the Contact form, or choose to
+            send a Product request through WhatsApp.
           </p>
           <p className="mt-3 font-medium text-gray-800">
             By using our website, you agree to the practices described in this
@@ -192,10 +191,10 @@ export default function PrivacyPolicyPage() {
 
         <PolicySection number={3} title="Payment Information">
           <p>
-            We do not store your debit card, credit card, UPI PIN, or banking
-            credentials. All payments are securely processed through trusted
-            third-party payment gateways that follow industry-standard security
-            practices.
+            This website does not collect or process payments. GTBS confirms
+            payment options only after reviewing your WhatsApp request. Never
+            send a UPI PIN, card PIN, password, or banking credential through
+            the website or WhatsApp.
           </p>
         </PolicySection>
 
@@ -215,6 +214,10 @@ export default function PrivacyPolicyPage() {
             The storefront does not currently use analytics, advertising, or
             personalization cookies. Disabling cookies may prevent admin login
             or Gujarati translation from working correctly.
+          </p>
+          <p className="mt-3">
+            The public Cart is stored in your browser&apos;s local storage, not
+            in a customer account or server-side order database.
           </p>
         </PolicySection>
 
@@ -266,11 +269,10 @@ export default function PrivacyPolicyPage() {
         <PolicySection number={9} title="Third-Party Services">
           <p>
             Our website may contain links to third-party websites or use
-            third-party services such as payment processors, analytics
-            providers, or shipping partners. We are not responsible for the
-            privacy practices or content of third-party websites. We encourage
-            you to review their privacy policies before sharing personal
-            information.
+            third-party services such as WhatsApp, EmailJS, image hosting, or
+            shipping partners. We are not responsible for the privacy practices
+            or content of third-party websites. We encourage you to review their
+            privacy policies before sharing personal information.
           </p>
         </PolicySection>
 
