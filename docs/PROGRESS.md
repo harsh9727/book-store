@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 35 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 36 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,22 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-05 - Visible Magazine empty state
+
+- Outcome: kept the admin-only Magazine section visible when its Category has no Products and matched the referenced Trending-section treatment: left-aligned heading/description, desktop View All action, dashed centered empty message, and mobile View All action. No placeholder Magazine card or fallback image was restored.
+- Main files/areas: homepage Magazine presentation, site-integrity regression, project overview, architecture, storefront rules, troubleshooting, and progress documentation.
+- Data/API/security impact: none; Product selection remains restricted to the exact `magazines` Category.
+- Verification and exact result: focused ESLint passed for the Magazine component and updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 7/7 and assert both the absence of static Magazine fallbacks and presence of the visible empty message; the approved `pnpm build` compiled in 1.843 seconds, completed TypeScript in 6.5 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the empty panel remains until an admin assigns at least one Product to the `magazines` Category.
+
+### 2026-09-05 - Admin-only Magazine section data
+
+- Outcome: removed all three static Magazine cards and their fallback cover/content from the homepage Magazine component. Homepage selection now accepts only Products assigned to the exact `magazines` Category, shows the first three using their saved localized title, description, image, price, badge, and Product link, and hides the section when the Category is empty. Renamed the fresh-catalog seed label to `Magazines` and added the same empty Category to the current local admin catalog so future admin-created Magazine Products can be assigned immediately.
+- Main files/areas: homepage Magazine component/composition, Category seed and current local catalog, storefront architecture/rules/troubleshooting, project overview, and progress documentation.
+- Data/API/security impact: the ignored local content store gained one Category record only; no Product was created. Product/category APIs, validation, auth, and persistence boundaries are unchanged.
+- Verification and exact result: focused ESLint passed for the homepage, Magazine component, Category seed, and updated integrity test; `pnpm exec tsc --noEmit` passed; direct single-process site-integrity tests passed 7/7, including the canonical Magazine-category/no-static-fallback regression; content-management tests passed 22/22; the approved `pnpm build` compiled in 3.3 seconds, completed TypeScript in 6.4 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: existing deployed catalogs that do not already contain the `magazines` slug must create it once through Admin Categories; Magazine products remain admin-managed and the section intentionally stays absent until at least one is assigned.
 
 ### 2026-09-05 - Consistent Add to Cart icon
 

@@ -42,10 +42,7 @@ export default async function Home() {
       product.category === "accessories" || hasBadge(product, "accessor"),
   );
   const magazineProducts = products.filter(
-    (product) =>
-      product.category === "magazines" ||
-      hasBadge(product, "magazine") ||
-      product.title.toLowerCase().includes("magazine"),
+    (product) => product.category === "magazines",
   );
 
   return (

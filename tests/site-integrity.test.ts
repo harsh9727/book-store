@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { categories } from "../src/data/categories.ts";
 import {
   addCartItem,
   markCartAsViewed,
@@ -78,6 +79,32 @@ test("client modules do not reference server-only secrets", () => {
   }
 
   assert.deepEqual(exposed, []);
+});
+
+test("homepage Magazines use only the canonical admin Product category", () => {
+  const homeSource = readFileSync(path.join(root, "src", "app", "page.tsx"), "utf8");
+  const magazineSource = readFileSync(
+    path.join(root, "src", "components", "home", "Magazines.tsx"),
+    "utf8",
+  );
+
+  assert.equal(
+    categories.some(
+      (category) =>
+        category.slug === "magazines" && category.name === "Magazines",
+    ),
+    true,
+  );
+  assert.match(homeSource, /product\.category === "magazines"/);
+  assert.doesNotMatch(
+    magazineSource,
+    /fallbackMagazines|DefaultMagazineCover|Faith & Life Magazine|Christian Living Digest|The Good News Monthly/,
+  );
+  assert.doesNotMatch(magazineSource, /return null/);
+  assert.match(
+    magazineSource,
+    /No products are currently assigned to this collection\./,
+  );
 });
 
 test("cart notification is unread after adding and acknowledged after viewing", () => {

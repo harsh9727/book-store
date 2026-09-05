@@ -23,7 +23,7 @@ export const categories: Category[] = [
   },
   {
     id: "magazines",
-    name: "Magazines & Periodicals",
+    name: "Magazines",
     slug: "magazines",
     description: "Christian magazines, faith periodicals, and monthly journals",
   },

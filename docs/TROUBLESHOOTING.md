@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Homepage shows fake Magazines that are not in Admin Products
+
+**Symptom:** the homepage displays Faith & Life Magazine, Christian Living Digest, or The Good News Monthly even though those Products do not exist in the admin catalog.
+
+**Cause resolved 2026-09-05:** `Magazines.tsx` rendered a three-item static fallback whenever no dynamic Magazine Products were found; homepage selection also accepted title/badge guesses instead of only the Category relationship.
+
+**Solution:** the static records and cover fallback were removed. The homepage now selects only Products assigned to the `magazines` Category; when no matching Product exists, it keeps the section visible and renders the standard dashed empty-collection panel.
+
+**Prevention:** create the `magazines` Category through Admin Categories when it is missing, then assign Magazine Products to it; do not add hardcoded Product fallbacks or title/badge matching to the homepage section.
+
 ## Header Cart badge returns after leaving the Cart page
 
 **Symptom:** the orange Cart count remains visible, or reappears on another page, even after the shopper has opened `/cart` and reviewed the current items.
