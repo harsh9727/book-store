@@ -1,10 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import type {
-  TranslationKey,
-  TranslationParams,
-} from "@/lib/storefrontI18n";
+import type { TranslationKey, TranslationParams } from "@/lib/storefrontI18n";
 
 export default function StorefrontText({
   translationKey,

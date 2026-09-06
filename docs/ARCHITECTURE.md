@@ -19,18 +19,18 @@ Browser
 
 ## Directory responsibilities
 
-| Path                   | Responsibility                                                                                     |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `src/app/`             | Routes, layouts, metadata, pages, and route handlers                                               |
-| `src/components/`      | Reusable UI organized by feature                                                                   |
-| `src/contexts/`        | Cross-tree client providers                                                                        |
-| `src/data/`            | Typed first-run/backward-compatible seeds and remaining static content                             |
-| `src/lib/`             | Utilities, SEO, constants, and auth                                                                |
-| `src/types/`           | Shared domain types                                                                                |
-| `public/images/`       | Static image assets                                                                                |
-| `storage/content.json` | Ignored runtime product/category/blog/gallery/testimonial/team metadata, created on first mutation |
-| `storage/admin-credentials.json` | Ignored atomic scrypt-hash/session-version override created by a successful password reset |
-| `docs/`                | Maintained project knowledge                                                                       |
+| Path                             | Responsibility                                                                                     |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/app/`                       | Routes, layouts, metadata, pages, and route handlers                                               |
+| `src/components/`                | Reusable UI organized by feature                                                                   |
+| `src/contexts/`                  | Cross-tree client providers                                                                        |
+| `src/data/`                      | Typed first-run/backward-compatible seeds and remaining static content                             |
+| `src/lib/`                       | Utilities, SEO, constants, and auth                                                                |
+| `src/types/`                     | Shared domain types                                                                                |
+| `public/images/`                 | Static image assets                                                                                |
+| `storage/content.json`           | Ignored runtime product/category/blog/gallery/testimonial/team metadata, created on first mutation |
+| `storage/admin-credentials.json` | Ignored atomic scrypt-hash/session-version override created by a successful password reset         |
+| `docs/`                          | Maintained project knowledge                                                                       |
 
 ## Rendering boundaries
 

@@ -47,7 +47,9 @@ const Faq = ({
           {resolvedTitle}
         </h2>
         {resolvedSubtitle && (
-          <p className="description mt-1.5 text-sm text-gray-600">{resolvedSubtitle}</p>
+          <p className="description mt-1.5 text-sm text-gray-600">
+            {resolvedSubtitle}
+          </p>
         )}
       </div>
 

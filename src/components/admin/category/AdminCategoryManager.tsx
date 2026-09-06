@@ -34,8 +34,7 @@ export default function AdminCategoryManager({
 }: Props) {
   const [items, setItems] = useState(initialItems);
   const [editing, setEditing] = useState<Category | null>(null);
-  const [formLanguage, setFormLanguage] =
-    useState<AdminContentLanguage>("en");
+  const [formLanguage, setFormLanguage] = useState<AdminContentLanguage>("en");
   const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -44,8 +43,7 @@ export default function AdminCategoryManager({
       new Map(
         items.map((item) => [
           item.slug,
-          products.filter((product) => product.category === item.slug)
-            .length,
+          products.filter((product) => product.category === item.slug).length,
         ]),
       ),
     [items, products],
@@ -183,10 +181,7 @@ export default function AdminCategoryManager({
             />
           </label>
         </div>
-        <div
-          className={formLanguage === "gu" ? "block" : "hidden"}
-          lang="gu"
-        >
+        <div className={formLanguage === "gu" ? "block" : "hidden"} lang="gu">
           <label className="block text-sm font-semibold">
             Gujarati category name
             <input
@@ -253,7 +248,10 @@ export default function AdminCategoryManager({
                   <td className="px-5 py-4">
                     <strong>{item.name}</strong>
                     {item.gujarati?.name ? (
-                      <span className="mt-0.5 block text-xs text-slate-500" lang="gu">
+                      <span
+                        className="mt-0.5 block text-xs text-slate-500"
+                        lang="gu"
+                      >
                         {item.gujarati.name}
                       </span>
                     ) : null}

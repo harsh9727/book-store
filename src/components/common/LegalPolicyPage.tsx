@@ -37,10 +37,7 @@ export default function LegalPolicyPage({ policy }: { policy: PolicyName }) {
     <div className="bg-white">
       <div className="container mx-auto max-w-4xl px-4 pt-8 lg:px-6">
         <Breadcrumb
-          items={[
-            { label: t("nav.home"), href: "/" },
-            { label: title },
-          ]}
+          items={[{ label: t("nav.home"), href: "/" }, { label: title }]}
           className="mb-0"
         />
       </div>

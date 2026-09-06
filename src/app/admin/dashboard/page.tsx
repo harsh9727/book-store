@@ -69,7 +69,9 @@ export default async function AdminDashboardPage() {
   const populatedCategoryCount = categoryProductCounts.filter(
     (category) => category.productCount > 0,
   ).length;
-  const knownCategorySlugs = new Set(categories.map((category) => category.slug));
+  const knownCategorySlugs = new Set(
+    categories.map((category) => category.slug),
+  );
   const uncategorizedProductCount = products.filter(
     (product) => !knownCategorySlugs.has(product.category),
   ).length;
@@ -116,7 +118,9 @@ export default async function AdminDashboardPage() {
     {
       label: "Blogs",
       value: blogs.length,
-      detail: blogs[0] ? `Top entry: ${blogs[0].title}` : "No articles added yet",
+      detail: blogs[0]
+        ? `Top entry: ${blogs[0].title}`
+        : "No articles added yet",
       href: "/admin/blogs",
       action: "Manage blogs",
       icon: BookOpenText,

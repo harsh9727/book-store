@@ -87,6 +87,14 @@
 - Production cookies are Secure, HttpOnly, SameSite Strict, high priority, host-only, and scoped to `/`.
 - Add auth regression coverage to `tests/admin-auth.test.ts` whenever an authentication invariant changes.
 
+## Formatting
+
+- Use the repository-local Prettier version; do not rely on an editor-global or transiently downloaded formatter.
+- Run `pnpm format` to format supported repository files and `pnpm format:check` for a read-only formatting check.
+- Keep generated output, runtime persistence, TypeScript build metadata, and `pnpm-lock.yaml` in `.prettierignore`. The lockfile remains package-manager generated.
+- Keep `eslint-config-prettier/flat` last in the ESLint configuration so lint rules do not compete with Prettier's formatting decisions.
+- Formatting must not be mixed with intentional behavior changes unless those behavior changes are independently documented and verified.
+
 ## Verification
 
 On this Windows workspace, use `pnpm dev` for the stable Webpack development server. Use `pnpm dev:turbopack` only when intentionally reproducing or tracing Turbopack behavior; stop the server before switching bundlers and clear only this workspace's generated `.next` directory if their caches conflict.
@@ -94,6 +102,7 @@ On this Windows workspace, use `pnpm dev` for the stable Webpack development ser
 For changed files:
 
 ```bash
+pnpm format:check
 npx eslint path/to/changed-file.tsx
 npx tsc --noEmit
 npm run test:admin-auth

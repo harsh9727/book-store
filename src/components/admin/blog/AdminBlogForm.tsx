@@ -90,7 +90,9 @@ export default function AdminBlogForm({ initialItem }: AdminBlogFormProps) {
       englishFields.some((field) => !String(values.get(field) || "").trim())
     ) {
       setFormLanguage("en");
-      setError("Complete all required English content fields before continuing.");
+      setError(
+        "Complete all required English content fields before continuing.",
+      );
       return;
     }
     const contentText = blogRichTextToPlainText(richContent).trim();

@@ -113,7 +113,9 @@ export default function AdminGalleryForm({
       englishFields.some((field) => !String(values.get(field) || "").trim())
     ) {
       setFormLanguage("en");
-      setError("Complete all required English content fields before continuing.");
+      setError(
+        "Complete all required English content fields before continuing.",
+      );
       return;
     }
     if (formLanguage === "en") {

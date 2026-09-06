@@ -29,7 +29,10 @@ export default function ProductCarouselSection({
   const scroll = (direction: -1 | 1) => {
     const list = listRef.current;
     if (!list) return;
-    list.scrollBy({ left: direction * list.clientWidth * 0.85, behavior: "smooth" });
+    list.scrollBy({
+      left: direction * list.clientWidth * 0.85,
+      behavior: "smooth",
+    });
   };
 
   return (

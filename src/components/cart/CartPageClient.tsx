@@ -2,13 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Minus,
-  Plus,
-  ShoppingBag,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   clearCart,
@@ -44,9 +38,7 @@ export default function CartPageClient() {
           `/product/${encodeURIComponent(item.productId)}`,
           window.location.origin,
         ).toString(),
-        ...(item.variantSummary
-          ? { variantSummary: item.variantSummary }
-          : {}),
+        ...(item.variantSummary ? { variantSummary: item.variantSummary } : {}),
       })),
       subtotal,
     );
@@ -96,7 +88,10 @@ export default function CartPageClient() {
           <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
             <section aria-labelledby="cart-items-heading" className="min-w-0">
               <div className="mb-3 flex items-center justify-between gap-4">
-                <h2 id="cart-items-heading" className="title text-xl font-bold text-gray-900">
+                <h2
+                  id="cart-items-heading"
+                  className="title text-xl font-bold text-gray-900"
+                >
                   {t("cart.items")}
                 </h2>
                 <button
@@ -147,7 +142,10 @@ export default function CartPageClient() {
                           type="button"
                           onClick={() =>
                             persistCartChange(() =>
-                              updateCartItemQuantity(item.key, item.quantity - 1),
+                              updateCartItemQuantity(
+                                item.key,
+                                item.quantity - 1,
+                              ),
                             )
                           }
                           aria-label={t("cart.decreaseItem", {
@@ -164,7 +162,10 @@ export default function CartPageClient() {
                           type="button"
                           onClick={() =>
                             persistCartChange(() =>
-                              updateCartItemQuantity(item.key, item.quantity + 1),
+                              updateCartItemQuantity(
+                                item.key,
+                                item.quantity + 1,
+                              ),
                             )
                           }
                           aria-label={t("cart.increaseItem", {

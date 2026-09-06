@@ -124,9 +124,7 @@ export default function BlogsPageClient({
       {/* Blog Cards Grid */}
       {filteredBlogs.length === 0 ? (
         <div className="py-16 text-center rounded-3xl border border-gray-100 bg-white p-8">
-          <p className="text-gray-500 description text-sm">
-            {t("blog.empty")}
-          </p>
+          <p className="text-gray-500 description text-sm">{t("blog.empty")}</p>
         </div>
       ) : (
         <div className="space-y-10">

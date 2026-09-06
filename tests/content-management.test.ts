@@ -176,9 +176,7 @@ test("requires bounded Gujarati Category content while accepting legacy stored c
       blogs: [],
       galleries: [],
       products: [],
-      categories: [
-        { id: "legacy", name: "Legacy", slug: "legacy" },
-      ],
+      categories: [{ id: "legacy", name: "Legacy", slug: "legacy" }],
       testimonials: [],
       teamMembers: [],
       catalogInitialized: true,
@@ -196,7 +194,10 @@ test("requires bounded Gujarati Category content while accepting legacy stored c
 });
 
 test("creates bounded collision-safe slugs from backend content titles", () => {
-  assert.equal(slugifyContentTitle("  Daily Devotional!  "), "daily-devotional");
+  assert.equal(
+    slugifyContentTitle("  Daily Devotional!  "),
+    "daily-devotional",
+  );
   assert.equal(
     createUniqueContentSlug(
       "Daily Devotional",

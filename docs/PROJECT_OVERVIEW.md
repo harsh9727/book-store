@@ -16,17 +16,18 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 - Tiptap 3 for the Blog admin rich-text editor
 - UploadThing server SDK for managed blog/gallery/product/team images
 - Node crypto for scrypt password hashing, TOTP MFA, and admin session signing
+- Prettier 3 with an exact project-local version and ESLint compatibility config
 
 ## Routes and current state
 
-| Area       | Routes                                                                                                                                            | Current state                                                                                                                                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Storefront | `/`, `/allproducts`, `/product/[id]`; legacy `/shop` and `/product` redirect to `/allproducts`                                                    | Dynamic Product/Category catalog, category-driven homepage Magazines, and homepage Testimonials served by the content repository                                                                                     |
-| Content    | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact`                                                                                     | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs                                                                                                                  |
-| Shopping   | `/cart`                                                                                                                                           | Browser-local multi-Product Cart with quantity controls, an acknowledged-on-visit header update badge, and a direct itemized WhatsApp handoff                                                                         |
-| Removed commerce aliases | `/checkout`, `/wishlist`, `/login`, `/register`, `/profile`                                                                                  | No page implementation; old URLs redirect to Cart or All Products                                                                                                                                                    |
-| Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
-| Admin      | `/admin/login`, `/admin/dashboard`, `/api/admin/password-reset`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Login includes Email → 6-digit OTP → new-password recovery; protected workspaces share one persistent responsive shell; Overview reports live repository totals and six-domain snapshots; the content modules retain their list/add/edit flows |
+| Area                     | Routes                                                                                                                                                                         | Current state                                                                                                                                                                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Storefront               | `/`, `/allproducts`, `/product/[id]`; legacy `/shop` and `/product` redirect to `/allproducts`                                                                                 | Dynamic Product/Category catalog, category-driven homepage Magazines, and homepage Testimonials served by the content repository                                                                                                               |
+| Content                  | `/about`, `/blogs`, `/gallery`, `/gallery/[slug]`, `/contact`                                                                                                                  | Blog, Gallery, and the About Team section are dynamic; Gallery detail URLs use title-derived slugs                                                                                                                                             |
+| Shopping                 | `/cart`                                                                                                                                                                        | Browser-local multi-Product Cart with quantity controls, an acknowledged-on-visit header update badge, and a direct itemized WhatsApp handoff                                                                                                  |
+| Removed commerce aliases | `/checkout`, `/wishlist`, `/login`, `/register`, `/profile`                                                                                                                    | No page implementation; old URLs redirect to Cart or All Products                                                                                                                                                                              |
+| Policies                 | Privacy, terms, and shipping routes                                                                                                                                            | Content implemented                                                                                                                                                                                                                            |
+| Admin                    | `/admin/login`, `/admin/dashboard`, `/api/admin/password-reset`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Login includes Email → 6-digit OTP → new-password recovery; protected workspaces share one persistent responsive shell; Overview reports live repository totals and six-domain snapshots; the content modules retain their list/add/edit flows |
 
 All visible storefront catalog links and Product breadcrumbs use `/allproducts`. `/shop` remains only as a permanent backward-compatible redirect that preserves supported category, collection, and search parameters.
 
@@ -60,6 +61,7 @@ Products, Categories, Testimonials, and Team members have committed seed arrays 
 Useful checks:
 
 ```bash
+pnpm format:check
 npm run lint
 npx tsc --noEmit
 npm run test:admin-auth
@@ -71,23 +73,23 @@ npm run build
 
 ## Environment variables
 
-| Variable                   | Purpose                                                           | Exposure       |
-| -------------------------- | ----------------------------------------------------------------- | -------------- |
-| `NEXT_PUBLIC_SITE_URL`     | Canonical URL and SEO                                             | Public         |
-| `GOOGLE_SITE_VERIFICATION` | Search Console verification                                       | Server config  |
-| `NEXT_PUBLIC_EMAILJS_*`    | Contact-form EmailJS configuration                                | Public/browser |
-| `EMAILJS_SERVICE_ID`       | Server reset-email service; may reuse the contact service          | Server only    |
-| `EMAILJS_PUBLIC_KEY`       | EmailJS account identifier used by the server reset request        | Server config  |
-| `EMAILJS_PASSWORD_RESET_TEMPLATE_ID` | Template that sends the OTP to `{{to_email}}`          | Server config  |
-| `EMAILJS_PRIVATE_KEY`      | Authorizes server-side password-reset email delivery               | Server secret  |
-| `UPLOADTHING_TOKEN`        | Authenticates server-side blog/gallery/product/team image uploads | Server only    |
-| `ADMIN_EMAIL`              | Admin identity                                                    | Server only    |
-| `ADMIN_PASSWORD_HASH`      | Generated scrypt password verifier; required in production        | Server only    |
-| `ADMIN_SESSION_SECRET`     | HMAC signing secret                                               | Server only    |
-| `ADMIN_SESSION_VERSION`    | Increment to invalidate every active admin session                | Server only    |
-| `ADMIN_REQUIRE_MFA`        | Must be `true` in production                                      | Server only    |
-| `ADMIN_TOTP_SECRET`        | Base32 authenticator secret                                       | Server only    |
-| `ADMIN_TRUST_PROXY`        | Trust deployment-provided client IP headers for rate-limit keys   | Server only    |
+| Variable                             | Purpose                                                           | Exposure       |
+| ------------------------------------ | ----------------------------------------------------------------- | -------------- |
+| `NEXT_PUBLIC_SITE_URL`               | Canonical URL and SEO                                             | Public         |
+| `GOOGLE_SITE_VERIFICATION`           | Search Console verification                                       | Server config  |
+| `NEXT_PUBLIC_EMAILJS_*`              | Contact-form EmailJS configuration                                | Public/browser |
+| `EMAILJS_SERVICE_ID`                 | Server reset-email service; may reuse the contact service         | Server only    |
+| `EMAILJS_PUBLIC_KEY`                 | EmailJS account identifier used by the server reset request       | Server config  |
+| `EMAILJS_PASSWORD_RESET_TEMPLATE_ID` | Template that sends the OTP to `{{to_email}}`                     | Server config  |
+| `EMAILJS_PRIVATE_KEY`                | Authorizes server-side password-reset email delivery              | Server secret  |
+| `UPLOADTHING_TOKEN`                  | Authenticates server-side blog/gallery/product/team image uploads | Server only    |
+| `ADMIN_EMAIL`                        | Admin identity                                                    | Server only    |
+| `ADMIN_PASSWORD_HASH`                | Generated scrypt password verifier; required in production        | Server only    |
+| `ADMIN_SESSION_SECRET`               | HMAC signing secret                                               | Server only    |
+| `ADMIN_SESSION_VERSION`              | Increment to invalidate every active admin session                | Server only    |
+| `ADMIN_REQUIRE_MFA`                  | Must be `true` in production                                      | Server only    |
+| `ADMIN_TOTP_SECRET`                  | Base32 authenticator secret                                       | Server only    |
+| `ADMIN_TRUST_PROXY`                  | Trust deployment-provided client IP headers for rate-limit keys   | Server only    |
 
 `ADMIN_PASSWORD` remains a local-development migration fallback only and is rejected in production. Do not deploy it.
 

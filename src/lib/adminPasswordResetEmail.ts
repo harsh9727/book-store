@@ -14,8 +14,7 @@ function passwordResetEmailConfiguration(): PasswordResetEmailConfiguration {
       process.env.EMAILJS_SERVICE_ID?.trim() ||
       process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID?.trim() ||
       "",
-    templateId:
-      process.env.EMAILJS_PASSWORD_RESET_TEMPLATE_ID?.trim() || "",
+    templateId: process.env.EMAILJS_PASSWORD_RESET_TEMPLATE_ID?.trim() || "",
     publicKey:
       process.env.EMAILJS_PUBLIC_KEY?.trim() ||
       process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY?.trim() ||

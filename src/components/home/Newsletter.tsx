@@ -46,11 +46,11 @@ const Newsletter = ({ title, description }: NewsletterProps) => {
               href={subscriptionEmail}
               className="description group flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 text-sm font-medium text-white transition-all duration-300 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/20"
             >
-                {t("common.newsletterRequest")}
-                <ArrowRight
-                  size={16}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
+              {t("common.newsletterRequest")}
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
             </a>
           </div>
         </div>

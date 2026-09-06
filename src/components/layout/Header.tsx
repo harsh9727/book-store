@@ -249,7 +249,11 @@ function Header({ categories }: { categories: Category[] }) {
           <div className="flex items-center justify-between gap-4 lg:gap-8">
             {/* ================= LOGO ================= */}
 
-            <Link href="/" className="shrink-0" aria-label={t("common.storeHome")}>
+            <Link
+              href="/"
+              className="shrink-0"
+              aria-label={t("common.storeHome")}
+            >
               <Image
                 src={Logo}
                 alt={t("common.storeLogo")}

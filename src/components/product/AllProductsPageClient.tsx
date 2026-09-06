@@ -448,7 +448,9 @@ function AllProductsContent({
                   <option value="featured">{t("catalog.featured")}</option>
                   <option value="rating">{t("catalog.topRated")}</option>
                   <option value="price-asc">{t("catalog.priceLowHigh")}</option>
-                  <option value="price-desc">{t("catalog.priceHighLow")}</option>
+                  <option value="price-desc">
+                    {t("catalog.priceHighLow")}
+                  </option>
                 </select>
               </div>
             </div>
@@ -631,7 +633,10 @@ function AllProductsContent({
             <div className="flex items-center justify-between border-b border-gray-100 p-4 sm:p-5">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal size={18} className="text-orange-600" />
-                <h3 id="mobile-filter-title" className="title text-base sm:text-lg font-bold text-gray-900">
+                <h3
+                  id="mobile-filter-title"
+                  className="title text-base sm:text-lg font-bold text-gray-900"
+                >
                   {t("catalog.filterBooks")}
                 </h3>
               </div>

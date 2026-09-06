@@ -10,7 +10,10 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-4 py-16 text-center">
       <div className="max-w-lg rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
-        <AlertTriangle aria-hidden="true" className="mx-auto h-10 w-10 text-orange-600" />
+        <AlertTriangle
+          aria-hidden="true"
+          className="mx-auto h-10 w-10 text-orange-600"
+        />
         <h1 className="title mt-4 text-3xl font-bold text-gray-900">
           {t("errors.generic.title")}
         </h1>
