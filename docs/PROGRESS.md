@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 49 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 50 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -25,13 +25,21 @@
 
 ## Change log
 
+### 2026-09-06 - Single-line Contact phone numbers
+
+- Outcome: kept both Contact-section phone numbers on one horizontal row and prevented Google Translate from splitting or localizing their dialable digits. Each phone link is now an LTR, tabular, non-translated, non-wrapping unit; the separator also cannot shrink.
+- Main files/areas: Contact details, translation-safe phone presentation, site-integrity coverage, storefront rules, troubleshooting, and progress documentation.
+- Data/API/security impact: none; the visible numbers and `tel:` destinations are unchanged.
+- Verification and exact result: focused ESLint passed for the Contact section and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 19/19; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 50/50 (7 admin-auth, 24 content-management, and 19 site-integrity). The approved `pnpm build` compiled in 3.6 seconds, completed TypeScript in 6.8 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: on exceptionally narrow screens the existing contact-details grid stacks before the number row becomes constrained.
+
 ### 2026-09-06 - Compact Gujarati homepage hero
 
-- Outcome: removed the oversized space between the translated Gujarati badge and heading by grouping them in an explicit vertical flex layout with an 8-pixel Gujarati gap. The Gujarati hero also uses tighter heading/description/action spacing and a bounded 420-pixel desktop stage, while English retains its existing spacing and mobile remains content-driven.
-- Main files/areas: homepage Hero client boundary, responsive language-aware presentation, site-integrity coverage, storefront layout documentation, and troubleshooting.
+- Outcome: removed the oversized space between the translated Gujarati badge and heading with an explicit 8-pixel Gujarati gap. The Gujarati hero also uses tighter heading/description/action spacing and a bounded 420-pixel desktop stage, while English retains its existing spacing and mobile remains content-driven. After the first language-reactive implementation exposed a browser `removeChild` error, the Hero was restored to static Server Component markup and the same language-specific presentation was moved to `html[lang="gu"]` CSS, preventing React from reconciling text nodes rewritten by Google Translate.
+- Main files/areas: homepage Hero markup, global language-aware presentation, site-integrity coverage, storefront layout documentation, and troubleshooting.
 - Data/API/security impact: none; the language store and Google Translate lifecycle are unchanged.
-- Verification and exact result: focused ESLint passed for the Hero and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 18/18; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 49/49 (7 admin-auth, 24 content-management, and 18 site-integrity). The approved `pnpm build` compiled in 3.7 seconds, completed TypeScript in 7.4 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
-- Known limitations or next step: the exact Gujarati glyph wrapping still depends on Google Translate output and the visitor's available Gujarati system font.
+- Verification and exact result: after the runtime correction, focused ESLint passed for the Hero and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 18/18; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 49/49 (7 admin-auth, 24 content-management, and 18 site-integrity). The approved `pnpm build` compiled in 2.4 seconds, completed TypeScript in 6.4 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the exact Gujarati glyph wrapping still depends on Google Translate output and the visitor's available Gujarati system font. A browser tab whose DOM was already mutated before this correction needs one hard refresh to discard that stale tree.
 
 ### 2026-09-06 - Responsive Category final-action buttons
 

@@ -144,13 +144,29 @@ test("Gujarati home hero uses a bounded compact desktop layout", () => {
     path.join(root, "src", "components", "home", "HeroSection.tsx"),
     "utf8",
   );
+  const globalStyles = readFileSync(
+    path.join(root, "src", "app", "globals.css"),
+    "utf8",
+  );
 
-  assert.match(source, /const isGujarati = language === "gu"/);
-  assert.match(source, /lg:h-\[420px\] lg:min-h-0/);
-  assert.match(source, /isGujarati \? "gap-2" : "gap-6"/);
-  assert.match(source, /isGujarati \? "mt-3" : "mt-5"/);
-  assert.match(source, /isGujarati \? "mt-6" : "mt-8"/);
-  assert.doesNotMatch(source, /isGujarati \? "mb-4" : "mb-6"/);
+  assert.doesNotMatch(source, /"use client"|useLanguage/);
+  assert.match(source, /home-hero-heading-group flex flex-col items-start gap-6/);
+  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-heading-group \{\s*gap: 0\.5rem;/);
+  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-description \{\s*margin-top: 0\.75rem;/);
+  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-actions \{\s*margin-top: 1\.5rem;/);
+  assert.match(globalStyles, /height: 420px;\s*min-height: 0;/);
+});
+
+test("Contact phone numbers stay on one untranslated line", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "contact", "ContactSection.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /flex flex-nowrap items-center gap-3/);
+  assert.equal((source.match(/notranslate whitespace-nowrap|notranslate mt-1 whitespace-nowrap/g) || []).length, 2);
+  assert.equal((source.match(/translate="no"/g) || []).length, 2);
+  assert.equal((source.match(/dir="ltr"/g) || []).length, 2);
 });
 
 test("Admin Product variants use individual option inputs", () => {

@@ -53,20 +53,24 @@ const ContactSection = () => {
                   <Phone size={21} strokeWidth={2} />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <h3 className="title font-bold text-gray-900">Call Us</h3>
 
-                  <div className="flex items-center gap-5">
+                  <div className="flex flex-nowrap items-center gap-3">
                     <a
                       href="tel:+919265429338"
-                      className="mt-1 block text-sm text-gray-600 transition-colors description hover:text-orange-600"
+                      className="notranslate mt-1 whitespace-nowrap text-sm tabular-nums text-gray-600 transition-colors description hover:text-orange-600"
+                      translate="no"
+                      dir="ltr"
                     >
                       +91 9265429338
                     </a>
-                    <span className="text-gray-400">|</span>
+                    <span className="shrink-0 text-gray-400">|</span>
                     <a
                       href="tel:+917490028867"
-                      className="block description text-sm text-gray-600 transition-colors hover:text-orange-600"
+                      className="notranslate whitespace-nowrap text-sm tabular-nums text-gray-600 transition-colors description hover:text-orange-600"
+                      translate="no"
+                      dir="ltr"
                     >
                       +91 7490028867
                     </a>

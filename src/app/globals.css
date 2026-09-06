@@ -53,6 +53,40 @@ body > .skiptranslate {
   font-family: var(--font-sans) !important;
 }
 
+/* Keep the translated Hero markup static so Google Translate and React do not
+   compete for ownership of the same text nodes. */
+html[lang="gu"] .home-hero-content {
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+}
+
+html[lang="gu"] .home-hero-heading-group {
+  gap: 0.5rem;
+}
+
+html[lang="gu"] .home-hero-title {
+  line-height: 1.04;
+}
+
+html[lang="gu"] .home-hero-description {
+  margin-top: 0.75rem;
+}
+
+html[lang="gu"] .home-hero-actions {
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  html[lang="gu"] .home-hero-content {
+    height: 420px;
+    min-height: 0;
+  }
+
+  html[lang="gu"] .home-hero-title {
+    font-size: 46px;
+  }
+}
+
 .number-input-no-spinner::-webkit-inner-spin-button,
 .number-input-no-spinner::-webkit-outer-spin-button {
   margin: 0;

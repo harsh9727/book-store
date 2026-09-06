@@ -37,7 +37,7 @@ Browser
 - The root layout loads metadata, structured data, and `SiteChrome`; system font stacks avoid a build-time/runtime dependency on remote Google font files.
 - `SiteChrome` removes public header/footer controls for `/admin` routes and mounts `LanguageProvider` only around the public branch.
 - The language provider loads Google Translate only after Gujarati is selected; English storefront browsing does not initialize the translation integration.
-- The homepage Hero is a focused Client Component under `LanguageProvider`; it reads only the current language to select presentation classes. Gujarati uses an explicit badge/heading flex gap and a bounded desktop stage, while content and translation ownership remain unchanged.
+- The homepage Hero remains a Server Component with stable markup. Gujarati presentation is selected by scoped `html[lang="gu"]` rules in global CSS, using an explicit badge/heading flex gap and bounded desktop stage without introducing a React subscription over Google Translate-mutated text nodes.
 - Local `pnpm dev` uses Next.js Webpack mode to avoid the observed native Windows Turbopack cache-memory crash. `experimental.webpackMemoryOptimizations` reduces peak Webpack usage and `preloadEntriesOnStart: false` avoids front-loading every route module on a memory-constrained workstation. Production builds retain the default bundler; `pnpm dev:turbopack` is an explicit diagnostic command rather than the stable local path. `agentRules: false` prevents Next dev from rewriting the repository-owned `AGENTS.md`; project instructions remain maintained manually.
 
 ## Storefront data flow

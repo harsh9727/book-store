@@ -32,7 +32,7 @@ All visible storefront catalog links and Product breadcrumbs use `/allproducts`.
 
 The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script.
 
-The homepage Hero keeps the established English composition. When Gujarati is active, it uses a compact language-aware desktop layout with an explicit 8-pixel badge-to-heading gap and a bounded 420-pixel stage so translated font metrics do not create oversized vertical whitespace; mobile height remains content-driven.
+The homepage Hero keeps static Server Component markup and the established English composition. When the document language is Gujarati, scoped global CSS applies a compact desktop layout with an explicit 8-pixel badge-to-heading gap and a bounded 420-pixel stage so translated font metrics do not create oversized vertical whitespace; mobile height remains content-driven. Keeping React output static avoids reconciling Hero text nodes rewritten by Google Translate.
 
 The Header Categories trigger has one route-independent closed style across the storefront. It changes to its orange open state only while the related desktop dropdown or mobile category panel is expanded; catalog route highlighting remains on the relevant navigation link instead of changing the trigger merely because of the current page.
 

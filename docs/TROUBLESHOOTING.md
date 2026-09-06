@@ -8,15 +8,35 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Gujarati Contact phone numbers split across lines
+
+**Symptom:** in the Gujarati Contact section, `+91` and the remaining digits appear on separate lines, making each call number difficult to read.
+
+**Cause resolved 2026-09-06:** the translated phone row allowed normal whitespace wrapping, while Google Translate could wrap/localize the invariant dialable text into additional inline nodes.
+
+**Solution:** mark both number links `translate="no"`/`notranslate`, render them LTR with tabular numerals and `white-space: nowrap`, keep the row non-wrapping, and prevent the separator from shrinking.
+
+**Prevention:** treat phone numbers as non-translatable structured data and preserve each complete number as one non-wrapping link.
+
 ## Gujarati homepage hero has excessive vertical space
 
 **Symptom:** after selecting Gujarati, the homepage banner becomes taller than English and shows a large blank area between the translated badge and main heading.
 
 **Cause resolved 2026-09-06:** the shared English spacing did not account for Gujarati glyph metrics and Google Translate's generated inline wrappers, so implicit inline flow and the content-driven minimum height exaggerated vertical gaps.
 
-**Solution:** the Hero now reads the existing public language context. Badge and heading share an explicit flex column with an 8-pixel Gujarati gap; Gujarati also receives compact internal spacing and a bounded 420-pixel desktop stage, while English classes and mobile content-driven height remain intact.
+**Solution:** the Hero retains static markup. Scoped `html[lang="gu"]` CSS gives the badge/heading flex column an 8-pixel gap and applies compact internal spacing plus a bounded 420-pixel desktop stage, while English classes and mobile content-driven height remain intact.
 
 **Prevention:** keep translated heading groups in explicit layout containers and cover the Gujarati gap/desktop-height contract in the site-integrity test.
+
+## Gujarati switch throws `removeChild` NotFoundError
+
+**Symptom:** changing or rendering the homepage in Gujarati opens the Next.js runtime overlay with `Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.`
+
+**Cause resolved 2026-09-06:** the Hero had temporarily become a language-subscribed Client Component. Google Translate rewrites text nodes outside React, and a subsequent language-driven React reconciliation attempted to remove a node that the translator had already replaced.
+
+**Solution:** remove the Hero's client boundary and language hook, keep its React tree static, and apply Gujarati-only spacing through scoped `html[lang="gu"]` CSS. This preserves the visual correction without asking React to reconcile translated Hero nodes.
+
+**Prevention:** use language-aware CSS for presentation-only differences inside machine-translated static content; reserve language subscriptions for components that select authored localized data and exclude those values from machine translation.
 
 ## Create Category button wraps onto two lines
 
