@@ -1,9 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Edit3, FolderPlus, Save, Trash2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Edit3,
+  FolderPlus,
+  Save,
+  Trash2,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import AdminBilingualFormSteps, {
+  type AdminContentLanguage,
+} from "@/components/admin/AdminBilingualFormSteps";
 import ConfirmDeleteModal from "@/components/admin/ConfirmDeleteModal";
 import { adminJsonRequest } from "@/lib/adminContentClient";
 import type { Category } from "@/types/category";
@@ -23,7 +34,10 @@ export default function AdminCategoryManager({
 }: Props) {
   const [items, setItems] = useState(initialItems);
   const [editing, setEditing] = useState<Category | null>(null);
+  const [formLanguage, setFormLanguage] =
+    useState<AdminContentLanguage>("en");
   const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
+  const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const counts = useMemo(
     () =>
@@ -42,7 +56,23 @@ export default function AdminCategoryManager({
     const form = event.currentTarget;
     const values = new FormData(form);
     const name = String(values.get("name") || "").trim();
-    const payload = { name };
+    setError("");
+    if (!name) {
+      setFormLanguage("en");
+      setError("Enter the English category name before continuing.");
+      return;
+    }
+    if (formLanguage === "en") {
+      setFormLanguage("gu");
+      return;
+    }
+
+    const gujaratiName = String(values.get("gujaratiName") || "").trim();
+    if (!gujaratiName) {
+      setError("Enter the Gujarati category name before saving.");
+      return;
+    }
+    const payload = { name, gujarati: { name: gujaratiName } };
     setBusy(true);
     try {
       const url = editing
@@ -63,6 +93,7 @@ export default function AdminCategoryManager({
             ),
       );
       setEditing(null);
+      setFormLanguage("en");
       form.reset();
       toast.success(editing ? "Category updated." : "Category created.");
     } catch (error) {
@@ -117,7 +148,11 @@ export default function AdminCategoryManager({
           {editing ? (
             <button
               type="button"
-              onClick={() => setEditing(null)}
+              onClick={() => {
+                setEditing(null);
+                setFormLanguage("en");
+                setError("");
+              }}
               className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
               aria-label="Cancel editing"
             >
@@ -127,23 +162,75 @@ export default function AdminCategoryManager({
             <FolderPlus className="text-orange-600" size={20} />
           )}
         </div>
-        <label className="block text-sm font-semibold">
-          Name
-          <input
-            name="name"
-            required
-            maxLength={120}
-            defaultValue={editing?.name}
-            className={`mt-1.5 ${inputClass}`}
-          />
-        </label>
-        <button
-          disabled={busy}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
+        <AdminBilingualFormSteps currentStep={formLanguage} />
+        {error ? (
+          <p
+            role="alert"
+            className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {error}
+          </p>
+        ) : null}
+        <div className={formLanguage === "en" ? "block" : "hidden"}>
+          <label className="block text-sm font-semibold">
+            English category name
+            <input
+              name="name"
+              required={formLanguage === "en"}
+              maxLength={120}
+              defaultValue={editing?.name}
+              className={`mt-1.5 ${inputClass}`}
+            />
+          </label>
+        </div>
+        <div
+          className={formLanguage === "gu" ? "block" : "hidden"}
+          lang="gu"
         >
-          <Save size={17} />
-          {busy ? "Saving..." : editing ? "Update category" : "Create category"}
-        </button>
+          <label className="block text-sm font-semibold">
+            Gujarati category name
+            <input
+              name="gujaratiName"
+              required={formLanguage === "gu"}
+              maxLength={120}
+              defaultValue={editing?.gujarati?.name}
+              className={`mt-1.5 ${inputClass}`}
+            />
+          </label>
+        </div>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row">
+          {formLanguage === "gu" ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setError("");
+                setFormLanguage("en");
+              }}
+              className="flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60 sm:w-[118px]"
+            >
+              <ArrowLeft size={17} className="shrink-0" /> Previous
+            </button>
+          ) : null}
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex h-11 min-w-0 w-full flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-orange-600 px-3 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
+          >
+            {formLanguage === "en" ? (
+              <ArrowRight size={17} className="shrink-0" />
+            ) : (
+              <Save size={17} className="shrink-0" />
+            )}
+            {formLanguage === "en"
+              ? "Next"
+              : busy
+                ? "Saving..."
+                : editing
+                  ? "Update category"
+                  : "Create category"}
+          </button>
+        </div>
       </form>
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -165,13 +252,22 @@ export default function AdminCategoryManager({
                 <tr key={item.id}>
                   <td className="px-5 py-4">
                     <strong>{item.name}</strong>
+                    {item.gujarati?.name ? (
+                      <span className="mt-0.5 block text-xs text-slate-500" lang="gu">
+                        {item.gujarati.name}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-5 py-4">{counts.get(item.slug) || 0}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
                       <button
                         type="button"
-                        onClick={() => setEditing(item)}
+                        onClick={() => {
+                          setEditing(item);
+                          setFormLanguage("en");
+                          setError("");
+                        }}
                         className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
                         aria-label={`Edit ${item.name}`}
                       >

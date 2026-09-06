@@ -19,6 +19,7 @@ import {
   validateImageSelection,
 } from "../src/lib/imageRules.ts";
 import { localizeBlog } from "../src/lib/localizedBlog.ts";
+import { localizeCategory } from "../src/lib/localizedCategory.ts";
 import { localizeGallery } from "../src/lib/localizedGallery.ts";
 import { localizeProduct } from "../src/lib/localizedProduct.ts";
 import { localizeTestimonial } from "../src/lib/localizedTestimonial.ts";
@@ -102,6 +103,9 @@ const galleryDraft = {
 
 const categoryDraft = {
   name: "Devotionals",
+  gujarati: {
+    name: "દૈનિક ભક્તિ",
+  },
 };
 
 const productDraft = {
@@ -158,6 +162,37 @@ test("accepts valid blog and gallery drafts", () => {
 test("accepts valid category and product drafts", () => {
   assert.equal(categoryDraftSchema.safeParse(categoryDraft).success, true);
   assert.equal(productDraftSchema.safeParse(productDraft).success, true);
+});
+
+test("requires bounded Gujarati Category content while accepting legacy stored categories", () => {
+  assert.equal(
+    categoryDraftSchema.safeParse({ ...categoryDraft, gujarati: undefined })
+      .success,
+    false,
+  );
+  assert.equal(
+    contentStoreSchema.safeParse({
+      version: 1,
+      blogs: [],
+      galleries: [],
+      products: [],
+      categories: [
+        { id: "legacy", name: "Legacy", slug: "legacy" },
+      ],
+      testimonials: [],
+      teamMembers: [],
+      catalogInitialized: true,
+    }).success,
+    true,
+  );
+
+  const storedCategory = {
+    ...categoryDraft,
+    id: "devotionals",
+    slug: "devotionals",
+  };
+  assert.equal(localizeCategory(storedCategory, "gu").name, "દૈનિક ભક્તિ");
+  assert.equal(localizeCategory(storedCategory, "en"), storedCategory);
 });
 
 test("creates bounded collision-safe slugs from backend content titles", () => {

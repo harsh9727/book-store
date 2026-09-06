@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 46 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 48 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,22 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-06 - Responsive Category final-action buttons
+
+- Outcome: fixed the Gujarati Category step's cramped Previous/Create or Previous/Update action row. On narrow screens the actions now stack at full width; from `sm` upward Previous uses a compact fixed width while the final submit action consumes the remaining row. Both labels are explicitly non-wrapping, icons cannot shrink, and the final button now declares `type="submit"`, preventing the Create Category label from splitting across two lines.
+- Main files/areas: Admin Category action group, responsive Category authoring rules/standards, UI regression coverage, troubleshooting, project overview, and progress documentation.
+- Data/API/security impact: none; Category bilingual values, final-submit behavior, slug generation, authentication, validation, and persistence are unchanged.
+- Verification and exact result: repository-wide `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 48/48 (7 admin-auth, 24 content-management, and 17 site-integrity), including responsive/non-wrapping Category action assertions. The approved `pnpm build` compiled in 2.9 seconds, completed TypeScript in 5.6 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: none.
+
+### 2026-09-06 - Sequential bilingual Category CRUD
+
+- Outcome: brought Category create/edit into the same English-first bilingual workflow as the other Admin content modules. The Category editor starts with the English name, `Next` switches to the preserved Gujarati name field without saving, `Previous` returns to English, and only the Gujarati step can perform the final Create/Update request. The Product form's inline Add Category modal follows the same two-step requirement. Category rows show saved Gujarati names beneath English, while homepage Category cards and desktop/mobile All Products filters reactively select authored Gujarati names when the storefront language is Gujarati.
+- Main files/areas: Category domain type and strict schemas, Category manager, Product inline Category creator, localized Category selector, homepage/category-filter consumers, content and UI regression coverage, project overview, architecture/rules/security/code standards, troubleshooting, and progress documentation.
+- Data/API/security impact: Category create/update drafts now require a bounded `gujarati.name`; stored Category records keep that block optional so seed and legacy content remains readable. Slug generation, Product relationships, authorization, request limits, and atomic persistence are unchanged.
+- Verification and exact result: repository-wide `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 48/48 (7 admin-auth, 24 content-management, and 17 site-integrity), including required Gujarati Category input, legacy-store compatibility, localization selection, both English-to-Gujarati Category entry points, and final-submit payload coverage. The approved `pnpm build` compiled in 4.5 seconds, completed TypeScript in 11.7 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: seed and legacy Categories without authored Gujarati names continue through the existing storefront translation fallback until an admin edits and saves them. Header category shortcuts remain their existing curated navigation set rather than repository-driven Category records.
 
 ### 2026-09-05 - Backend-generated Admin content slugs
 

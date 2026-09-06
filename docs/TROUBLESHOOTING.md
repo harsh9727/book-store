@@ -8,6 +8,26 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Create Category button wraps onto two lines
+
+**Symptom:** on the Gujarati Category step, the orange Create Category button looks cramped and its label breaks into two lines beside Previous.
+
+**Cause resolved 2026-09-06:** both buttons used equal flex widths inside the narrow Category editor, while their padding, icon, gap, and unequal label lengths competed for the same space.
+
+**Solution:** actions stack at full width on narrow viewports. From `sm` upward Previous uses a compact 118-pixel width and the submit action receives the remaining space; labels use `whitespace-nowrap` and icons use `shrink-0`.
+
+**Prevention:** preserve the responsive Category action-group classes and test for the non-wrapping/fixed-secondary-button contract when changing button copy or icons.
+
+## Category saves without the English-to-Gujarati step flow
+
+**Symptom:** Category create/edit immediately submits one English name, has no `Next`/`Previous` flow, or the Product form's inline Add Category request fails after Gujarati Category content becomes required.
+
+**Cause resolved 2026-09-06:** Categories originally had no localized domain field, so their inline CRUD was excluded from the shared bilingual workflow and Product's category popup sent only `{ name }`.
+
+**Solution:** Category drafts require `{ name, gujarati: { name } }`. Both Category entry points start on English, advance locally to Gujarati, and submit only from the Gujarati step. Stored Gujarati names are selected on repository-backed Category cards and catalog filters; legacy records remain valid without the optional stored block.
+
+**Prevention:** keep the Category manager and Product inline creator aligned with `AdminBilingualFormSteps`, and update every Category creation call whenever the strict Category draft contract changes.
+
 ## Admin CRUD asks for slugs or reports duplicate slugs
 
 **Symptom:** Product, Category, Blog, or Gallery create/edit asks the admin to understand a route slug, exposes that internal value in a list, or rejects a create because an admin-entered slug already exists.

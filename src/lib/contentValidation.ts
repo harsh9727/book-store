@@ -308,14 +308,29 @@ const categorySchema = z
     name: z.string().trim().min(1).max(120),
     slug: slugSchema,
     description: optionalText(1_000),
+    gujarati: z
+      .object({
+        name: z.string().trim().min(1).max(120),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 
-export const categoryDraftSchema = categorySchema.omit({
-  id: true,
-  slug: true,
-  description: true,
-});
+export const categoryDraftSchema = categorySchema
+  .omit({
+    id: true,
+    slug: true,
+    description: true,
+    gujarati: true,
+  })
+  .extend({
+    gujarati: z
+      .object({
+        name: z.string().trim().min(1).max(120),
+      })
+      .strict(),
+  });
 
 const productReviewSchema = z
   .object({

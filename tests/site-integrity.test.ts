@@ -214,6 +214,43 @@ test("Admin Product features use individual addable and removable inputs", () =>
   assert.match(source, /normalizeFeatures\(gujaratiFeatures\)/);
 });
 
+test("Admin Category CRUD uses English then Gujarati final submission", () => {
+  const categoryManager = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "category",
+      "AdminCategoryManager.tsx",
+    ),
+    "utf8",
+  );
+  const productForm = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "product",
+      "AdminProductForm.tsx",
+    ),
+    "utf8",
+  );
+
+  assert.match(categoryManager, /AdminBilingualFormSteps/);
+  assert.match(categoryManager, /useState<AdminContentLanguage>\("en"\)/);
+  assert.match(categoryManager, /formLanguage === "en"[\s\S]+setFormLanguage\("gu"\)[\s\S]+return;/);
+  assert.match(categoryManager, /name="gujaratiName"/);
+  assert.match(categoryManager, /const payload = \{ name, gujarati: \{ name: gujaratiName \} \}/);
+  assert.match(categoryManager, /formLanguage === "en"[\s\S]+\? "Next"/);
+  assert.match(categoryManager, /flex-col-reverse gap-2 sm:flex-row/);
+  assert.match(categoryManager, /whitespace-nowrap[^"]+sm:w-\[118px\]/);
+  assert.match(categoryManager, /type="submit"/);
+  assert.match(productForm, /categoryCreatorLanguage === "en"/);
+  assert.match(productForm, /\{ name, gujarati: \{ name: gujaratiName \} \}/);
+});
+
 test("Admin navigation lives in the persistent route layout", () => {
   const layout = readFileSync(
     path.join(root, "src", "app", "admin", "layout.tsx"),

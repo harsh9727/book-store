@@ -175,7 +175,10 @@ export default function AdminProductForm({
     initialItem?.category || "",
   );
   const [categoryCreatorOpen, setCategoryCreatorOpen] = useState(false);
+  const [categoryCreatorLanguage, setCategoryCreatorLanguage] =
+    useState<AdminContentLanguage>("en");
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryGujaratiName, setNewCategoryGujaratiName] = useState("");
   const [categoryBusy, setCategoryBusy] = useState(false);
   const [categoryError, setCategoryError] = useState("");
   const [specifications, setSpecifications] = useState<
@@ -296,7 +299,18 @@ export default function AdminProductForm({
   const createCategory = async () => {
     const name = newCategoryName.trim();
     if (!name) {
-      setCategoryError("Enter a category name.");
+      setCategoryCreatorLanguage("en");
+      setCategoryError("Enter the English category name.");
+      return;
+    }
+    if (categoryCreatorLanguage === "en") {
+      setCategoryError("");
+      setCategoryCreatorLanguage("gu");
+      return;
+    }
+    const gujaratiName = newCategoryGujaratiName.trim();
+    if (!gujaratiName) {
+      setCategoryError("Enter the Gujarati category name.");
       return;
     }
     setCategoryBusy(true);
@@ -305,7 +319,7 @@ export default function AdminProductForm({
       const result = await adminJsonRequest<{ item: Category }>(
         "/api/admin/content/categories",
         "POST",
-        { name },
+        { name, gujarati: { name: gujaratiName } },
       );
       setCategoryOptions((current) =>
         [...current, result.item].sort((left, right) =>
@@ -314,6 +328,8 @@ export default function AdminProductForm({
       );
       setSelectedCategory(result.item.slug);
       setNewCategoryName("");
+      setNewCategoryGujaratiName("");
+      setCategoryCreatorLanguage("en");
       setCategoryCreatorOpen(false);
       toast.success("Category created and selected.");
     } catch (createError) {
@@ -529,6 +545,7 @@ export default function AdminProductForm({
                 type="button"
                 onClick={() => {
                   setCategoryCreatorOpen(true);
+                  setCategoryCreatorLanguage("en");
                   setCategoryError("");
                 }}
                 className="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700"
@@ -1214,6 +1231,7 @@ export default function AdminProductForm({
           onMouseDown={(event) => {
             if (event.target === event.currentTarget && !categoryBusy) {
               setCategoryCreatorOpen(false);
+              setCategoryCreatorLanguage("en");
               setCategoryError("");
             }
           }}
@@ -1240,6 +1258,7 @@ export default function AdminProductForm({
                 type="button"
                 onClick={() => {
                   setCategoryCreatorOpen(false);
+                  setCategoryCreatorLanguage("en");
                   setCategoryError("");
                 }}
                 disabled={categoryBusy}
@@ -1249,13 +1268,34 @@ export default function AdminProductForm({
                 <X size={18} />
               </button>
             </div>
+            <div className="mt-5">
+              <AdminBilingualFormSteps
+                currentStep={categoryCreatorLanguage}
+              />
+            </div>
             <div className="mt-5 space-y-4">
-              <label className="block text-sm font-semibold">
-                Category name
+              <label
+                className={`text-sm font-semibold ${categoryCreatorLanguage === "en" ? "block" : "hidden"}`}
+              >
+                English category name
                 <input
                   autoFocus
                   value={newCategoryName}
                   onChange={(event) => setNewCategoryName(event.target.value)}
+                  maxLength={120}
+                  className={inputClass}
+                />
+              </label>
+              <label
+                className={`text-sm font-semibold ${categoryCreatorLanguage === "gu" ? "block" : "hidden"}`}
+                lang="gu"
+              >
+                Gujarati category name
+                <input
+                  value={newCategoryGujaratiName}
+                  onChange={(event) =>
+                    setNewCategoryGujaratiName(event.target.value)
+                  }
                   maxLength={120}
                   className={inputClass}
                 />
@@ -1274,6 +1314,7 @@ export default function AdminProductForm({
                 type="button"
                 onClick={() => {
                   setCategoryCreatorOpen(false);
+                  setCategoryCreatorLanguage("en");
                   setCategoryError("");
                 }}
                 disabled={categoryBusy}
@@ -1281,14 +1322,35 @@ export default function AdminProductForm({
               >
                 Cancel
               </button>
+              {categoryCreatorLanguage === "gu" ? (
+                <button
+                  type="button"
+                  disabled={categoryBusy}
+                  onClick={() => {
+                    setCategoryCreatorLanguage("en");
+                    setCategoryError("");
+                  }}
+                  className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                >
+                  <ArrowLeft size={17} /> Previous
+                </button>
+              ) : null}
               <button
                 type="button"
                 disabled={categoryBusy}
                 onClick={createCategory}
                 className="flex h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
               >
-                <Plus size={17} />
-                {categoryBusy ? "Creating..." : "Create and select"}
+                {categoryCreatorLanguage === "en" ? (
+                  <ArrowRight size={17} />
+                ) : (
+                  <Save size={17} />
+                )}
+                {categoryCreatorLanguage === "en"
+                  ? "Next"
+                  : categoryBusy
+                    ? "Creating..."
+                    : "Create and select"}
               </button>
             </div>
           </div>

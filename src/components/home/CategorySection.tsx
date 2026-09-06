@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   BookOpen,
@@ -15,6 +17,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { Category } from "@/types/category";
 import type { Product } from "@/types/product";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeCategory } from "@/lib/localizedCategory";
 
 // Icon mapping per category slug
 const categoryIconMap: Record<string, LucideIcon> = {
@@ -35,6 +39,8 @@ const CategorySection = ({
   categories: Category[];
   products: Product[];
 }) => {
+  const { language } = useLanguage();
+
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
       <div className="container px-3 lg:px-6 mx-auto">
@@ -58,6 +64,9 @@ const CategorySection = ({
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category) => {
+            const localizedCategory = localizeCategory(category, language);
+            const usesStoredGujarati =
+              language === "gu" && Boolean(category.gujarati);
             const Icon = categoryIconMap[category.slug] || Bookmark;
             const bookCount = products.filter(
               (p) => p.category.toLowerCase() === category.slug.toLowerCase(),
@@ -89,8 +98,10 @@ const CategorySection = ({
                   </div>
 
                   {/* Category Title */}
-                  <h3 className="title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600">
-                    {category.name}
+                  <h3
+                    className={`title text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-orange-600 ${usesStoredGujarati ? "notranslate" : ""}`}
+                  >
+                    {localizedCategory.name}
                   </h3>
                 </div>
 

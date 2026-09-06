@@ -18,6 +18,7 @@ import Faq from "@/components/common/Faq";
 import SearchBar from "@/components/common/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
+import { localizeCategory } from "@/lib/localizedCategory";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -97,7 +98,8 @@ function AllProductsContent({
   // Category list with accurate item counts
   const categoryList = useMemo(() => {
     const allCount = products.length;
-    const list = categories.map((cat) => {
+    const list = categories.map((sourceCategory) => {
+      const cat = localizeCategory(sourceCategory, language);
       const count = products.filter(
         (p) => p.category.toLowerCase() === cat.slug.toLowerCase(),
       ).length;
@@ -107,7 +109,7 @@ function AllProductsContent({
       { id: "all", name: "All Genres", slug: "all", count: allCount },
       ...list,
     ];
-  }, [categories, products]);
+  }, [categories, language, products]);
 
   // Filter & Sort Logic
   const filteredAndSortedProducts = useMemo(() => {
@@ -318,7 +320,11 @@ function AllProductsContent({
                           : "text-gray-700 hover:bg-orange-50/70 hover:text-orange-600"
                       }`}
                     >
-                      <span className="truncate">{cat.name}</span>
+                      <span
+                        className={`truncate ${language === "gu" && cat.gujarati ? "notranslate" : ""}`}
+                      >
+                        {cat.name}
+                      </span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                           isSelected
@@ -651,7 +657,11 @@ function AllProductsContent({
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
-                      <span className="truncate">{cat.name}</span>
+                      <span
+                        className={`truncate ${language === "gu" && cat.gujarati ? "notranslate" : ""}`}
+                      >
+                        {cat.name}
+                      </span>
                       <span
                         className={`text-[10px] rounded-full px-2 py-0.5 ${
                           selectedCategory === cat.slug
