@@ -146,6 +146,9 @@ export default function AdminPanelShell({ children }: { children: ReactNode }) {
             <div className="ml-auto flex items-center gap-2">
               <Link
                 href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open storefront in a new tab"
                 className="hidden h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:flex"
               >
                 <Store size={16} />

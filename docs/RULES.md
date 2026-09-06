@@ -23,6 +23,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 ## Product rules
 
 - Public routes use storefront chrome; admin routes do not.
+- The Admin header Storefront action must open the public root in a new, opener-isolated tab so the current protected workspace remains open.
 - Storefront language/Google Translate effects mount only for public routes; admin routes remain outside that provider and third-party script lifecycle.
 - Indian storefront prices use rupees and Indian formatting unless source data requires otherwise.
 - Static or browser-local features must be labeled mock, demo, or local in documentation.
@@ -30,6 +31,7 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Dynamic routes must handle unknown IDs safely, normally through Next.js not-found behavior.
 - Visible catalog links and Product breadcrumbs must use `/allproducts`; `/shop` is a legacy redirect only and must not be emitted by current storefront UI.
 - Header Categories triggers must use the same closed design on every route. Orange active styling reflects an expanded desktop/mobile category menu only, not whether the visitor is on All Products or a Product detail page.
+- Desktop and mobile Header category menus must use the authoritative Category repository, never a separate hard-coded/seed fallback list. An intentional empty catalog shows an empty message while retaining the All Products path.
 - The homepage Hero must preserve the established English spacing. Gujarati may use tighter vertical spacing and a bounded desktop height, but the badge-to-heading gap must remain explicit and mobile height must stay content-driven.
 - Contact phone numbers are invariant dialable data: keep each complete number LTR, excluded from machine translation, and non-wrapping. When two numbers share a row, their separator must not shrink.
 - Products must reference an existing Category key. Category keys are backend-generated and immutable through Admin edits, so renaming a Category leaves assigned Products intact; Categories with assigned Products cannot be deleted.

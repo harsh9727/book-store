@@ -7,8 +7,15 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { Toaster } from "sonner";
+import type { Category } from "@/types/category";
 
-export default function SiteChrome({ children }: { children: ReactNode }) {
+export default function SiteChrome({
+  categories,
+  children,
+}: {
+  categories: Category[];
+  children: ReactNode;
+}) {
   const pathname = usePathname();
 
   if (pathname.startsWith("/admin")) {
@@ -23,7 +30,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
       >
         Skip to main content
       </a>
-      <Header />
+      <Header categories={categories} />
       <main id="main-content" tabIndex={-1} className="min-h-screen">
         {children}
       </main>

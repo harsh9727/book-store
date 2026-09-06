@@ -4,6 +4,7 @@ import "./globals.css";
 
 import JsonLd from "@/components/seo/JsonLd";
 import SiteChrome from "@/components/layout/SiteChrome";
+import { getCategories } from "@/lib/contentRepository";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -78,16 +79,18 @@ const storeStructuredData = {
   openingHours: "Mo-Sa 10:00-18:00",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories();
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="font-sans antialiased">
         <JsonLd data={storeStructuredData} />
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome categories={categories}>{children}</SiteChrome>
       </body>
     </html>
   );

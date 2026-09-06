@@ -8,6 +8,26 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Admin Storefront action replaces the current tab
+
+**Symptom:** selecting Storefront from the Admin header navigates away from the management panel, interrupting the current Admin context.
+
+**Cause resolved 2026-09-06:** the action was a normal same-tab Next.js link to `/`.
+
+**Solution:** open the Storefront link with `target="_blank"` and `rel="noopener noreferrer"`, and expose its new-tab behavior in the accessible label.
+
+**Prevention:** retain the new-tab and opener-isolation attributes when changing the persistent Admin header actions.
+
+## Deleted Admin categories remain in the Header dropdown
+
+**Symptom:** after deleting every Category in Admin, the desktop or mobile Header still shows Holy Bibles, Christian Living, Devotionals, Kids & Youth, and Accessories.
+
+**Cause resolved 2026-09-06:** Header owned a separate five-item hard-coded category array, so it never observed repository mutations or the intentional empty-catalog marker.
+
+**Solution:** the root layout reads `getCategories()` and passes the records through `SiteChrome` to Header. Both menus derive links from stored slugs, localize stored names, and show `No categories available` when the authoritative array is empty. Existing mutation-driven public-layout revalidation refreshes the shared data.
+
+**Prevention:** keep all storefront Category navigation on repository-provided records and retain integrity coverage that rejects the former static labels in Header source.
+
 ## Gujarati Contact phone numbers split across lines
 
 **Symptom:** in the Gujarati Contact section, `+91` and the remaining digits appear on separate lines, making each call number difficult to read.

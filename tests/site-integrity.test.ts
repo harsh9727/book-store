@@ -139,6 +139,31 @@ test("Header Categories controls use route-independent styling", () => {
   assert.match(source, /aria-expanded=\{isMobileCategoriesOpen\}/);
 });
 
+test("Header category menus use repository data without static fallbacks", () => {
+  const header = readFileSync(
+    path.join(root, "src", "components", "layout", "Header.tsx"),
+    "utf8",
+  );
+  const siteChrome = readFileSync(
+    path.join(root, "src", "components", "layout", "SiteChrome.tsx"),
+    "utf8",
+  );
+  const rootLayout = readFileSync(
+    path.join(root, "src", "app", "layout.tsx"),
+    "utf8",
+  );
+
+  assert.match(rootLayout, /const categories = await getCategories\(\)/);
+  assert.match(rootLayout, /<SiteChrome categories=\{categories\}>/);
+  assert.match(siteChrome, /<Header categories=\{categories\} \/>/);
+  assert.match(header, /navigationCategories\.map/);
+  assert.match(header, /navigationCategories\.length === 0/);
+  assert.doesNotMatch(
+    header,
+    /Holy Bibles|Christian Living|Devotionals|Kids & Youth/,
+  );
+});
+
 test("Gujarati home hero uses a bounded compact desktop layout", () => {
   const source = readFileSync(
     path.join(root, "src", "components", "home", "HeroSection.tsx"),
@@ -301,6 +326,21 @@ test("Admin navigation lives in the persistent route layout", () => {
   assert.match(panelShell, /pathname\.startsWith\(`\$\{href\}\/`\)/);
   assert.doesNotMatch(panelShell, /window\.location|location\.href/);
   assert.doesNotMatch(contentShell, /<aside |Admin navigation|min-h-screen/);
+});
+
+test("Admin Storefront action opens safely in a new tab", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "admin", "AdminPanelShell.tsx"),
+    "utf8",
+  );
+  const storefrontLink = source.match(
+    /<Link\s+href="\/"[\s\S]*?>[\s\S]*?Storefront\s*<\/Link>/,
+  )?.[0];
+
+  assert.ok(storefrontLink);
+  assert.match(storefrontLink, /target="_blank"/);
+  assert.match(storefrontLink, /rel="noopener noreferrer"/);
+  assert.match(storefrontLink, /aria-label="Open storefront in a new tab"/);
 });
 
 test("Admin CRUD leaves content identifiers to the backend", () => {

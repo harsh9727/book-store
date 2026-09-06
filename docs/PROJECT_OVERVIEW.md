@@ -30,11 +30,11 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 
 All visible storefront catalog links and Product breadcrumbs use `/allproducts`. `/shop` remains only as a permanent backward-compatible redirect that preserves supported category, collection, and search parameters.
 
-The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script.
+The Language provider and Google Translate lifecycle exist only inside public `SiteChrome`. Admin routes do not subscribe to the storefront language store, create the hidden translation element, or load the third-party translation script. The persistent Admin header's Storefront action opens the public root in a separate, opener-isolated tab so the current Admin workspace remains available.
 
 The homepage Hero keeps static Server Component markup and the established English composition. When the document language is Gujarati, scoped global CSS applies a compact desktop layout with an explicit 8-pixel badge-to-heading gap and a bounded 420-pixel stage so translated font metrics do not create oversized vertical whitespace; mobile height remains content-driven. Keeping React output static avoids reconciling Hero text nodes rewritten by Google Translate.
 
-The Header Categories trigger has one route-independent closed style across the storefront. It changes to its orange open state only while the related desktop dropdown or mobile category panel is expanded; catalog route highlighting remains on the relevant navigation link instead of changing the trigger merely because of the current page.
+The Header Categories trigger has one route-independent closed style across the storefront. It changes to its orange open state only while the related desktop dropdown or mobile category panel is expanded; catalog route highlighting remains on the relevant navigation link instead of changing the trigger merely because of the current page. Both category menus render the authoritative repository records supplied by the root layout, use authored Gujarati names when available, and show an empty message rather than static fallback categories when Admin has removed every Category.
 
 Public Gallery detail pages show photos in a responsive 1/2/4-column grid. The first 8 are visible initially; View more reveals the remaining batch and expands the photos available to the lightbox. The viewer supports click controls plus Left Arrow, Right Arrow, and Escape keyboard controls.
 

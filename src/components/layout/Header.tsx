@@ -25,8 +25,10 @@ import {
   useCart,
   useCartNotification,
 } from "@/lib/storefrontStorage";
+import { localizeCategory } from "@/lib/localizedCategory";
+import type { Category } from "@/types/category";
 
-function Header() {
+function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
   const { itemCount: cartItemCount } = useCart();
@@ -133,32 +135,12 @@ function Header() {
     }
   };
 
-  /* =========================================================
-     CATEGORY ITEMS
-  ========================================================= */
-
-  const categories = [
-    {
-      name: "Holy Bibles",
-      href: "/allproducts?category=bible-books",
-    },
-    {
-      name: "Christian Living",
-      href: "/allproducts?category=christian-living",
-    },
-    {
-      name: "Devotionals",
-      href: "/allproducts?category=devotionals",
-    },
-    {
-      name: "Kids & Youth",
-      href: "/allproducts?category=kids",
-    },
-    {
-      name: "Accessories",
-      href: "/allproducts?category=accessories",
-    },
-  ];
+  const navigationCategories = categories.map((category) => ({
+    ...category,
+    name: localizeCategory(category, language).name,
+    href: `/allproducts?category=${category.slug}`,
+    usesStoredGujarati: language === "gu" && Boolean(category.gujarati),
+  }));
 
   /* =========================================================
      ACTIVE CHECK
@@ -498,12 +480,12 @@ function Header() {
               {/* Categories */}
 
               <div className="space-y-1">
-                {categories.map((category) => {
+                {navigationCategories.map((category) => {
                   const active = isActive(category.href);
 
                   return (
                     <Link
-                      key={category.href}
+                      key={category.id}
                       href={category.href}
                       onClick={() => setIsCategoryMenuOpen(false)}
                       className={`flex items-center justify-between rounded-md border px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
@@ -512,12 +494,26 @@ function Header() {
                           : "border-transparent text-gray-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
                       }`}
                     >
-                      <span>{category.name}</span>
+                      <span
+                        className={
+                          category.usesStoredGujarati ? "notranslate" : ""
+                        }
+                        translate={
+                          category.usesStoredGujarati ? "no" : undefined
+                        }
+                      >
+                        {category.name}
+                      </span>
 
                       <span className="text-base">→</span>
                     </Link>
                   );
                 })}
+                {navigationCategories.length === 0 && (
+                  <p className="px-3 py-4 text-center text-sm text-gray-500">
+                    No categories available.
+                  </p>
+                )}
               </div>
 
               {/* Divider */}
@@ -644,12 +640,12 @@ function Header() {
             >
               <div className="min-h-0 overflow-hidden">
                 <div className="space-y-1 rounded-xl bg-gray-50 p-2">
-                  {categories.map((category) => {
+                  {navigationCategories.map((category) => {
                     const active = isActive(category.href);
 
                     return (
                       <Link
-                        key={category.href}
+                        key={category.id}
                         href={category.href}
                         onClick={closeSidebar}
                         className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
@@ -658,12 +654,26 @@ function Header() {
                             : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                         }`}
                       >
-                        <span>{category.name}</span>
+                        <span
+                          className={
+                            category.usesStoredGujarati ? "notranslate" : ""
+                          }
+                          translate={
+                            category.usesStoredGujarati ? "no" : undefined
+                          }
+                        >
+                          {category.name}
+                        </span>
 
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     );
                   })}
+                  {navigationCategories.length === 0 && (
+                    <p className="px-3 py-4 text-center text-sm text-gray-500">
+                      No categories available.
+                    </p>
+                  )}
 
                   {/* View All */}
 

@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 50 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 52 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,22 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-06 - Admin Storefront opens in a new tab
+
+- Outcome: changed the Admin header's Storefront action to open `/` in a separate browser tab, allowing the protected management page and its current editing context to remain open. The new-tab link includes an explicit accessible label and `noopener noreferrer` isolation.
+- Main files/areas: persistent Admin panel header, navigation behavior, integrity coverage, admin workflow documentation, troubleshooting, and progress documentation.
+- Data/API/security impact: no session, authorization, mutation, or storefront-data change; opener isolation prevents the new tab from controlling the Admin tab through `window.opener`.
+- Verification and exact result: focused ESLint passed for the Admin panel shell and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 21/21; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 52/52 (7 admin-auth, 24 content-management, and 21 site-integrity). The approved `pnpm build` compiled in 3.4 seconds, completed TypeScript in 7.1 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: browsers may apply their own new-tab focus preference.
+
+### 2026-09-06 - Repository-driven Header categories
+
+- Outcome: removed the five hard-coded desktop/mobile Header category links. The root layout now reads the authoritative Category repository and passes those records through the public chrome into both Header menus. Admin-created names/slugs therefore drive navigation, authored Gujarati names are selected without retranslation, and an intentionally empty Category catalog renders a clear empty state instead of seed/static links.
+- Main files/areas: root layout data loading, public chrome props, responsive Header category menus, localization, empty-state UI, integrity coverage, architecture/rules, troubleshooting, and progress documentation.
+- Data/API/security impact: no schema, endpoint, authorization, or persistence change. Existing successful Admin mutations already invalidate the public layout cache, so the next storefront render receives the changed Category array.
+- Verification and exact result: focused ESLint passed for the root layout, public chrome, Header, and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 20/20; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 51/51 (7 admin-auth, 24 content-management, and 20 site-integrity). The approved `pnpm build` compiled in 2.8 seconds, completed TypeScript in 7.2 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the Categories trigger and View All Books link remain visible when the list is empty so shoppers can still reach the complete catalog.
 
 ### 2026-09-06 - Single-line Contact phone numbers
 
@@ -55,7 +71,7 @@
 - Main files/areas: Category domain type and strict schemas, Category manager, Product inline Category creator, localized Category selector, homepage/category-filter consumers, content and UI regression coverage, project overview, architecture/rules/security/code standards, troubleshooting, and progress documentation.
 - Data/API/security impact: Category create/update drafts now require a bounded `gujarati.name`; stored Category records keep that block optional so seed and legacy content remains readable. Slug generation, Product relationships, authorization, request limits, and atomic persistence are unchanged.
 - Verification and exact result: repository-wide `pnpm lint` passed with 0 errors/warnings; `pnpm exec tsc --noEmit` passed; direct single-process tests passed 48/48 (7 admin-auth, 24 content-management, and 17 site-integrity), including required Gujarati Category input, legacy-store compatibility, localization selection, both English-to-Gujarati Category entry points, and final-submit payload coverage. The approved `pnpm build` compiled in 4.5 seconds, completed TypeScript in 11.7 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
-- Known limitations or next step: seed and legacy Categories without authored Gujarati names continue through the existing storefront translation fallback until an admin edits and saves them. Header category shortcuts remain their existing curated navigation set rather than repository-driven Category records.
+- Known limitations or next step: seed and legacy Categories without authored Gujarati names continue through the existing storefront translation fallback until an admin edits and saves them. The former curated Header shortcut limitation was resolved by the later repository-driven Header change.
 
 ### 2026-09-05 - Backend-generated Admin content slugs
 
