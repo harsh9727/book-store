@@ -12,6 +12,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Production requires `NEXT_PUBLIC_SITE_URL` to be a credential-free HTTPS origin; auth fails closed otherwise.
 - `ADMIN_SESSION_VERSION` can be incremented to invalidate every existing signed session.
 - `NEXT_PUBLIC_` variables are browser-visible and cannot contain secrets.
+- `EMAILJS_PRIVATE_KEY` and the password-reset template ID are server-owned recovery configuration. The private key must never use a `NEXT_PUBLIC_` prefix or appear in client code.
 - `UPLOADTHING_TOKEN` is server-only and must never be prefixed with `NEXT_PUBLIC_` or returned by an API.
 - Rotate a secret immediately if exposed in Git, logs, screenshots, chat, or docs.
 
@@ -24,6 +25,10 @@ This records implemented controls and known risks; it is not a formal security c
 ## Implemented admin controls
 
 - Passwords are verified server-side against a memory-hard scrypt hash; the plaintext fallback is development-only.
+- Forgot password uses a server-mediated EmailJS flow with three client steps: normalized Admin email, six-digit OTP, and confirmed replacement password. The request response does not reveal whether the entered address matches the configured identity.
+- Password-reset requests use cryptographic OTP/challenge randomness, a 10-minute OTP expiry, five verification attempts, a one-minute resend cooldown, 15-minute pair/client caps, and a single-use 256-bit reset authorization that expires after 10 minutes.
+- OTPs and reset authorizations are retained only as HMAC digests in bounded process memory. They are never put in URLs, cookies, local storage, logs, or the credential file.
+- Successful completion derives a new scrypt hash, atomically persists only that hash with a change timestamp and randomized session version in ignored `storage/admin-credentials.json`, and invalidates all existing Admin sessions. Login prefers a valid persisted override and otherwise uses the environment bootstrap hash.
 - Production requires a six-digit TOTP authenticator code with a one-step clock-skew window.
 - Login bodies have a 4 KiB limit and a strict Zod schema.
 - Generic authentication errors reduce account enumeration; client/account failures lock for 15 minutes after five failures and client-wide failures after ten.
@@ -70,11 +75,11 @@ This records implemented controls and known risks; it is not a formal security c
 - Back login throttling with a shared store or deployment WAF for multi-process/multi-region deployments; the implemented bounded store is process-local and resets on restart.
 - Add CSRF review/protection to future state-changing admin endpoints.
 - Add database-backed per-session revocation and audit logs; current rotation invalidates all sessions together.
-- Implement short-lived, single-use password reset tokens; current recovery only prepares an email request and never changes credentials.
+- Move password-reset challenges, recovery throttling, and the credential override to shared durable stores before multi-process, serverless, or multi-region deployment. The current bounded challenge store is process-local and the credential override assumes one writable persistent filesystem.
 - Extend Content Security Policy coverage beyond admin routes after auditing storefront third-party scripts.
 - Replace local `storage/content.json` with a shared database before serverless, read-only, multi-process, or multi-region deployment. The current in-process write queue cannot coordinate replicas.
 - Add an orphan-file reconciliation job if UploadThing usage grows; a successful upload followed by a rejected content mutation can leave an unreferenced provider file.
-- Review EmailJS quotas, abuse protection, and allowed origins.
+- Configure and operationally verify the dedicated EmailJS password-reset template/private key, delivery/spam behavior, quota, and account security. The local audited environment is missing the reset template ID and private key.
 - Add server-side/contact-provider abuse protection if public form volume warrants it; EmailJS public identifiers are intentionally browser-visible and are not secrets.
 - Add dependency vulnerability scanning to CI even though the current production audit is clean.
 - Configure a real HTTPS `NEXT_PUBLIC_SITE_URL` in deployment. Without it, public canonical/social metadata falls back to localhost and production admin authentication rejects the configuration.
@@ -88,6 +93,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Every admin mutation also applies the shared same-origin request check; the marker header is defense-in-depth, not a secret.
 - Inline Category creation in the Product form uses the same protected Category mutation endpoint and must never rely on Product-form visibility as authorization.
 - Credentials never go in URLs, analytics, logs, or error responses.
+- A reset request for an unknown email must follow the same public response contract and must never trigger delivery. OTP verification and completion remain bound to the initiating client, normalized email, and random challenge.
 
 ## Input/output safety
 
@@ -100,6 +106,7 @@ This records implemented controls and known risks; it is not a formal security c
 ## Release checklist
 
 - [ ] Production secrets are unique and stored in a secret manager.
+- [ ] The EmailJS reset template sends only to `{{to_email}}`, includes the bounded OTP/expiry variables, uses server-only private-key authorization, and has been tested at the deployed origin.
 - [ ] HTTPS is enforced; the production `__Host-` admin cookie is observed as Secure.
 - [ ] Example credentials fail.
 - [ ] Protected pages/mutations reject missing, invalid, and expired sessions.

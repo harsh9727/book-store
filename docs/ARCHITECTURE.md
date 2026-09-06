@@ -11,6 +11,7 @@ Browser
   │    └─ file-backed product/category/blog/gallery/testimonial/team repository
   └─ Admin pages
        ├─ login → POST /api/admin/login
+       ├─ password recovery → Email / OTP / replacement password
        ├─ signed HttpOnly session cookie
        ├─ protected dashboard/content workspaces
        └─ CRUD/upload APIs → filesystem + UploadThing
@@ -28,6 +29,7 @@ Browser
 | `src/types/`           | Shared domain types                                                                                |
 | `public/images/`       | Static image assets                                                                                |
 | `storage/content.json` | Ignored runtime product/category/blog/gallery/testimonial/team metadata, created on first mutation |
+| `storage/admin-credentials.json` | Ignored atomic scrypt-hash/session-version override created by a successful password reset |
 | `docs/`                | Maintained project knowledge                                                                       |
 
 ## Rendering boundaries
@@ -101,14 +103,20 @@ The repository is intentionally a typed boundary, so it can later be replaced wi
 ## Admin authentication
 
 1. Login posts email, password, optional TOTP code, and remember-me to `/api/admin/login` with a same-origin marker header.
-2. Login/logout reject an absent or mismatched Origin, cross-site fetch metadata, or absent marker header.
-3. The login route caps request size, validates a strict Zod schema, checks process-local client/account throttles, and returns generic credential failures.
-4. Production configuration fails closed unless it has a valid scrypt password hash, a 32+ character session secret, and TOTP MFA enabled with a valid Base32 secret.
-5. Password verification uses scrypt; identifiers, HMAC signatures, and TOTP codes use timing-safe comparison where applicable.
-6. The session payload contains audience, normalized identity, issue/expiry times, a random ID, and a rotation version, then receives an HMAC-SHA256 signature.
-7. The token is stored in an HttpOnly, SameSite Strict, high-priority cookie. Production uses a Secure `__Host-` cookie.
-8. Protected pages verify the signature, identity, audience, timestamps, maximum lifetime, and version server-side before rendering.
-9. Logout passes the same-origin check and expires the cookie. Incrementing `ADMIN_SESSION_VERSION` invalidates all existing sessions.
+2. The Forgot password dialog advances through Email, six-digit OTP, and replacement-password steps without placing any credential/token in a URL or browser storage.
+3. `POST /api/admin/password-reset` accepts strict bounded request/verify/complete actions and applies the same Origin, fetch-site, explicit-marker, and no-store response rules as login.
+4. A request always returns the same success description for syntactically valid recognized or unrecognized email addresses. Only a timing-safe match with `ADMIN_EMAIL` triggers the server-owned EmailJS template.
+5. The cryptographically random six-digit OTP lives for 10 minutes, is stored only as a keyed digest in bounded process memory, permits at most five verification attempts, and becomes unusable after verification.
+6. Successful OTP verification returns a random 256-bit reset authorization held only in dialog state. Its keyed digest expires after 10 minutes and is consumed by one password change.
+7. Recovery requests have a one-minute pair cooldown plus 15-minute pair/client caps. These controls and challenges are process-local and require a shared store/WAF equivalent for distributed hosting.
+8. Completion derives a fresh scrypt hash, atomically writes it with a new randomized session version to ignored `storage/admin-credentials.json`, and thereby invalidates every existing Admin session. The environment hash remains the bootstrap fallback.
+9. Login/logout reject an absent or mismatched Origin, cross-site fetch metadata, or absent marker header.
+10. The login route caps request size, validates a strict Zod schema, checks process-local client/account throttles, and returns generic credential failures.
+11. Production configuration fails closed unless it has a valid bootstrap scrypt password hash, a 32+ character session secret, and TOTP MFA enabled with a valid Base32 secret. Recovery email additionally requires a separate EmailJS reset template and private key.
+12. Password verification uses the valid persisted override when present and otherwise the environment bootstrap hash. Identifiers, HMAC signatures, OTPs, reset authorizations, and TOTP codes use timing-safe comparisons where applicable.
+13. The session payload contains audience, normalized identity, issue/expiry times, a random ID, and the effective environment/persisted rotation version, then receives an HMAC-SHA256 signature.
+14. The token is stored in an HttpOnly, SameSite Strict, high-priority cookie. Production uses a Secure `__Host-` cookie; protected pages verify every claim and expiry server-side.
+15. Logout expires the cookie. Incrementing `ADMIN_SESSION_VERSION` invalidates sessions that still use the environment bootstrap version, while every successful password reset rotates the persisted version automatically.
 
 Default sessions last 8 hours; remember-me sessions last 7 days.
 
@@ -131,7 +139,7 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 
 - **Status:** Temporary
 - **Reason:** Protects the first admin area without a database.
-- **Consequence:** No roles, reset tokens, per-session revocation list, or audit log. Production credentials are nevertheless hashed and MFA-protected.
+- **Consequence:** No roles, per-session revocation list, or audit log. Production credentials are hashed and MFA-protected; a successful email-OTP recovery creates a file-backed hash override for the same configured identity.
 
 ### ADR-004: Documentation in definition of done
 
@@ -156,3 +164,9 @@ The in-memory rate-limit store is bounded and suitable as an application-layer c
 - **Status:** Accepted
 - **Reason:** Keeps the provider token server-only and centralizes authentication, type, signature, count, and size enforcement.
 - **Consequence:** Blog banners, Gallery covers/photos, Product images, and Team member images accept only JPG, PNG, or WebP files up to 500 KiB each; Gallery extra photos are capped at 12 and Product detail images at 6.
+
+### ADR-008: Server-mediated email-OTP password recovery
+
+- **Status:** Temporary single-instance implementation
+- **Reason:** The single Admin needs a self-service reset without exposing provider credentials or storing plaintext OTPs, while the project has no user database.
+- **Consequence:** EmailJS delivery uses a server-only template/private key; expiring challenges remain in bounded process memory; the replacement scrypt hash and session rotation version use ignored atomic filesystem persistence. Multi-instance/serverless deployment requires shared challenge, rate-limit, and credential stores.

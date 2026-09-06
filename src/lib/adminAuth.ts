@@ -1,9 +1,15 @@
 import {
   createHmac,
+  randomBytes,
   randomUUID,
   scrypt as nodeScrypt,
   timingSafeEqual,
 } from "node:crypto";
+
+import {
+  readAdminCredentialOverride,
+  writeAdminCredentialOverride,
+} from "./adminCredentialStore.ts";
 
 const SCRYPT_COST = 32_768;
 const SCRYPT_BLOCK_SIZE = 8;
@@ -70,6 +76,10 @@ function getSessionSecret() {
 }
 
 function getSessionVersion() {
+  const storedCredentials = readAdminCredentialOverride();
+  if (storedCredentials.status === "valid") {
+    return storedCredentials.credentials.sessionVersion;
+  }
   return process.env.ADMIN_SESSION_VERSION?.trim() || "1";
 }
 
@@ -153,7 +163,10 @@ function createTotp(secret: Buffer, counter: number) {
 export function getAdminAuthConfigurationIssues() {
   const issues: string[] = [];
   const email = process.env.ADMIN_EMAIL?.trim() || "";
-  const passwordHash = parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
+  const environmentPasswordHash = parsePasswordHash(
+    process.env.ADMIN_PASSWORD_HASH,
+  );
+  const storedCredentials = readAdminCredentialOverride();
   const sessionSecret = getSessionSecret();
   const production = process.env.NODE_ENV === "production";
 
@@ -162,7 +175,17 @@ export function getAdminAuthConfigurationIssues() {
   if (Buffer.byteLength(sessionSecret) < 32) {
     issues.push("ADMIN_SESSION_SECRET must contain at least 32 characters.");
   }
-  if (!passwordHash && (production || !process.env.ADMIN_PASSWORD)) {
+  if (
+    storedCredentials.status === "invalid" ||
+    (storedCredentials.status === "valid" &&
+      !parsePasswordHash(storedCredentials.credentials.passwordHash))
+  ) {
+    issues.push("Persisted admin credentials are invalid.");
+  }
+  if (
+    !environmentPasswordHash &&
+    (production || !process.env.ADMIN_PASSWORD)
+  ) {
     issues.push("ADMIN_PASSWORD_HASH must be a valid supported scrypt hash.");
   }
   if (production && process.env.ADMIN_REQUIRE_MFA !== "true") {
@@ -207,7 +230,11 @@ export function isAdminMfaRequired() {
 }
 
 async function verifyPassword(password: string) {
-  const parsedHash = parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
+  const storedCredentials = readAdminCredentialOverride();
+  const parsedHash =
+    storedCredentials.status === "valid"
+      ? parsePasswordHash(storedCredentials.credentials.passwordHash)
+      : parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
 
   if (!parsedHash) {
     return (
@@ -264,6 +291,16 @@ export async function createAdminPasswordHash(password: string, salt: Buffer) {
     salt.toString("base64url"),
     derivedKey.toString("base64url"),
   ].join("$");
+}
+
+export async function replaceAdminPassword(password: string) {
+  const passwordHash = await createAdminPasswordHash(password, randomBytes(16));
+  await writeAdminCredentialOverride({
+    version: 1,
+    passwordHash,
+    sessionVersion: randomUUID(),
+    passwordChangedAt: new Date().toISOString(),
+  });
 }
 
 export function createAdminSession(email: string, expiresAt: number) {

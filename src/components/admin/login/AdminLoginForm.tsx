@@ -12,9 +12,10 @@ import {
   LockKeyhole,
   Mail,
   ShieldCheck,
-  X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import AdminPasswordResetDialog from "@/components/admin/login/AdminPasswordResetDialog";
 
 const REMEMBERED_EMAIL_KEY = "gtbs-admin-email";
 
@@ -35,6 +36,7 @@ export default function AdminLoginForm({
   }>({});
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
+  const closePasswordReset = useCallback(() => setIsForgotOpen(false), []);
 
   useEffect(() => {
     const savedEmail = window.localStorage.getItem(REMEMBERED_EMAIL_KEY) || "";
@@ -120,19 +122,6 @@ export default function AdminLoginForm({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleRecoveryRequest = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("recoveryEmail") || "").trim();
-    const subject = encodeURIComponent("Admin password recovery request");
-    const body = encodeURIComponent(
-      `Please help me reset access to the GTBS admin account associated with ${email}.`,
-    );
-
-    window.location.href = `mailto:gtbs-1852@yahoo.in?subject=${subject}&body=${body}`;
-    setIsForgotOpen(false);
   };
 
   return (
@@ -347,81 +336,12 @@ export default function AdminLoginForm({
         </div>
       </div>
 
-      {isForgotOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setIsForgotOpen(false);
-            }
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="forgot-password-title"
-            className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-2xl"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2
-                  id="forgot-password-title"
-                  className="title text-xl font-bold text-gray-900"
-                >
-                  Forgot password?
-                </h2>
-                <p className="description mt-2 text-sm leading-6 text-gray-600">
-                  Send a recovery request to the GTBS account owner.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsForgotOpen(false)}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                aria-label="Close password recovery"
-                title="Close"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleRecoveryRequest} className="mt-6">
-              <label
-                htmlFor="recovery-email"
-                className="text-sm font-semibold text-gray-800"
-              >
-                Admin email address
-              </label>
-              <input
-                id="recovery-email"
-                name="recoveryEmail"
-                type="email"
-                required
-                value={recoveryEmail}
-                onChange={(event) => setRecoveryEmail(event.target.value)}
-                className="mt-2 h-11 w-full rounded-lg border border-gray-300 px-3.5 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-                placeholder="admin@example.com"
-              />
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsForgotOpen(false)}
-                  className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="h-10 rounded-lg bg-orange-600 px-4 text-sm font-semibold text-white hover:bg-orange-700"
-                >
-                  Request reset
-                </button>
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
+      {isForgotOpen ? (
+        <AdminPasswordResetDialog
+          initialEmail={recoveryEmail}
+          onClose={closePasswordReset}
+        />
+      ) : null}
     </div>
   );
 }

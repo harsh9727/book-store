@@ -82,6 +82,7 @@
 - Parse admin route bodies with strict schemas and cap body size before expensive credential work.
 - Validate image MIME type, byte size, and file signature server-side before provider upload; client checks are usability only.
 - Keep password hashing, MFA verification, session signing, request-origin checks, and throttling in server-only utilities.
+- Password recovery endpoints use strict bounded action schemas, generic account-discovery responses, cryptographic randomness, keyed-digest comparisons, short expiries, attempt/cooldown limits, and single-use reset authorization. Persist only the replacement scrypt hash and rotated session version through the atomic credential store.
 - Admin mutation fetches include `X-GTBS-Admin-Request: 1`; route handlers also validate Origin and fetch-site metadata.
 - Production cookies are Secure, HttpOnly, SameSite Strict, high priority, host-only, and scoped to `/`.
 - Add auth regression coverage to `tests/admin-auth.test.ts` whenever an authentication invariant changes.

@@ -224,6 +224,46 @@
 
 **Prevention:** prefer server-provided initial data for server-owned sources, keep filter/search interaction at a narrow client boundary, and reserve `priority` for above-the-fold images that affect LCP. In development, first visits still include route compilation time; compare warm requests or a completed production build when evaluating runtime performance.
 
+## Admin password recovery email is not configured
+
+**Symptom:** the first Forgot password step returns HTTP 503 with `Admin password recovery email is not configured.`
+
+**Cause:** `EMAILJS_PASSWORD_RESET_TEMPLATE_ID` or `EMAILJS_PRIVATE_KEY` is missing. The service/public values may come from `EMAILJS_SERVICE_ID`/`EMAILJS_PUBLIC_KEY` or fall back to the configured public contact-form values.
+
+**Solution:** create a dedicated EmailJS template with recipient `{{to_email}}` and body variables `{{otp_code}}`, `{{expires_minutes}}`, and `{{application_name}}`. Put its template ID and the EmailJS Account Security private key in local/deployment secrets, then restart Next.js. Never paste the private key into source, Markdown, screenshots, or a `NEXT_PUBLIC_` variable.
+
+**Prevention:** validate provider configuration and an end-to-end inbox delivery during deployment, while keeping the example environment values blank.
+
+## Admin password-reset OTP does not arrive or is rejected
+
+**Symptom:** the UI advances to OTP but no message arrives, or verification reports that the code is invalid/expired.
+
+**Cause:** a syntactically valid unknown email intentionally receives the same request response but no message; alternatively the EmailJS recipient/template is wrong, delivery went to spam, the 10-minute challenge expired, five incorrect entries consumed it, the process restarted, or a different host/process handled the next step.
+
+**Solution:** use the exact configured `ADMIN_EMAIL`, check the dedicated EmailJS template/history and spam folder without logging the OTP, then start again after the displayed cooldown. Keep all three steps on the same canonical host. For multiple instances, replace the process-local challenge store with a shared expiring store.
+
+**Prevention:** retain generic account-discovery responses, template recipient `{{to_email}}`, bounded challenge tests, one canonical origin, and production provider monitoring.
+
+## New Admin password cannot be saved
+
+**Symptom:** OTP verification succeeds but the final step reports that the new password could not be saved.
+
+**Cause:** the application cannot atomically create/replace ignored `storage/admin-credentials.json`, its existing document is invalid, or the target deployment has a read-only/ephemeral filesystem.
+
+**Solution:** give the single Node application instance a private writable persistent `storage/` directory and retry from the Email step. A serverless or replicated deployment must use a shared credential repository instead of local files.
+
+**Prevention:** include credential-path write/persistence checks in deployment verification and never manually edit the credential JSON.
+
+## Password-reset build traces the whole project
+
+**Symptom:** Turbopack warns that the dynamic `readFileSync(credentialStoragePath())` access causes the whole project to be traced into the server output.
+
+**Cause resolved 2026-09-06:** the credential store supports an isolated test path, so static analysis could not prove that the runtime read remains scoped to ignored `storage/admin-credentials.json`.
+
+**Solution:** retain Turbopack's supported `/* turbopackIgnore: true */` annotation on that read. The production path is application-owned runtime persistence, is not required in the deployment bundle, and is created only by a successful password reset.
+
+**Prevention:** keep the production credential path fixed under `storage/`, keep path override test-only, and rerun the production build after changing filesystem access.
+
 ## Admin login says “not configured”
 
 **Symptom:** `POST /api/admin/login` returns HTTP 503.

@@ -11,7 +11,7 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 - Next.js 16.3.3 App Router, React 19, and strict TypeScript
 - Tailwind CSS 4
 - Lucide React
-- EmailJS for the contact form
+- EmailJS for the public contact form and server-mediated Admin reset OTP email
 - Zod for request and persisted-content validation
 - Tiptap 3 for the Blog admin rich-text editor
 - UploadThing server SDK for managed blog/gallery/product/team images
@@ -26,7 +26,7 @@ The repository currently implements a frontend-led storefront with a dynamic, fi
 | Shopping   | `/cart`                                                                                                                                           | Browser-local multi-Product Cart with quantity controls, an acknowledged-on-visit header update badge, and a direct itemized WhatsApp handoff                                                                         |
 | Removed commerce aliases | `/checkout`, `/wishlist`, `/login`, `/register`, `/profile`                                                                                  | No page implementation; old URLs redirect to Cart or All Products                                                                                                                                                    |
 | Policies   | Privacy, terms, and shipping routes                                                                                                               | Content implemented                                                                                                                                                                                                 |
-| Admin      | `/admin/login`, `/admin/dashboard`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Protected workspaces share one persistent responsive sidebar/header; Overview reports live repository totals, category distribution, and six-domain content snapshots; Products/Blogs/Gallery/Testimonials/Team use list-first management, and Categories uses a dedicated inline module |
+| Admin      | `/admin/login`, `/admin/dashboard`, `/api/admin/password-reset`, Product, Category, Blog, Gallery, Testimonial, and Team management routes including standalone add/edit pages | Login includes Email → 6-digit OTP → new-password recovery; protected workspaces share one persistent responsive shell; Overview reports live repository totals and six-domain snapshots; the content modules retain their list/add/edit flows |
 
 All visible storefront catalog links and Product breadcrumbs use `/allproducts`. `/shop` remains only as a permanent backward-compatible redirect that preserves supported category, collection, and search parameters.
 
@@ -46,15 +46,16 @@ The homepage Magazine section has no placeholder Product records. It shows up to
 
 ## Data
 
-Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. This is single-instance filesystem persistence, not a database. FAQs remain static bilingual dictionary content keyed by section. Cart uses bounded, validated, non-sensitive `localStorage` records plus a non-sensitive read/unread update marker and intentionally does not synchronize its contents across devices.
+Products, Categories, Testimonials, and Team members have committed seed arrays in `src/data/` for first-run/backward-compatible hydration; Blogs and Galleries have no committed fallback records and start empty until managed through the admin. Admin mutations persist all six domains in ignored `storage/content.json`. Existing stores missing the Testimonial or Team field receive their committed bilingual seeds, while explicit empty arrays remain authoritative. The full document is strictly validated and written atomically. A failed write makes a best-effort cleanup of its unique temporary file before surfacing the error. A `catalogInitialized` marker separately distinguishes an intentional empty Product/Category catalog from a legacy/accidental uninitialized catalog. After the first successful Admin password reset, the replacement scrypt hash, password-change timestamp, and randomized session version are atomically persisted in ignored `storage/admin-credentials.json`; the environment hash remains the bootstrap fallback and plaintext passwords/OTPs are never stored there. These are single-instance filesystem stores, not a database. FAQs remain static bilingual dictionary content keyed by section. Cart uses bounded, validated, non-sensitive `localStorage` records plus a non-sensitive read/unread update marker and intentionally does not synchronize its contents across devices.
 
 ## Local setup
 
 1. Install dependencies with `npm install` or the declared package manager, pnpm.
 2. Copy `.env.example` to `.env` and provide local values. Never commit `.env`.
 3. Run `npm run admin:setup` to generate the production password hash, session secret, and authenticator secret; store the output in local/deployment secret configuration.
-4. Run `pnpm dev` (or `npm run dev`) to use the repository's stable Webpack development fallback on Windows. `pnpm dev:turbopack` remains available for explicit Turbopack diagnostics.
-5. Open `http://localhost:3000`.
+4. In EmailJS, create a password-reset template whose recipient is `{{to_email}}` and whose content includes `{{otp_code}}`, `{{expires_minutes}}`, and `{{application_name}}`; configure its template ID and the account private key in server-only environment values.
+5. Run `pnpm dev` (or `npm run dev`) to use the repository's stable Webpack development fallback on Windows. `pnpm dev:turbopack` remains available for explicit Turbopack diagnostics.
+6. Open `http://localhost:3000`.
 
 Useful checks:
 
@@ -75,6 +76,10 @@ npm run build
 | `NEXT_PUBLIC_SITE_URL`     | Canonical URL and SEO                                             | Public         |
 | `GOOGLE_SITE_VERIFICATION` | Search Console verification                                       | Server config  |
 | `NEXT_PUBLIC_EMAILJS_*`    | Contact-form EmailJS configuration                                | Public/browser |
+| `EMAILJS_SERVICE_ID`       | Server reset-email service; may reuse the contact service          | Server only    |
+| `EMAILJS_PUBLIC_KEY`       | EmailJS account identifier used by the server reset request        | Server config  |
+| `EMAILJS_PASSWORD_RESET_TEMPLATE_ID` | Template that sends the OTP to `{{to_email}}`          | Server config  |
+| `EMAILJS_PRIVATE_KEY`      | Authorizes server-side password-reset email delivery               | Server secret  |
 | `UPLOADTHING_TOKEN`        | Authenticates server-side blog/gallery/product/team image uploads | Server only    |
 | `ADMIN_EMAIL`              | Admin identity                                                    | Server only    |
 | `ADMIN_PASSWORD_HASH`      | Generated scrypt password verifier; required in production        | Server only    |
@@ -106,7 +111,7 @@ npm run build
 - Uploading images and then failing a later content mutation can leave an unreferenced UploadThing file that must be cleaned up manually.
 - Admin auth supports one environment-configured account and no roles or database-backed per-session revocation.
 - Login throttling is process-local; multi-instance deployments must also enable a shared host/WAF rate limit.
-- Password recovery prepares a support email; it does not issue an automated reset token.
+- Password recovery requires a configured EmailJS reset template/private key and one writable persistent application instance. OTP challenges are intentionally process-local, so a multi-instance deployment needs a shared expiring challenge/rate-limit store; reset password hashes need shared durable credential storage.
 - Cart is device-local browser state; it is not authenticated, inventory-reserved, server-validated, or synchronized across devices.
 - Buy Now and Cart prepare WhatsApp enquiries only. They do not confirm shipping, reserve stock, charge a payment method, or create a persistent order.
 - Wishlist, Checkout, customer sign-in, registration, and profile pages are intentionally absent from the product scope.

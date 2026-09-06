@@ -20,9 +20,11 @@
 # production
 /build
 
-# local file-backed CMS persistence
+# local file-backed persistence
 /storage/content.json
 /storage/content-*.tmp
+/storage/admin-credentials.json
+/storage/admin-credentials-*.tmp
 
 # misc
 .DS_Store

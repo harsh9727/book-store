@@ -497,6 +497,54 @@ test("Admin Storefront action opens safely in a new tab", () => {
   assert.match(storefrontLink, /aria-label="Open storefront in a new tab"/);
 });
 
+test("Admin password recovery uses the server-owned email OTP flow", () => {
+  const loginForm = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "login",
+      "AdminLoginForm.tsx",
+    ),
+    "utf8",
+  );
+  const resetDialog = readFileSync(
+    path.join(
+      root,
+      "src",
+      "components",
+      "admin",
+      "login",
+      "AdminPasswordResetDialog.tsx",
+    ),
+    "utf8",
+  );
+  const resetRoute = readFileSync(
+    path.join(
+      root,
+      "src",
+      "app",
+      "api",
+      "admin",
+      "password-reset",
+      "route.ts",
+    ),
+    "utf8",
+  );
+
+  assert.match(loginForm, /AdminPasswordResetDialog/);
+  assert.doesNotMatch(loginForm, /mailto:/);
+  assert.match(resetDialog, /"email" \| "otp" \| "password" \| "success"/);
+  assert.match(resetDialog, /\/api\/admin\/password-reset/);
+  assert.match(resetDialog, /action: "request"/);
+  assert.match(resetDialog, /action: "verify"/);
+  assert.match(resetDialog, /action: "complete"/);
+  assert.match(resetRoute, /isTrustedAdminMutation\(request\)/);
+  assert.match(resetRoute, /Cache-Control": "no-store"/);
+  assert.match(resetRoute, /newPassword: z\.string\(\)\.min\(12\)\.max\(128\)/);
+});
+
 test("Admin CRUD leaves content identifiers to the backend", () => {
   const adminComponentRoot = path.join(root, "src", "components", "admin");
   const formFiles = [

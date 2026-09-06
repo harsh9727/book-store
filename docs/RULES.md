@@ -110,6 +110,8 @@ Update every topic document whose facts changed. New errors and resolutions belo
 - Persisted content mutations go through `contentRepository.ts`; UI and route handlers do not write the content file directly.
 - Production admin auth must fail closed when the password hash, MFA secret, HTTPS origin, or strong session secret is missing.
 - Never weaken or bypass login throttling for UI convenience; distributed deployments add a shared host/WAF limit.
+- Forgot password must remain an Email → OTP → new-password flow. Send an OTP only for a timing-safe match with the configured Admin email, return generic request copy, keep OTP/reset authorization out of URLs and durable storage, expire and rate-limit challenges, and rotate all existing sessions after a successful reset.
+- Password-reset email must be initiated server-side with the dedicated EmailJS template/private key. Never expose `EMAILJS_PRIVATE_KEY`, an OTP, a reset authorization, or the replacement password to a Client Component environment variable, log, analytics event, or Markdown file.
 
 ## Git and files
 
