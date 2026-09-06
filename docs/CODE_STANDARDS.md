@@ -49,6 +49,7 @@
 
 - Prefer Tailwind utilities and existing visual conventions.
 - Start mobile-first, then add responsive enhancements.
+- When translated font metrics change a layout materially, select narrowly scoped language-aware presentation classes from the existing language context; use explicit flex/grid gaps instead of relying on translated inline-flow whitespace.
 - Use arbitrary values sparingly.
 - Maintain keyboard focus, contrast, and 40–44px touch targets. When a feature removes the global orange input outline, use a dedicated scoped class that overrides the unlayered global `:focus-visible` rule and replace it with a visible neutral focus state rather than removing keyboard focus indication entirely.
 - Specify image dimensions to prevent layout shift. Every responsive `next/image` using `fill` must also declare a realistic `sizes` value.

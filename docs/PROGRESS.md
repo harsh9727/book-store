@@ -13,7 +13,7 @@
 | Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 48 focused/integrity tests, production build, and dependency audit pass                           |
+| Automated quality | Healthy baseline                    | ESLint, TypeScript, 49 focused/integrity tests, production build, and dependency audit pass                           |
 
 ## Current priorities
 
@@ -24,6 +24,14 @@
 5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-06 - Compact Gujarati homepage hero
+
+- Outcome: removed the oversized space between the translated Gujarati badge and heading by grouping them in an explicit vertical flex layout with an 8-pixel Gujarati gap. The Gujarati hero also uses tighter heading/description/action spacing and a bounded 420-pixel desktop stage, while English retains its existing spacing and mobile remains content-driven.
+- Main files/areas: homepage Hero client boundary, responsive language-aware presentation, site-integrity coverage, storefront layout documentation, and troubleshooting.
+- Data/API/security impact: none; the language store and Google Translate lifecycle are unchanged.
+- Verification and exact result: focused ESLint passed for the Hero and site-integrity test; `pnpm exec tsc --noEmit` passed; focused site-integrity tests passed 18/18; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process suite passed 49/49 (7 admin-auth, 24 content-management, and 18 site-integrity). The approved `pnpm build` compiled in 3.7 seconds, completed TypeScript in 7.4 seconds, generated 33/33 pages, and exited 0; `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the exact Gujarati glyph wrapping still depends on Google Translate output and the visitor's available Gujarati system font.
 
 ### 2026-09-06 - Responsive Category final-action buttons
 

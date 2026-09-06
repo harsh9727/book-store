@@ -139,6 +139,20 @@ test("Header Categories controls use route-independent styling", () => {
   assert.match(source, /aria-expanded=\{isMobileCategoriesOpen\}/);
 });
 
+test("Gujarati home hero uses a bounded compact desktop layout", () => {
+  const source = readFileSync(
+    path.join(root, "src", "components", "home", "HeroSection.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /const isGujarati = language === "gu"/);
+  assert.match(source, /lg:h-\[420px\] lg:min-h-0/);
+  assert.match(source, /isGujarati \? "gap-2" : "gap-6"/);
+  assert.match(source, /isGujarati \? "mt-3" : "mt-5"/);
+  assert.match(source, /isGujarati \? "mt-6" : "mt-8"/);
+  assert.doesNotMatch(source, /isGujarati \? "mb-4" : "mb-6"/);
+});
+
 test("Admin Product variants use individual option inputs", () => {
   const source = readFileSync(
     path.join(

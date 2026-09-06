@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Gujarati homepage hero has excessive vertical space
+
+**Symptom:** after selecting Gujarati, the homepage banner becomes taller than English and shows a large blank area between the translated badge and main heading.
+
+**Cause resolved 2026-09-06:** the shared English spacing did not account for Gujarati glyph metrics and Google Translate's generated inline wrappers, so implicit inline flow and the content-driven minimum height exaggerated vertical gaps.
+
+**Solution:** the Hero now reads the existing public language context. Badge and heading share an explicit flex column with an 8-pixel Gujarati gap; Gujarati also receives compact internal spacing and a bounded 420-pixel desktop stage, while English classes and mobile content-driven height remain intact.
+
+**Prevention:** keep translated heading groups in explicit layout containers and cover the Gujarati gap/desktop-height contract in the site-integrity test.
+
 ## Create Category button wraps onto two lines
 
 **Symptom:** on the Gujarati Category step, the orange Create Category button looks cramped and its label breaks into two lines beside Previous.
