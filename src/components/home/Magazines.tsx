@@ -12,7 +12,7 @@ interface MagazinesProps {
 }
 
 export default function Magazines({ products }: MagazinesProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const magazineItems = products.slice(0, 3).map((product) => {
     const localized = localizeProduct(product, language);
     return {
@@ -32,11 +32,10 @@ export default function Magazines({ products }: MagazinesProps) {
         <div className="mb-10 flex items-end justify-between gap-6">
           <div className="max-w-2xl">
             <h2 className="title text-3xl font-semibold text-orange-600 sm:text-4xl">
-              Our Magazines
+              {t("home.magazines.title")}
             </h2>
             <p className="description mt-3 max-w-xl text-sm leading-6 text-gray-500 sm:text-[15px]">
-              Discover inspiring Christian magazines filled with faith, stories,
-              spiritual insights, and meaningful content for everyday life.
+              {t("home.magazines.description")}
             </p>
           </div>
 
@@ -44,7 +43,7 @@ export default function Magazines({ products }: MagazinesProps) {
             href="/allproducts?category=magazines"
             className="description hidden shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition hover:border-orange-600 hover:text-orange-600 sm:flex"
           >
-            View All
+            {t("action.viewAll")}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -90,7 +89,7 @@ export default function Magazines({ products }: MagazinesProps) {
 
                   <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
                     <div className="flex items-center text-xs font-semibold text-orange-600 transition-all duration-300 group-hover:text-orange-700 sm:text-sm">
-                      <span>View Product Details</span>
+                      <span>{t("action.viewDetails")}</span>
                       <ArrowRight
                         size={15}
                         className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1.5"
@@ -116,7 +115,7 @@ export default function Magazines({ products }: MagazinesProps) {
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-gray-200 bg-white px-5 py-10 text-center text-sm text-gray-500">
-            No products are currently assigned to this collection.
+            {t("home.collection.empty")}
           </p>
         )}
 
@@ -125,7 +124,7 @@ export default function Magazines({ products }: MagazinesProps) {
             href="/allproducts?category=magazines"
             className="description flex items-center gap-2 rounded-full border border-orange-600 px-6 py-2.5 text-sm font-medium text-orange-600 hover:bg-orange-600 hover:text-white"
           >
-            View All
+            {t("action.viewAll")}
             <ArrowRight size={16} />
           </Link>
         </div>

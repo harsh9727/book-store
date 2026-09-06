@@ -1,24 +1,28 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import Logo from "../../../public/images/logo/logo.webp";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { TranslationKey } from "@/lib/storefrontI18n";
 
 const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Blogs", href: "/blogs" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
-];
+  { labelKey: "nav.home", href: "/" },
+  { labelKey: "nav.about", href: "/about" },
+  { labelKey: "nav.blogs", href: "/blogs" },
+  { labelKey: "nav.gallery", href: "/gallery" },
+  { labelKey: "nav.contact", href: "/contact" },
+] satisfies Array<{ labelKey: TranslationKey; href: string }>;
 
 const policyLinks = [
-  { label: "Privacy Policy", href: "/privacy-policy" },
-  { label: "Terms and Conditions", href: "/terms-and-conditions" },
+  { labelKey: "footer.privacy", href: "/privacy-policy" },
+  { labelKey: "footer.terms", href: "/terms-and-conditions" },
   {
-    label: "Shipping and Delivery Policy",
+    labelKey: "footer.shipping",
     href: "/shipping-and-delivery-policy",
   },
-];
+] satisfies Array<{ labelKey: TranslationKey; href: string }>;
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -30,6 +34,8 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 }
 
 function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="relative bg-black pt-16 pb-8">
       {/* thin gradient accent line at the very top of the footer */}
@@ -39,17 +45,20 @@ function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12">
           {/* Brand */}
           <div className="lg:col-span-4">
-            <Image src={Logo} alt="GTBS Book Store" width={72} height={72} />
+            <Image
+              src={Logo}
+              alt={t("common.storeLogo")}
+              width={72}
+              height={72}
+            />
             <p className="text-white/60 font-normal pt-5 text-sm leading-relaxed max-w-xs">
-              Welcome to GTBS Book Store, your trusted destination for Christian
-              books, Holy Bibles, devotionals, study guides, children&apos;s
-              books, magazines, and faith-inspired gifts.
+              {t("footer.description")}
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <FooterHeading>Quick Links</FooterHeading>
+            <FooterHeading>{t("footer.quickLinks")}</FooterHeading>
             <ul className="text-white/60 font-normal text-sm space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -57,7 +66,7 @@ function Footer() {
                     href={link.href}
                     className="transition-colors hover:text-amber-400"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -66,7 +75,7 @@ function Footer() {
 
           {/* Policy Links */}
           <div className="lg:col-span-3">
-            <FooterHeading>Policy Links</FooterHeading>
+            <FooterHeading>{t("footer.policyLinks")}</FooterHeading>
             <ul className="text-white/60 font-normal text-sm space-y-3">
               {policyLinks.map((link) => (
                 <li key={link.href}>
@@ -74,7 +83,7 @@ function Footer() {
                     href={link.href}
                     className="transition-colors hover:text-amber-400"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -83,7 +92,7 @@ function Footer() {
 
           {/* Contact */}
           <div className="lg:col-span-3">
-            <FooterHeading>Contact Information</FooterHeading>
+            <FooterHeading>{t("footer.contact")}</FooterHeading>
             <ul className="text-white/60 font-normal text-sm space-y-4">
               <li>
                 <div className="flex flex-wrap items-center gap-3 text-white/60">
@@ -137,10 +146,10 @@ function Footer() {
         {/* Bottom bar */}
         <div className="mt-14 flex flex-col-reverse items-center gap-4 border-t border-white/10 pt-6 sm:flex-row sm:justify-between">
           <p className="text-white/40 text-xs">
-            © {new Date().getFullYear()} GTBS Book Store. All rights reserved.
+            {t("footer.rights", { year: new Date().getFullYear() })}
           </p>
           <p className="text-white/40 text-xs">
-            Faithfully serving readers since 2010.
+            {t("footer.serving")}
           </p>
         </div>
       </div>

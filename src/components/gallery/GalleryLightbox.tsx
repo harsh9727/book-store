@@ -10,6 +10,7 @@ import {
   Maximize2,
 } from "lucide-react";
 import { GalleryPhoto } from "@/types/gallery";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface GalleryLightboxProps {
   photos: GalleryPhoto[];
@@ -18,6 +19,7 @@ interface GalleryLightboxProps {
 const PHOTO_BATCH_SIZE = 8;
 
 export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
+  const { t } = useLanguage();
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(
     null,
   );
@@ -100,7 +102,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
             key={photo.id}
             role="button"
             tabIndex={0}
-            aria-label={`Open photo: ${photo.title}`}
+            aria-label={t("gallery.lightbox.open", { title: photo.title })}
             onClick={(event) => openLightbox(idx, event.currentTarget)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -152,11 +154,14 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
             }
             className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-6 text-sm font-semibold text-orange-700 transition-colors hover:border-orange-300 hover:bg-orange-100"
           >
-            View more photos
+            {t("gallery.lightbox.viewMore")}
             <ChevronDown size={17} />
           </button>
           <span className="text-xs text-gray-500">
-            Showing {visiblePhotos.length} of {photos.length}
+            {t("gallery.lightbox.showing", {
+              visible: visiblePhotos.length,
+              total: photos.length,
+            })}
           </span>
         </div>
       )}
@@ -175,7 +180,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
             ref={closeButtonRef}
             type="button"
             onClick={closeLightbox}
-            aria-label="Close photo viewer"
+            aria-label={t("gallery.lightbox.close")}
             className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <X size={20} />
@@ -185,7 +190,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           <button
             type="button"
             onClick={prevPhoto}
-            aria-label="View previous photo"
+            aria-label={t("gallery.lightbox.previous")}
             className="absolute left-5 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <ChevronLeft size={24} />
@@ -195,7 +200,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
           <button
             type="button"
             onClick={nextPhoto}
-            aria-label="View next photo"
+            aria-label={t("gallery.lightbox.next")}
             className="absolute right-5 top-1/2 -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <ChevronRight size={24} />

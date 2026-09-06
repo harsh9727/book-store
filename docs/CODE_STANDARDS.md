@@ -49,7 +49,8 @@
 
 - Prefer Tailwind utilities and existing visual conventions.
 - Start mobile-first, then add responsive enhancements.
-- When translated font metrics change a layout materially, prefer stable markup with narrowly scoped `html[lang]` presentation rules and explicit flex/grid gaps. Do not make an otherwise static translated subtree language-reactive merely to change CSS classes, because external translation can replace React-owned text nodes.
+- Storefront static copy uses typed semantic dictionary keys through `useLanguage().t`; Server Components that only need a translated text leaf may use `StorefrontText`, while larger interactive blocks remain focused client boundaries. Keep keys inside the closest nested feature section (`home.hero`, `catalog`, `contact.form`, `faqContent`, `policies`, and so on), and add the same leaf path to both `english.json` and `gujarati.json` in one change. Interpolation placeholders use named braces such as `{count}` and must match in both language files. Static FAQ records store typed question/answer keys, never a second embedded copy of either language.
+- When Gujarati font metrics change a layout materially, keep the React-owned markup stable and use narrowly scoped `html[lang]` presentation rules with explicit flex/grid gaps. Do not introduce external scripts that rewrite React-owned text nodes.
 - Use arbitrary values sparingly.
 - Maintain keyboard focus, contrast, and 40–44px touch targets. When a feature removes the global orange input outline, use a dedicated scoped class that overrides the unlayered global `:focus-visible` rule and replace it with a visible neutral focus state rather than removing keyboard focus indication entirely.
 - Specify image dimensions to prevent layout shift. Every responsive `next/image` using `fill` must also declare a realistic `sizes` value.

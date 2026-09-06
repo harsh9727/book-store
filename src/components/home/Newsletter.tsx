@@ -1,4 +1,7 @@
+"use client";
+
 import { Mail, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NewsletterProps {
   title: string;
@@ -6,6 +9,7 @@ interface NewsletterProps {
 }
 
 const Newsletter = ({ title, description }: NewsletterProps) => {
+  const { t } = useLanguage();
   const subscriptionEmail =
     "mailto:gtbs-1852@yahoo.in?subject=GTBS%20newsletter%20subscription";
 
@@ -42,7 +46,7 @@ const Newsletter = ({ title, description }: NewsletterProps) => {
               href={subscriptionEmail}
               className="description group flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 text-sm font-medium text-white transition-all duration-300 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/20"
             >
-                Request email updates
+                {t("common.newsletterRequest")}
                 <ArrowRight
                   size={16}
                   className="transition-transform duration-300 group-hover:translate-x-1"

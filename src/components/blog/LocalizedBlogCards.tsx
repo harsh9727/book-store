@@ -9,7 +9,7 @@ import { localizeBlog } from "@/lib/localizedBlog";
 import type { BlogPost } from "@/types/blog";
 
 export default function LocalizedBlogCards({ blogs }: { blogs: BlogPost[] }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -62,7 +62,7 @@ export default function LocalizedBlogCards({ blogs }: { blogs: BlogPost[] }) {
                 href={`/blogs/${blog.slug}`}
                 className="group/link mt-auto flex w-fit items-center gap-1.5 pt-4 text-xs font-semibold text-gray-800 transition-colors duration-300 hover:text-orange-600"
               >
-                Read More
+                {t("action.readMore")}
                 <ArrowRight
                   size={14}
                   className="transition-transform duration-300 group-hover/link:translate-x-1"

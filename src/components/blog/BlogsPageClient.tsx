@@ -16,7 +16,7 @@ export default function BlogsPageClient({
 }: {
   initialItems: BlogPost[];
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const blogItems = initialItems;
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,14 +56,13 @@ export default function BlogsPageClient({
       <div className="mb-10 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-sm font-semibold description tracking-wide text-orange-700 mb-3">
           <BookOpen size={16} />
-          <span>The GTBS Literary Journal</span>
+          <span>{t("blog.badge")}</span>
         </div>
         <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-          Stories, Ideas & Book Wisdom
+          {t("blog.title")}
         </h1>
         <p className="description mt-3 text-sm md:text-base text-gray-600">
-          Curated reading guides, author perspectives, book reviews, and mindful
-          reading tips.
+          {t("blog.description")}
         </p>
       </div>
 
@@ -74,9 +73,7 @@ export default function BlogsPageClient({
           {categories.map((cat) => {
             const categoryLabel =
               cat === "All"
-                ? language === "gu"
-                  ? "બધા"
-                  : cat
+                ? t("blog.all")
                 : localizeBlog(
                     blogItems.find((blog) => blog.category === cat)!,
                     language,
@@ -119,7 +116,7 @@ export default function BlogsPageClient({
             onSearch={updateSearchQuery}
             debounceMs={300}
             size="sm"
-            placeholder="Search articles or topics..."
+            placeholder={t("blog.search")}
           />
         </div>
       </div>
@@ -128,7 +125,7 @@ export default function BlogsPageClient({
       {filteredBlogs.length === 0 ? (
         <div className="py-16 text-center rounded-3xl border border-gray-100 bg-white p-8">
           <p className="text-gray-500 description text-sm">
-            No blog posts found matching your search.
+            {t("blog.empty")}
           </p>
         </div>
       ) : (
@@ -209,7 +206,7 @@ export default function BlogsPageClient({
                         href={`/blogs/${blog.slug}`}
                         className="flex items-center gap-1 text-xs font-semibold tracking-wide description text-orange-600 hover:text-orange-700"
                       >
-                        <span>Read</span>
+                        <span>{t("blog.read")}</span>
                         <ArrowRight size={14} />
                       </Link>
                     </div>
@@ -224,11 +221,10 @@ export default function BlogsPageClient({
             <div className="flex flex-col items-center justify-center gap-3 pt-6 border-t border-gray-100">
               <div className="flex items-center gap-2.5 text-xs text-gray-500 description tracking-wide">
                 <span>
-                  Showing{" "}
-                  <strong>
-                    {Math.min(visibleCount, filteredBlogs.length)}
-                  </strong>{" "}
-                  of <strong>{filteredBlogs.length}</strong> articles
+                  {t("blog.showing", {
+                    visible: Math.min(visibleCount, filteredBlogs.length),
+                    total: filteredBlogs.length,
+                  })}
                 </span>
                 <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -248,7 +244,7 @@ export default function BlogsPageClient({
                 onClick={() => setVisibleCount((count) => count + 6)}
                 className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
               >
-                <span>View More Articles (+6)</span>
+                <span>{t("blog.viewMore")}</span>
                 <ChevronDown
                   size={16}
                   className="transition-transform duration-200 group-hover:translate-y-0.5"
@@ -258,8 +254,7 @@ export default function BlogsPageClient({
           ) : filteredBlogs.length > 6 ? (
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 description tracking-wide">
-                You have viewed all {filteredBlogs.length} articles in this
-                collection.
+                {t("blog.viewedAll", { count: filteredBlogs.length })}
               </p>
             </div>
           ) : null}
@@ -271,9 +266,9 @@ export default function BlogsPageClient({
         <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
           <Faq
             faqs={blogsFaqs}
-            badge="Literary Journal"
-            title="Book Reviews & Blog FAQs"
-            subtitle="Frequently asked questions about guest submissions, book curation, and reading lists."
+            badgeKey="blog.faq.badge"
+            titleKey="blog.faq.title"
+            subtitleKey="blog.faq.subtitle"
           />
         </div>
       </div>

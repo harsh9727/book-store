@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import VisionMissionImage from "../../../public/images/about/VisionMission.webp";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const VisionMission = () => {
+  const { t } = useLanguage();
+
   return (
     <section
       aria-labelledby="vision-mission-heading"
@@ -14,22 +19,18 @@ const VisionMission = () => {
             {/* ================= VISION ================= */}
             <article className="flex h-full flex-col rounded-xl bg-white p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-orange-600 md:text-xs">
-                Our Vision
+                {t("about.vision.badge")}
               </p>
 
               <h2
                 id="vision-mission-heading"
                 className="title mt-3 text-[28px] font-bold leading-[1.15] tracking-tight text-gray-900 sm:text-[32px] md:text-[34px] lg:text-[36px]"
               >
-                Inspiring a World of{" "}
-                <span className="text-orange-600">Readers</span>
+                {t("about.vision.title")}
               </h2>
 
               <p className="description mt-5 text-[13px] leading-6 text-gray-600 md:text-sm md:leading-6">
-                Our vision is to make reading an inspiring and meaningful part
-                of everyday life. We want every reader to easily discover books
-                that spark imagination, encourage learning, and create lasting
-                connections with stories.
+                {t("about.vision.description")}
               </p>
 
               <div className="mt-6 space-y-3">
@@ -41,7 +42,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Discover books for every interest
+                    {t("about.vision.point1")}
                   </span>
                 </div>
 
@@ -53,7 +54,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Inspire lifelong reading habits
+                    {t("about.vision.point2")}
                   </span>
                 </div>
 
@@ -65,7 +66,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Connect readers with meaningful stories
+                    {t("about.vision.point3")}
                   </span>
                 </div>
               </div>
@@ -75,7 +76,7 @@ const VisionMission = () => {
             <div className="relative w-full overflow-hidden rounded-xl h-[400px]">
               <Image
                 src={VisionMissionImage}
-                alt="Stack of books representing our vision and mission to connect readers with quality books"
+                alt={t("about.mission.imageAlt")}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-700 hover:scale-105"
@@ -85,19 +86,15 @@ const VisionMission = () => {
             {/* ================= MISSION ================= */}
             <article className="flex h-full flex-col rounded-xl bg-white p-6 md:p-7">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-orange-600 md:text-xs">
-                Our Mission
+                {t("about.mission.badge")}
               </p>
 
               <h3 className="title mt-3 text-[28px] font-bold leading-[1.15] tracking-tight text-gray-900 sm:text-[32px] md:text-[34px] lg:text-[36px]">
-                Helping You Find Your Next{" "}
-                <span className="text-orange-600">Great Read</span>
+                {t("about.mission.title")}
               </h3>
 
               <p className="description mt-5 text-[13px] leading-6 text-gray-600 md:text-sm md:leading-6">
-                We are more than just an online bookstore. Our mission is to
-                help readers discover quality books through carefully curated
-                collections, an easy shopping experience, and dependable service
-                from book discovery to delivery.
+                {t("about.mission.description")}
               </p>
 
               <div className="mt-6 space-y-3">
@@ -109,7 +106,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Curated collections for every reader
+                    {t("about.mission.point1")}
                   </span>
                 </div>
 
@@ -121,7 +118,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Quality books at great value
+                    {t("about.mission.point2")}
                   </span>
                 </div>
 
@@ -133,7 +130,7 @@ const VisionMission = () => {
                     aria-hidden="true"
                   />
                   <span className="description text-[14px] font-medium text-gray-600">
-                    Hassle-free online book shopping
+                    {t("about.mission.point3")}
                   </span>
                 </div>
               </div>

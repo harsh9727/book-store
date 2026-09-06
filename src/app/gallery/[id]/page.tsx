@@ -11,6 +11,7 @@ import {
   LocalizedGalleryText,
 } from "@/components/gallery/LocalizedGalleryContent";
 import JsonLd from "@/components/seo/JsonLd";
+import StorefrontText from "@/components/common/StorefrontText";
 import {
   absoluteUrl,
   createPageMetadata,
@@ -126,7 +127,7 @@ export default async function GalleryDetailPage({
           {/* Story & Background Info Box */}
           <div className="mb-12 rounded-3xl bg-gradient-to-br from-orange-50/60 via-amber-50/40 to-white p-3 sm:p-6 border border-orange-100">
             <h2 className="title text-lg font-bold text-gray-900 mb-2">
-              About This Event
+              <StorefrontText translationKey="gallery.detail.about" />
             </h2>
             <p className="description text-sm md:text-base leading-relaxed text-gray-700">
               <LocalizedGalleryText gallery={album} field="description" />
@@ -138,11 +139,14 @@ export default async function GalleryDetailPage({
             <div className="flex items-center gap-2">
               <Camera size={20} className="text-orange-600" />
               <h2 className="title text-2xl font-bold text-gray-900">
-                Photo Collection ({album.photos.length})
+                <StorefrontText
+                  translationKey="gallery.detail.photoCollection"
+                  params={{ count: album.photos.length }}
+                />
               </h2>
             </div>
             <span className="text-sm text-gray-500 sm:text-right">
-              Click any photo to enlarge and browse
+              <StorefrontText translationKey="gallery.detail.photoHint" />
             </span>
           </div>
 
@@ -155,13 +159,13 @@ export default async function GalleryDetailPage({
           <section className="mt-15 border-t border-gray-100 pt-10">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="title text-2xl font-bold text-gray-900">
-                Explore More Albums
+                <StorefrontText translationKey="gallery.detail.explore" />
               </h2>
               <Link
                 href="/gallery"
                 className="flex items-center gap-1 text-sm font-semibold text-orange-600 hover:underline"
               >
-                View All <ArrowRight size={14} />
+                <StorefrontText translationKey="action.viewAll" /> <ArrowRight size={14} />
               </Link>
             </div>
 
@@ -181,7 +185,10 @@ export default async function GalleryDetailPage({
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[13px] description tracking-wide font-semibold text-white">
-                      {other.photos.length} photos
+                      <StorefrontText
+                        translationKey="gallery.detail.photosLower"
+                        params={{ count: other.photos.length }}
+                      />
                     </span>
                   </div>
 

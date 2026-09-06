@@ -10,7 +10,7 @@ interface TeamProps {
 }
 
 const Team = ({ members }: TeamProps) => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   if (members.length === 0) return null;
 
@@ -23,12 +23,11 @@ const Team = ({ members }: TeamProps) => {
             id="team-heading"
             className="title text-[30px] font-bold leading-tight tracking-tight text-orange-600 sm:text-[34px] md:text-[40px]"
           >
-            Meet the Team
+            {t("about.team.title")}
           </h2>
 
           <p className="description mt-3 text-sm leading-6 text-gray-600 md:text-[15px]">
-            A team of book lovers working behind the scenes to bring you the
-            best reading and shopping experience.
+            {t("about.team.description")}
           </p>
         </div>
 

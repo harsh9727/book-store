@@ -1,47 +1,53 @@
 "use client";
 
 import { BookOpen, Tag, Truck, Headphones } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { TranslationKey } from "@/lib/storefrontI18n";
 
 const benefits = [
   {
     icon: BookOpen,
-    title: "Wide Selection",
-    description: "Thousands of books across every genre and category.",
+    titleKey: "about.why.selection.title",
+    descriptionKey: "about.why.selection.description",
   },
   {
     icon: Tag,
-    title: "Best Prices",
-    description:
-      "Competitive pricing and exclusive offers on your favorite books.",
+    titleKey: "about.why.prices.title",
+    descriptionKey: "about.why.prices.description",
   },
   {
     icon: Truck,
-    title: "Quick Delivery",
-    description:
-      "Fast and reliable shipping delivered straight to your doorstep.",
+    titleKey: "about.why.delivery.title",
+    descriptionKey: "about.why.delivery.description",
   },
   {
     icon: Headphones,
-    title: "24/7 Support",
-    description: "We're here to help whenever you need assistance.",
+    titleKey: "about.why.support.title",
+    descriptionKey: "about.why.support.description",
   },
-];
+] satisfies Array<{
+  icon: typeof BookOpen;
+  titleKey: TranslationKey;
+  descriptionKey: TranslationKey;
+}>;
 
 const WhyChooseUs = () => {
+  const { t } = useLanguage();
+
   return (
     <section aria-labelledby="why-choose-us-heading" className="bg-white py-10">
       <div className="container mx-auto px-4 lg:px-6">
         {/* ================= SECTION HEADING ================= */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-orange-600 md:text-xs">
-            Why Choose GTBS Books?
+            {t("about.why.badge")}
           </p>
 
           <h2
             id="why-choose-us-heading"
             className="title mt-3 text-[30px] font-bold leading-tight tracking-tight text-gray-900 sm:text-[34px] md:text-[40px]"
           >
-            Built for <span className="text-orange-600">Book Lovers</span>
+            {t("about.why.title")}
           </h2>
         </div>
 
@@ -52,7 +58,7 @@ const WhyChooseUs = () => {
 
             return (
               <article
-                key={benefit.title}
+                key={benefit.titleKey}
                 className="group flex min-h-[250px] flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-[0_12px_35px_rgba(0,0,0,0.06)]"
               >
                 {/* Icon */}
@@ -67,12 +73,12 @@ const WhyChooseUs = () => {
 
                 {/* Title */}
                 <h3 className="title mt-7 text-[18px] font-bold text-gray-900">
-                  {benefit.title}
+                  {t(benefit.titleKey)}
                 </h3>
 
                 {/* Description */}
                 <p className="description mt-3 max-w-[230px] text-[14px] leading-6 text-gray-500 md:text-sm">
-                  {benefit.description}
+                  {t(benefit.descriptionKey)}
                 </p>
               </article>
             );

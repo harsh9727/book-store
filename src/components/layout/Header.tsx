@@ -30,7 +30,7 @@ import type { Category } from "@/types/category";
 
 function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { itemCount: cartItemCount } = useCart();
   const hasUnreadCartChanges = useCartNotification();
 
@@ -88,32 +88,32 @@ function Header({ categories }: { categories: Category[] }) {
 
   const menuItems = [
     {
-      name: "Home",
+      name: t("nav.home"),
       href: "/",
       sectionId: null,
     },
     {
-      name: "All Products",
+      name: t("nav.products"),
       href: "/allproducts",
       sectionId: null,
     },
     {
-      name: "About",
+      name: t("nav.about"),
       href: "/about",
       sectionId: null,
     },
     {
-      name: "Gallery",
+      name: t("nav.gallery"),
       href: "/gallery",
       sectionId: null,
     },
     {
-      name: "Blogs",
+      name: t("nav.blogs"),
       href: "/blogs",
       sectionId: null,
     },
     {
-      name: "Contact",
+      name: t("nav.contact"),
       href: "/contact",
       sectionId: null,
     },
@@ -177,8 +177,8 @@ function Header({ categories }: { categories: Category[] }) {
 
             <Link
               href="mailto:gtbs-1852@yahoo.in"
-              title="Email us"
-              aria-label="Email us"
+              title={t("common.emailUs")}
+              aria-label={t("common.emailUs")}
               className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
             >
               <Mail className="h-4 w-4 shrink-0" />
@@ -197,8 +197,10 @@ function Header({ categories }: { categories: Category[] }) {
 
               <Link
                 href="tel:+919265429338"
-                title="Call +91 9265429338"
-                aria-label="Call +91 9265429338"
+                title={t("common.callNumber", { number: "+91 9265429338" })}
+                aria-label={t("common.callNumber", {
+                  number: "+91 9265429338",
+                })}
                 className="transition-colors duration-200 hover:text-amber-400"
               >
                 +91 9265429338
@@ -208,8 +210,10 @@ function Header({ categories }: { categories: Category[] }) {
 
               <Link
                 href="tel:+917490028867"
-                title="Call +91 7490028867"
-                aria-label="Call +91 7490028867"
+                title={t("common.callNumber", { number: "+91 7490028867" })}
+                aria-label={t("common.callNumber", {
+                  number: "+91 7490028867",
+                })}
                 className="hidden transition-colors duration-200 hover:text-amber-400 md:inline"
               >
                 +91 7490028867
@@ -221,13 +225,13 @@ function Header({ categories }: { categories: Category[] }) {
 
           <Link
             href="/contact"
-            title="Help Center"
-            aria-label="Help Center"
+            title={t("nav.helpCenter")}
+            aria-label={t("nav.helpCenter")}
             className="flex items-center gap-2 text-sm leading-none text-white transition-colors duration-200 hover:text-amber-400"
           >
             <Headset className="h-4 w-4 shrink-0" />
 
-            <span className="hidden sm:inline">Help Center</span>
+            <span className="hidden sm:inline">{t("nav.helpCenter")}</span>
           </Link>
         </div>
       </div>
@@ -245,10 +249,10 @@ function Header({ categories }: { categories: Category[] }) {
           <div className="flex items-center justify-between gap-4 lg:gap-8">
             {/* ================= LOGO ================= */}
 
-            <Link href="/" className="shrink-0" aria-label="Book Store Home">
+            <Link href="/" className="shrink-0" aria-label={t("common.storeHome")}>
               <Image
                 src={Logo}
-                alt="Book Store Logo"
+                alt={t("common.storeLogo")}
                 className="h-auto w-20 sm:w-24"
                 priority
               />
@@ -263,7 +267,7 @@ function Header({ categories }: { categories: Category[] }) {
               <SearchBar
                 redirectToallproducts
                 size="md"
-                placeholder="Search books by title, author, genre..."
+                placeholder={t("search.placeholder")}
               />
             </div>
 
@@ -284,7 +288,7 @@ function Header({ categories }: { categories: Category[] }) {
               >
                 <button
                   type="button"
-                  aria-label="Select language"
+                  aria-label={t("language.select")}
                   aria-expanded={isLanguageOpen}
                   aria-haspopup="menu"
                   onClick={() => {
@@ -297,7 +301,9 @@ function Header({ categories }: { categories: Category[] }) {
                   <Languages className="h-5 w-5 sm:hidden" />
 
                   <span className="hidden sm:inline">
-                    {language === "gu" ? "ગુજરાતી" : "English"}
+                    {language === "gu"
+                      ? t("language.gujaratiNative")
+                      : t("language.englishNative")}
                   </span>
 
                   <ChevronDown
@@ -318,7 +324,7 @@ function Header({ categories }: { categories: Category[] }) {
                 >
                   <div className="border-b border-gray-100 px-4 py-3.5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
-                      Select Language
+                      {t("language.select")}
                     </p>
                   </div>
 
@@ -336,9 +342,13 @@ function Header({ categories }: { categories: Category[] }) {
                       }`}
                     >
                       <div className="text-left">
-                        <p className="text-sm font-medium">English</p>
+                        <p className="text-sm font-medium">
+                          {t("language.english")}
+                        </p>
 
-                        <p className="text-[11px] text-gray-400">English</p>
+                        <p className="text-[11px] text-gray-400">
+                          {t("language.englishNative")}
+                        </p>
                       </div>
                       {language === "en" && <Check className="h-4 w-4" />}
                     </button>
@@ -356,9 +366,13 @@ function Header({ categories }: { categories: Category[] }) {
                       }`}
                     >
                       <div className="text-left">
-                        <p className="text-sm font-medium">ગુજરાતી</p>
+                        <p className="text-sm font-medium">
+                          {t("language.gujaratiNative")}
+                        </p>
 
-                        <p className="text-[11px] text-gray-400">Gujarati</p>
+                        <p className="text-[11px] text-gray-400">
+                          {t("language.gujarati")}
+                        </p>
                       </div>
                       {language === "gu" && <Check className="h-4 w-4" />}
                     </button>
@@ -377,7 +391,11 @@ function Header({ categories }: { categories: Category[] }) {
               <Link
                 href="/cart"
                 className="relative flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-orange-50 hover:text-orange-600"
-                aria-label={`Open cart${cartItemCount ? `, ${cartItemCount} items` : ""}`}
+                aria-label={
+                  cartItemCount
+                    ? t("common.openCartItems", { count: cartItemCount })
+                    : t("common.openCart")
+                }
               >
                 <ShoppingCart className="h-5 w-5" aria-hidden="true" />
 
@@ -389,7 +407,7 @@ function Header({ categories }: { categories: Category[] }) {
                     </span>
                   )}
 
-                <span className="hidden sm:inline">Cart</span>
+                <span className="hidden sm:inline">{t("nav.cart")}</span>
               </Link>
 
               {/* =================================================
@@ -399,7 +417,7 @@ function Header({ categories }: { categories: Category[] }) {
 
               <button
                 type="button"
-                aria-label="Open navigation menu"
+                aria-label={t("common.openNavigation")}
                 aria-expanded={isSidebarOpen}
                 onClick={() => setIsSidebarOpen(true)}
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-700 transition-all duration-200 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500 lg:hidden"
@@ -421,7 +439,7 @@ function Header({ categories }: { categories: Category[] }) {
             <SearchBar
               redirectToallproducts
               size="lg"
-              placeholder="Search books by title, author, genre..."
+              placeholder={t("search.placeholder")}
             />
           </div>
         </div>
@@ -452,7 +470,7 @@ function Header({ categories }: { categories: Category[] }) {
                   : "border-gray-300 bg-white text-gray-700 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
               }`}
             >
-              Categories
+              {t("nav.categories")}
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${
                   isCategoryMenuOpen ? "rotate-180" : ""
@@ -473,7 +491,7 @@ function Header({ categories }: { categories: Category[] }) {
 
               <div className="mb-2 px-2 py-1">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Browse Categories
+                  {t("nav.browseCategories")}
                 </p>
               </div>
 
@@ -511,7 +529,7 @@ function Header({ categories }: { categories: Category[] }) {
                 })}
                 {navigationCategories.length === 0 && (
                   <p className="px-3 py-4 text-center text-sm text-gray-500">
-                    No categories available.
+                    {t("nav.noCategories")}
                   </p>
                 )}
               </div>
@@ -527,7 +545,7 @@ function Header({ categories }: { categories: Category[] }) {
                 onClick={() => setIsCategoryMenuOpen(false)}
                 className="flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
               >
-                View All Books
+                {t("nav.viewAllBooks")}
               </Link>
             </div>
           </div>
@@ -574,7 +592,7 @@ function Header({ categories }: { categories: Category[] }) {
       ===================================================== */}
 
       <aside
-        aria-label="Mobile navigation"
+        aria-label={t("common.mobileNavigation")}
         aria-hidden={!isSidebarOpen}
         inert={!isSidebarOpen}
         className={`fixed right-0 top-0 z-[110] flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
@@ -585,14 +603,18 @@ function Header({ categories }: { categories: Category[] }) {
 
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <Link href="/" onClick={closeSidebar} className="shrink-0">
-            <Image src={Logo} alt="Book Store Logo" className="h-auto w-20" />
+            <Image
+              src={Logo}
+              alt={t("common.storeLogo")}
+              className="h-auto w-20"
+            />
           </Link>
 
           {/* Close Button */}
 
           <button
             type="button"
-            aria-label="Close navigation menu"
+            aria-label={t("common.closeNavigation")}
             onClick={closeSidebar}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-all duration-200 hover:bg-orange-500 hover:text-white"
           >
@@ -620,7 +642,7 @@ function Header({ categories }: { categories: Category[] }) {
                   : "bg-gray-50 text-gray-800 hover:bg-orange-50 hover:text-orange-500"
               }`}
             >
-              <span>Categories</span>
+              <span>{t("nav.categories")}</span>
 
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-300 ${
@@ -671,7 +693,7 @@ function Header({ categories }: { categories: Category[] }) {
                   })}
                   {navigationCategories.length === 0 && (
                     <p className="px-3 py-4 text-center text-sm text-gray-500">
-                      No categories available.
+                      {t("nav.noCategories")}
                     </p>
                   )}
 
@@ -682,7 +704,7 @@ function Header({ categories }: { categories: Category[] }) {
                     onClick={closeSidebar}
                     className="mt-2 flex items-center justify-center rounded-lg bg-orange-500 px-3 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-600"
                   >
-                    View All Books
+                    {t("nav.viewAllBooks")}
                   </Link>
                 </div>
               </div>

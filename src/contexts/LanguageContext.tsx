@@ -8,45 +8,29 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { usePathname } from "next/navigation";
+import {
+  translateStorefront,
+  type TranslationKey,
+  type TranslationParams,
+} from "@/lib/storefrontI18n";
 
 type AppLanguage = "en" | "gu";
 
 interface LanguageContextValue {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
-}
-
-interface GoogleTranslateWindow extends Window {
-  google?: {
-    translate?: {
-      TranslateElement?: new (
-        options: {
-          pageLanguage: string;
-          includedLanguages: string;
-          autoDisplay: boolean;
-        },
-        elementId: string,
-      ) => unknown;
-    };
-  };
-  googleTranslateElementInit?: () => void;
+  t: (key: TranslationKey, params?: TranslationParams) => string;
 }
 
 const LANGUAGE_STORAGE_KEY = "gtbs-language";
 const LANGUAGE_CHANGE_EVENT = "gtbs-language-change";
-const GOOGLE_TRANSLATE_SCRIPT_ID = "google-translate-script";
 const LEGACY_CONSENT_STORAGE_KEY = "gtbs-cookie-consent";
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 function getLanguageSnapshot(): AppLanguage {
   const savedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  const hasGujaratiCookie = document.cookie
-    .split(";")
-    .some((cookie) => cookie.trim() === "googtrans=/en/gu");
-
-  return savedLanguage === "gu" || hasGujaratiCookie ? "gu" : "en";
+  return savedLanguage === "gu" ? "gu" : "en";
 }
 
 function subscribeToLanguageChange(callback: () => void) {
@@ -59,27 +43,7 @@ function subscribeToLanguageChange(callback: () => void) {
   };
 }
 
-function getTranslateSelect() {
-  return document.querySelector<HTMLSelectElement>(".goog-te-combo");
-}
-
-function applyGujaratiTranslation() {
-  const select = getTranslateSelect();
-
-  if (!select) {
-    return false;
-  }
-
-  select.value = "gu";
-  select.dispatchEvent(new Event("change", { bubbles: true }));
-  return true;
-}
-
-function setGujaratiCookie() {
-  document.cookie = "googtrans=/en/gu;path=/;SameSite=Lax";
-}
-
-function clearGujaratiCookie() {
+function clearLegacyGoogleTranslateCookie() {
   const expiredCookie =
     "googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax";
   document.cookie = expiredCookie;
@@ -90,7 +54,6 @@ function clearGujaratiCookie() {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
   const language = useSyncExternalStore(
     subscribeToLanguageChange,
     getLanguageSnapshot,
@@ -100,103 +63,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLanguage = useCallback((nextLanguage: AppLanguage) => {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
     document.documentElement.lang = nextLanguage;
-
-    if (nextLanguage === "gu") {
-      setGujaratiCookie();
-      applyGujaratiTranslation();
-      window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
-      return;
-    }
-
-    clearGujaratiCookie();
     window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
-    window.location.reload();
   }, []);
+
+  const t = useCallback(
+    (key: TranslationKey, params?: TranslationParams) =>
+      translateStorefront(language, key, params),
+    [language],
+  );
 
   useEffect(() => {
     window.localStorage.removeItem(LEGACY_CONSENT_STORAGE_KEY);
     document.cookie =
       "gtbs_cookie_consent=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax";
-  }, []);
-
-  useEffect(() => {
-    if (language !== "gu") {
-      return;
-    }
-
-    const translateWindow = window as GoogleTranslateWindow;
-    let active = true;
-    let applyTimer: number | undefined;
-
-    const initializeTranslateElement = () => {
-      if (!active) return;
-      const TranslateElement =
-        translateWindow.google?.translate?.TranslateElement;
-      const container = document.getElementById("google_translate_element");
-
-      if (TranslateElement && container && !container.hasChildNodes()) {
-        new TranslateElement(
-          {
-            pageLanguage: "en",
-            includedLanguages: "en,gu",
-            autoDisplay: false,
-          },
-          "google_translate_element",
-        );
-      }
-
-      if (getLanguageSnapshot() === "gu") {
-        applyTimer = window.setTimeout(() => {
-          if (active) applyGujaratiTranslation();
-        }, 250);
-      }
-    };
-
-    translateWindow.googleTranslateElementInit = initializeTranslateElement;
-
-    if (translateWindow.google?.translate?.TranslateElement) {
-      initializeTranslateElement();
-    } else if (!document.getElementById(GOOGLE_TRANSLATE_SCRIPT_ID)) {
-      const script = document.createElement("script");
-      script.id = GOOGLE_TRANSLATE_SCRIPT_ID;
-      script.src =
-        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-
-    return () => {
-      active = false;
-      if (applyTimer !== undefined) window.clearTimeout(applyTimer);
-      if (
-        translateWindow.googleTranslateElementInit ===
-        initializeTranslateElement
-      ) {
-        translateWindow.googleTranslateElementInit = () => undefined;
-      }
-    };
+    clearLegacyGoogleTranslateCookie();
+    document.documentElement.lang = language;
   }, [language]);
 
-  useEffect(() => {
-    document.documentElement.lang = language;
-
-    if (language !== "gu") {
-      return;
-    }
-
-    setGujaratiCookie();
-    const timer = window.setTimeout(applyGujaratiTranslation, 350);
-    return () => window.clearTimeout(timer);
-  }, [language, pathname]);
-
   return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
-      <div
-        id="google_translate_element"
-        className="notranslate hidden"
-        translate="no"
-        aria-hidden="true"
-      />
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

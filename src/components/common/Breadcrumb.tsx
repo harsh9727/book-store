@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BreadcrumbItem {
   label: string;
@@ -18,9 +21,11 @@ const Breadcrumb = ({
   showHomeIcon = true,
   className = "",
 }: BreadcrumbProps) => {
+  const { t } = useLanguage();
+
   return (
     <nav
-      aria-label="Breadcrumb"
+      aria-label={t("common.breadcrumb")}
       className={`mb-8 flex flex-wrap items-center gap-2 text-sm font-medium description tracking-wide text-gray-500 ${className}`}
     >
       {items.map((item, index) => {

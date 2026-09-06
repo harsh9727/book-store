@@ -30,21 +30,6 @@ body {
   outline-offset: 0;
 }
 
-/* Keep the translation service UI hidden; language is controlled in the header. */
-.goog-te-banner-frame,
-.goog-te-banner-frame.skiptranslate,
-iframe.goog-te-banner-frame,
-.goog-te-gadget,
-.goog-logo-link,
-#goog-gt-tt,
-.goog-te-balloon-frame {
-  display: none !important;
-}
-
-body > .skiptranslate {
-  display: none !important;
-}
-
 .title {
   font-family: var(--font-display) !important;
 }
@@ -53,8 +38,7 @@ body > .skiptranslate {
   font-family: var(--font-sans) !important;
 }
 
-/* Keep the translated Hero markup static so Google Translate and React do not
-   compete for ownership of the same text nodes. */
+/* Gujarati copy is React-rendered from the storefront dictionary. */
 html[lang="gu"] .home-hero-content {
   padding-top: 1.75rem;
   padding-bottom: 1.75rem;

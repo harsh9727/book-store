@@ -33,9 +33,9 @@ export default async function About() {
           <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
             <Faq
               faqs={aboutFaqs}
-              badge="Learn More About Us"
-              title="About GTBS FAQ"
-              subtitle="Everything you need to know about our history, collections, and publishing values."
+              badgeKey="about.faq.badge"
+              titleKey="about.faq.title"
+              subtitleKey="about.faq.subtitle"
             />
           </div>
         </div>

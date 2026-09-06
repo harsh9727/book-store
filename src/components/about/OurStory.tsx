@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { BookOpen } from "lucide-react";
 import OurStoryImage from "../../../public/images/about/story.webp";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const OurStory = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden bg-white py-10">
       <div className="container relative px-3 lg:px-6">
@@ -12,33 +17,27 @@ const OurStory = () => {
             {/* Label */}
             <div className="mb-5 flex items-center gap-3">
               <span className="text-xs description font-bold uppercase tracking-[0.18em] text-orange-600">
-                Our Story
+                {t("about.story.badge")}
               </span>
             </div>
 
             {/* Heading */}
             <h1 className="max-w-2xl text-3xl title font-bold leading-[1.12] tracking-tight text-gray-900 sm:text-4xl md:text-[46px]">
-              More Than a Bookstore,
+              {t("about.story.titleLine1")}
               <br />
               <span className="text-orange-600">
-                We Create Reading Experiences.
+                {t("about.story.titleLine2")}
               </span>
             </h1>
 
             {/* Description */}
             <div className="mt-6 space-y-4">
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                At GTBS Book Store, our story began with a simple belief — every
-                great book and faith-filled resource has the power to change the
-                way we think, learn, and see the world.
+                {t("about.story.paragraph1")}
               </p>
 
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                What started as a mission for discovering meaningful Christian
-                literature and Holy Bibles has grown into a trusted destination
-                for readers and communities. From timeless classics to spiritual
-                devotionals, we carefully bring together books that inspire
-                faith, curiosity, and spiritual growth.
+                {t("about.story.paragraph2")}
               </p>
             </div>
 
@@ -49,7 +48,7 @@ const OurStory = () => {
                   1K+
                 </p>
                 <p className="mt-1 text-[11px] text-gray-500">
-                  Books Available
+                  {t("about.story.booksAvailable")}
                 </p>
               </div>
 
@@ -57,14 +56,14 @@ const OurStory = () => {
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   8K+
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">Happy Readers</p>
+                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.happyReaders")}</p>
               </div>
 
               <div className="pl-4">
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   4.9/5
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">Reader Rating</p>
+                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.readerRating")}</p>
               </div>
             </div>
           </div>
@@ -76,7 +75,7 @@ const OurStory = () => {
               <div className="aspect-[1.3/1] w-full">
                 <Image
                   src={OurStoryImage}
-                  alt="A cozy reading space surrounded by books at GTBS"
+                  alt={t("about.story.imageAlt")}
                   fill
                   priority
                   className="object-cover transition-transform duration-700 hover:scale-105"
@@ -89,11 +88,11 @@ const OurStory = () => {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600">
-                      Since 2010
+                      {t("about.story.since")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-gray-900">
-                      Inspiring Readers, One Book at a Time.
+                      {t("about.story.overlay")}
                     </p>
                   </div>
 

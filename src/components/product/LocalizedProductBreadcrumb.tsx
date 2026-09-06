@@ -10,7 +10,7 @@ export default function LocalizedProductBreadcrumb({
 }: {
   product: Product;
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedProduct = localizeProduct(product, language);
   const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
 
@@ -19,12 +19,12 @@ export default function LocalizedProductBreadcrumb({
       <Breadcrumb
         items={[
           {
-            label: usesStoredGujarati ? "મુખ્ય પૃષ્ઠ" : "Home",
+            label: t("product.home"),
             href: "/",
             skipTranslation: usesStoredGujarati,
           },
           {
-            label: usesStoredGujarati ? "ઉત્પાદનો" : "Products",
+            label: t("product.products"),
             href: "/allproducts",
             skipTranslation: usesStoredGujarati,
           },

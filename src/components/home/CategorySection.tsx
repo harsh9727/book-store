@@ -39,7 +39,7 @@ const CategorySection = ({
   categories: Category[];
   products: Product[];
 }) => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   return (
     <section className="bg-gradient-to-b from-orange-50/50 via-white to-orange-50/30 py-14 md:py-20">
@@ -48,16 +48,15 @@ const CategorySection = ({
         <div className="mb-12 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-xs sm:text-sm font-semibold description tracking-wide text-orange-700 mb-3">
             <Sparkles size={14} />
-            <span>Curated Bookstore Departments</span>
+            <span>{t("home.categories.badge")}</span>
           </div>
 
           <h2 className="title text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-            Explore Categories
+            {t("home.categories.title")}
           </h2>
 
           <p className="description mt-3 text-sm sm:text-base leading-relaxed text-gray-600">
-            Find the right books, study resources, and faith-inspired titles
-            from our carefully organized collections.
+            {t("home.categories.description")}
           </p>
         </div>
 
@@ -93,7 +92,9 @@ const CategorySection = ({
                     </div>
 
                     <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600 description tracking-wide transition-colors group-hover:bg-orange-100 group-hover:text-orange-700">
-                      {bookCount > 0 ? `${bookCount}+ Books` : "Available"}
+                      {bookCount > 0
+                        ? t("home.categories.books", { count: bookCount })
+                        : t("home.categories.available")}
                     </span>
                   </div>
 
@@ -108,7 +109,7 @@ const CategorySection = ({
                 {/* Bottom Action Row */}
                 <div className="relative mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
                   <span className="text-sm font-semibold description tracking-wide text-gray-500 transition-colors group-hover:text-orange-600">
-                    Browse Collection
+                    {t("home.categories.browse")}
                   </span>
 
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white group-hover:translate-x-1">
@@ -129,7 +130,7 @@ const CategorySection = ({
             href="/allproducts"
             className="group inline-flex items-center gap-2.5 rounded-full border border-orange-600 bg-white px-7 py-3 text-sm font-semibold description tracking-wide text-orange-600 shadow-sm transition-all duration-300 hover:bg-orange-600 hover:text-white hover:shadow-lg hover:shadow-orange-600/20 active:scale-95"
           >
-            <span>View All Categories & Full Library</span>
+            <span>{t("home.categories.viewAll")}</span>
             <ArrowRight
               size={16}
               className="transition-transform duration-300 group-hover:translate-x-1"

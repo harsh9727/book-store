@@ -24,9 +24,9 @@ function Contact() {
           <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
             <Faq
               faqs={contactFaqs}
-              badge="Support & Inquiries"
-              title="Contact & Customer Service FAQs"
-              subtitle="Quick solutions to questions regarding visits, customer support, and communication."
+              badgeKey="contact.faq.badge"
+              titleKey="contact.faq.title"
+              subtitleKey="contact.faq.subtitle"
             />
           </div>
         </div>

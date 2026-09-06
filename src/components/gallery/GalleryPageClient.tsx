@@ -23,7 +23,7 @@ export default function GalleryPageClient({
 }: {
   initialItems: GalleryItem[];
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const galleryItems = initialItems;
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,14 +63,13 @@ export default function GalleryPageClient({
       <div className="mb-10 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-sm font-semibold text-orange-600 mb-3 description">
           <Sparkles size={14} />
-          <span>Moments & Memories</span>
+          <span>{t("gallery.badge")}</span>
         </div>
         <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-          Photo Gallery & Events
+          {t("gallery.title")}
         </h1>
         <p className="description mt-3 text-sm md:text-base text-gray-600">
-          Step inside our bookstore events, author meetups, community story
-          sessions, and literary exhibitions.
+          {t("gallery.description")}
         </p>
       </div>
 
@@ -87,9 +86,7 @@ export default function GalleryPageClient({
               ) ?? galleryItems.find((gallery) => gallery.category === cat);
             const categoryLabel =
               cat === "All"
-                ? language === "gu"
-                  ? "બધા"
-                  : cat
+                ? t("gallery.all")
                 : localizeGallery(categorySource!, language).category;
             const usesStoredGujarati =
               language === "gu" &&
@@ -125,7 +122,7 @@ export default function GalleryPageClient({
             onSearch={updateSearchQuery}
             debounceMs={300}
             size="sm"
-            placeholder="Search gallery & events..."
+            placeholder={t("gallery.search")}
           />
         </div>
       </div>
@@ -134,7 +131,7 @@ export default function GalleryPageClient({
       {filteredGalleries.length === 0 ? (
         <div className="py-16 text-center rounded-3xl border border-gray-100 bg-white p-8">
           <p className="text-gray-500 description text-sm">
-            No gallery albums found matching your search.
+            {t("gallery.empty")}
           </p>
         </div>
       ) : (
@@ -172,7 +169,7 @@ export default function GalleryPageClient({
 
                     <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 pt-1 pb-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-sm shadow-sm description">
                       <Camera size={14} />
-                      <span>{album.photos.length} Photos</span>
+                      <span>{t("gallery.photos", { count: album.photos.length })}</span>
                     </span>
                   </Link>
 
@@ -218,7 +215,7 @@ export default function GalleryPageClient({
                         href={`/gallery/${album.slug}`}
                         className="flex items-center justify-between description tracking-wide font-semibold text-xs sm:text-sm text-orange-600 group-hover:text-orange-700"
                       >
-                        <span>View Full Photo Collection</span>
+                        <span>{t("gallery.viewCollection")}</span>
                         <ArrowRight
                           size={16}
                           className="transition-transform group-hover:translate-x-1"
@@ -236,11 +233,10 @@ export default function GalleryPageClient({
             <div className="flex flex-col items-center justify-center gap-3 pt-6 border-t border-gray-100">
               <div className="flex items-center gap-2.5 text-xs text-gray-500 description tracking-wide">
                 <span>
-                  Showing{" "}
-                  <strong>
-                    {Math.min(visibleCount, filteredGalleries.length)}
-                  </strong>{" "}
-                  of <strong>{filteredGalleries.length}</strong> photo albums
+                  {t("gallery.showing", {
+                    visible: Math.min(visibleCount, filteredGalleries.length),
+                    total: filteredGalleries.length,
+                  })}
                 </span>
                 <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -260,7 +256,7 @@ export default function GalleryPageClient({
                 onClick={() => setVisibleCount((count) => count + 6)}
                 className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
               >
-                <span>View More Albums (+6)</span>
+                <span>{t("gallery.viewMore")}</span>
                 <ChevronDown
                   size={16}
                   className="transition-transform duration-200 group-hover:translate-y-0.5"
@@ -270,8 +266,7 @@ export default function GalleryPageClient({
           ) : filteredGalleries.length > 6 ? (
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 description tracking-wide">
-                You have viewed all {filteredGalleries.length} photo albums in
-                this collection.
+                {t("gallery.viewedAll", { count: filteredGalleries.length })}
               </p>
             </div>
           ) : null}
@@ -283,9 +278,9 @@ export default function GalleryPageClient({
         <div className="bg-orange-50/70 rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
           <Faq
             faqs={galleryFaqs}
-            badge="Events & Exhibitions"
-            title="Bookstore Gallery & Events FAQ"
-            subtitle="Common questions about event admissions, photography rights, and hosting book launches."
+            badgeKey="gallery.faq.badge"
+            titleKey="gallery.faq.title"
+            subtitleKey="gallery.faq.subtitle"
           />
         </div>
       </div>

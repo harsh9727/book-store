@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import ContactImage from "../../../public/images/contact/contact.webp";
 
 const ContactSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="bg-white py-10">
       <div className="container px-6 lg:px-8">
@@ -12,19 +17,17 @@ const ContactSection = () => {
           <div>
             {/* Small Heading */}
             <p className="mb-5 text-sm font-bold uppercase tracking-wide text-orange-600">
-              Get in Touch
+              {t("contact.badge")}
             </p>
 
             {/* Main Heading */}
             <h1 className="title text-4xl font-bold leading-[1.15] tracking-tight text-black sm:text-5xl">
-              We’d Love to <span className="text-orange-600">Hear</span> From
-              You!
+              {t("contact.title")}
             </h1>
 
             {/* Description */}
             <p className="mt-5 description leading-7 text-gray-700 sm:text-lg">
-              Have a question, suggestion, or need help? Our team is here for
-              you. Reach out and we&apos;ll get back to you as soon as possible.
+              {t("contact.description")}
             </p>
 
             {/* Contact Details */}
@@ -39,7 +42,7 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <h3 className="title font-bold text-gray-900">Email Us</h3>
+                  <h3 className="title font-bold text-gray-900">{t("contact.email")}</h3>
 
                   <p className="mt-1 description text-sm text-gray-600 transition-colors group-hover:text-orange-600">
                     gtbs-1852@yahoo.in
@@ -54,7 +57,7 @@ const ContactSection = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="title font-bold text-gray-900">Call Us</h3>
+                  <h3 className="title font-bold text-gray-900">{t("contact.call")}</h3>
 
                   <div className="flex flex-nowrap items-center gap-3">
                     <a
@@ -90,7 +93,7 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <h3 className="title font-bold text-gray-900">Visit Us</h3>
+                  <h3 className="title font-bold text-gray-900">{t("contact.visit")}</h3>
 
                   <p className="mt-1 description text-sm leading-6 text-gray-600 transition-colors group-hover:text-orange-600">
                     Sahitya Seva Sadan, Shahid Veer Kinariwala Marg, I P Mission
@@ -105,7 +108,7 @@ const ContactSection = () => {
           <div className="relative overflow-hidden rounded-2xl">
             <Image
               src={ContactImage}
-              alt="Contact us"
+              alt={t("contact.imageAlt")}
               width={900}
               height={650}
               className="h-[420px] w-full object-cover sm:h-[480px]"

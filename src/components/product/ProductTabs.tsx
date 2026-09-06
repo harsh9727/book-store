@@ -5,6 +5,7 @@ import { CheckCircle, FileText, PackageOpen } from "lucide-react";
 import type { Product, ProductSpecification } from "@/types/product";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizeProduct } from "@/lib/localizedProduct";
+import type { TranslationKey } from "@/lib/storefrontI18n";
 
 interface ProductTabsProps {
   product: Product;
@@ -13,9 +14,13 @@ interface ProductTabsProps {
 type ProductTab = "overview" | "specs";
 
 const tabs = [
-  { id: "overview", label: "Overview & Features", icon: PackageOpen },
-  { id: "specs", label: "Specifications", icon: FileText },
-] as const;
+  { id: "overview", labelKey: "product.overviewTab", icon: PackageOpen },
+  { id: "specs", labelKey: "product.specificationsTab", icon: FileText },
+] as const satisfies ReadonlyArray<{
+  id: ProductTab;
+  labelKey: TranslationKey;
+  icon: typeof PackageOpen;
+}>;
 
 function getSpecifications(product: Product): ProductSpecification[] {
   if (product.specifications?.length) return product.specifications;
@@ -34,7 +39,7 @@ function getSpecifications(product: Product): ProductSpecification[] {
 }
 
 export default function ProductTabs({ product }: ProductTabsProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedProduct = localizeProduct(product, language);
   const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
   const [activeTab, setActiveTab] = useState<ProductTab>("overview");
@@ -61,7 +66,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               }`}
             >
               <Icon size={17} />
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey)}</span>
             </button>
           );
         })}
@@ -72,7 +77,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
           <div className="max-w-4xl space-y-6 text-gray-700">
             <div>
               <h3 className="title mb-3 text-xl font-bold text-gray-900">
-                Product Overview
+                {t("product.overview")}
               </h3>
               <p
                 className={`description text-base leading-relaxed text-gray-600 ${usesStoredGujarati ? "notranslate" : ""}`}
@@ -81,9 +86,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               >
                 {localizedProduct.synopsis ||
                   localizedProduct.description ||
-                  (usesStoredGujarati
-                    ? "આ ઉત્પાદન માટે વિગતવાર માહિતી ઉપલબ્ધ નથી."
-                    : "No detailed overview is available for this product.")}
+                  t("product.noOverview")}
               </p>
             </div>
 
@@ -91,7 +94,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               localizedProduct.features.length > 0 && (
                 <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-6">
                   <h4 className="title mb-3 text-base font-bold text-orange-950">
-                    Key Highlights
+                    {t("product.highlights")}
                   </h4>
                   <ul
                     className={`space-y-2.5 text-sm text-gray-700 ${usesStoredGujarati ? "notranslate" : ""}`}
@@ -119,7 +122,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
         {activeTab === "specs" && (
           <div className="max-w-3xl">
             <h3 className="title mb-5 text-xl font-bold text-gray-900">
-              Product Specifications
+              {t("product.specifications")}
             </h3>
             {specifications.length ? (
               <div
@@ -141,7 +144,7 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               </div>
             ) : (
               <p className="rounded-2xl border border-dashed border-gray-200 p-6 text-sm text-gray-500">
-                No specifications are available for this product.
+                {t("product.noSpecifications")}
               </p>
             )}
           </div>

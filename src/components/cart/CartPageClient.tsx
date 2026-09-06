@@ -17,6 +17,7 @@ import {
   useCart,
 } from "@/lib/storefrontStorage";
 import { createWhatsAppOrderUrl } from "@/lib/whatsappOrder";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const formatPrice = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -26,10 +27,11 @@ const formatPrice = (value: number) =>
   }).format(value);
 
 export default function CartPageClient() {
+  const { t } = useLanguage();
   const { items, itemCount, subtotal } = useCart();
   const persistCartChange = (change: () => boolean) => {
     if (!change()) {
-      toast.error("Your browser could not update the cart. Check storage permissions.");
+      toast.error(t("cart.updateError"));
     }
   };
   const handleBuyCart = () => {
@@ -57,15 +59,17 @@ export default function CartPageClient() {
         <div className="mx-auto mb-8 max-w-2xl text-center">
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-orange-100/80 px-3.5 py-1 text-xs font-semibold text-orange-700">
             <ShoppingBag size={14} />
-            <span>Your Reading Bag</span>
+            <span>{t("cart.badge")}</span>
           </div>
           <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Shopping Cart
+            {t("cart.title")}
           </h1>
           <p className="mt-2 text-sm text-gray-600" aria-live="polite">
             {itemCount === 0
-              ? "Your cart is empty."
-              : `${itemCount} ${itemCount === 1 ? "item" : "items"} in your cart.`}
+              ? t("cart.emptyStatus")
+              : t(itemCount === 1 ? "cart.itemStatus" : "cart.itemsStatus", {
+                  count: itemCount,
+                })}
           </p>
         </div>
 
@@ -75,16 +79,16 @@ export default function CartPageClient() {
               <ShoppingBag size={36} strokeWidth={1.75} />
             </div>
             <h2 className="title mb-3 text-2xl font-bold text-gray-900">
-              Your Cart is Currently Empty
+              {t("cart.emptyTitle")}
             </h2>
             <p className="description mx-auto mb-8 max-w-md text-sm leading-relaxed text-gray-600 sm:text-base">
-              Explore the catalog and add books you would like to order.
+              {t("cart.emptyDescription")}
             </p>
             <Link
               href="/allproducts"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-700 sm:w-auto"
             >
-              Browse All Books
+              {t("cart.browse")}
               <ArrowRight size={16} />
             </Link>
           </div>
@@ -93,14 +97,14 @@ export default function CartPageClient() {
             <section aria-labelledby="cart-items-heading" className="min-w-0">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <h2 id="cart-items-heading" className="title text-xl font-bold text-gray-900">
-                  Cart items
+                  {t("cart.items")}
                 </h2>
                 <button
                   type="button"
                   onClick={() => persistCartChange(clearCart)}
                   className="text-sm font-semibold text-gray-500 hover:text-red-600"
                 >
-                  Clear cart
+                  {t("cart.clear")}
                 </button>
               </div>
               <ul className="space-y-4">
@@ -146,7 +150,9 @@ export default function CartPageClient() {
                               updateCartItemQuantity(item.key, item.quantity - 1),
                             )
                           }
-                          aria-label={`Decrease quantity of ${item.title}`}
+                          aria-label={t("cart.decreaseItem", {
+                            title: item.title,
+                          })}
                           className="flex h-9 w-9 items-center justify-center rounded-l-xl hover:bg-white"
                         >
                           <Minus size={14} />
@@ -161,7 +167,9 @@ export default function CartPageClient() {
                               updateCartItemQuantity(item.key, item.quantity + 1),
                             )
                           }
-                          aria-label={`Increase quantity of ${item.title}`}
+                          aria-label={t("cart.increaseItem", {
+                            title: item.title,
+                          })}
                           className="flex h-9 w-9 items-center justify-center rounded-r-xl hover:bg-white"
                         >
                           <Plus size={14} />
@@ -172,7 +180,7 @@ export default function CartPageClient() {
                         onClick={() =>
                           persistCartChange(() => removeCartItem(item.key))
                         }
-                        aria-label={`Remove ${item.title} from cart`}
+                        aria-label={t("cart.removeItem", { title: item.title })}
                         className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -184,27 +192,29 @@ export default function CartPageClient() {
             </section>
 
             <aside className="rounded-2xl border border-orange-100 bg-orange-50 p-5 lg:sticky lg:top-6">
-              <h2 className="title text-xl font-bold text-gray-900">Order summary</h2>
+              <h2 className="title text-xl font-bold text-gray-900">
+                {t("cart.summary")}
+              </h2>
               <div className="mt-5 flex justify-between border-b border-orange-200 pb-4 text-sm text-gray-700">
-                <span>Subtotal</span>
+                <span>{t("cart.subtotal")}</span>
                 <strong>{formatPrice(subtotal)}</strong>
               </div>
               <p className="mt-4 text-xs leading-5 text-gray-600">
-                Shipping and availability are confirmed by the bookstore before payment.
+                {t("cart.notice")}
               </p>
               <button
                 type="button"
                 onClick={handleBuyCart}
                 className="mt-5 flex w-full items-center justify-center rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700"
-                aria-label="Buy all selected products on WhatsApp"
+                aria-label={t("cart.buyWhatsAppLabel")}
               >
-                Buy Now
+                {t("action.buyNow")}
               </button>
               <Link
                 href="/allproducts"
                 className="mt-3 block text-center text-sm font-semibold text-orange-700 hover:underline"
               >
-                Continue shopping
+                {t("cart.continue")}
               </Link>
             </aside>
           </div>

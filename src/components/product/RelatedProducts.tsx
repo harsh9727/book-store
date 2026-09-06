@@ -1,5 +1,8 @@
+"use client";
+
 import { Product } from "@/types/product";
 import ProductCard from "./ProductCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface RelatedProductsProps {
   currentProductId: string;
@@ -12,6 +15,7 @@ export default function RelatedProducts({
   category,
   allProducts,
 }: RelatedProductsProps) {
+  const { t } = useLanguage();
   const related = allProducts
     .filter((p) => p.id !== currentProductId)
     .sort(
@@ -27,10 +31,10 @@ export default function RelatedProducts({
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="title text-2xl font-bold text-gray-900 md:text-3xl">
-            You Might Also Like
+            {t("product.related")}
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            More products from similar categories
+            {t("product.relatedDescription")}
           </p>
         </div>
       </div>

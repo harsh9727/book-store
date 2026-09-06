@@ -1,33 +1,39 @@
+"use client";
+
 import { BookOpen, MessageCircle, Truck, WalletCards } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { TranslationKey } from "@/lib/storefrontI18n";
 
 const features = [
   {
     icon: BookOpen,
-    title: "Premium Collection",
-    description:
-      "Discover carefully selected Christian books, Bibles, devotionals, and inspirational resources from trusted publishers.",
+    titleKey: "home.features.collection.title",
+    descriptionKey: "home.features.collection.description",
   },
   {
     icon: Truck,
-    title: "Fast Delivery",
-    description:
-      "Enjoy quick and reliable delivery across India with secure packaging to keep every order safe.",
+    titleKey: "home.features.delivery.title",
+    descriptionKey: "home.features.delivery.description",
   },
   {
     icon: MessageCircle,
-    title: "Order on WhatsApp",
-    description:
-      "Send a product or your complete cart to GTBS on WhatsApp for availability, delivery, and payment confirmation.",
+    titleKey: "home.features.whatsapp.title",
+    descriptionKey: "home.features.whatsapp.description",
   },
   {
     icon: WalletCards,
-    title: "Affordable Prices",
-    description:
-      "Quality Christian books and faith-based products at prices you'll love, with regular offers throughout the year.",
+    titleKey: "home.features.prices.title",
+    descriptionKey: "home.features.prices.description",
   },
-];
+] satisfies Array<{
+  icon: typeof BookOpen;
+  titleKey: TranslationKey;
+  descriptionKey: TranslationKey;
+}>;
 
 const FeaturesSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="py-6">
       <div className="container px-3 lg:px-6">
@@ -57,12 +63,12 @@ const FeaturesSection = () => {
 
                   {/* Title */}
                   <h3 className="title text-[21px] font-medium leading-tight text-gray-900">
-                    {feature.title}
+                    {t(feature.titleKey)}
                   </h3>
 
                   {/* Description */}
                   <p className="description mt-2 text-[15px] leading-[1.55] text-gray-600">
-                    {feature.description}
+                    {t(feature.descriptionKey)}
                   </p>
                 </div>
               );

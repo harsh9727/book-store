@@ -36,7 +36,7 @@ export function LocalizedBlogText({
 }
 
 export function LocalizedBlogBreadcrumb({ blog }: { blog: BlogPost }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedBlog = localizeBlog(blog, language);
   const usesStoredGujarati = language === "gu" && Boolean(blog.gujarati);
 
@@ -47,8 +47,8 @@ export function LocalizedBlogBreadcrumb({ blog }: { blog: BlogPost }) {
     >
       <Breadcrumb
         items={[
-          { label: usesStoredGujarati ? "મુખ્ય પૃષ્ઠ" : "Home", href: "/" },
-          { label: usesStoredGujarati ? "બ્લોગ્સ" : "Blogs", href: "/blogs" },
+          { label: t("nav.home"), href: "/" },
+          { label: t("nav.blogs"), href: "/blogs" },
           { label: localizedBlog.title },
         ]}
       />

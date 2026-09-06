@@ -3,8 +3,10 @@
 import { FormEvent, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { Globe2, Send } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ContactForm = () => {
+  const { t } = useLanguage();
   const form = useRef<HTMLFormElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -26,9 +28,7 @@ const ContactForm = () => {
 
     if (!serviceId || !templateId || !publicKey) {
       setLoading(false);
-      setError(
-        "Online messaging is temporarily unavailable. Please email or call us instead.",
-      );
+      setError(t("contact.form.unavailable"));
       return;
     }
 
@@ -42,11 +42,11 @@ const ContactForm = () => {
         },
       );
 
-      setSuccess("Your message has been sent successfully!");
+      setSuccess(t("contact.form.success"));
 
       form.current.reset();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("contact.form.failure"));
     } finally {
       setLoading(false);
     }
@@ -60,12 +60,11 @@ const ContactForm = () => {
 
           <div className="rounded-2xl border border-gray-300 bg-white p-6 sm:p-6 lg:p-8">
             <h2 className="title text-3xl text-gray-900 sm:text-4xl">
-              Send us a Message
+              {t("contact.form.title")}
             </h2>
 
             <p className="mt-3 description leading-6 text-gray-600">
-              Have a question or need assistance? Fill out the form below, and
-              our team will respond as quickly as possible.
+              {t("contact.form.description")}
             </p>
 
             <form
@@ -79,14 +78,14 @@ const ContactForm = () => {
                 {/* Name */}
                 <div>
                   <label htmlFor="contact-name" className="sr-only">
-                    Name
+                    {t("contact.form.name")}
                   </label>
                   <input
                     id="contact-name"
                     type="text"
                     name="user_name"
                     autoComplete="name"
-                    placeholder="Enter your name"
+                    placeholder={t("contact.form.namePlaceholder")}
                     required
                     maxLength={100}
                     className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
@@ -108,9 +107,9 @@ const ContactForm = () => {
                     inputMode="numeric"
                     pattern="[0-9]{10}"
                     maxLength={10}
-                    placeholder="Enter your phone number"
+                    placeholder={t("contact.form.phonePlaceholder")}
                     required
-                    aria-label="10-digit Indian phone number"
+                    aria-label={t("contact.form.phoneLabel")}
                     className="h-13 w-full rounded-xl border border-gray-300 pl-24 pr-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
                   />
                 </div>
@@ -119,7 +118,7 @@ const ContactForm = () => {
               {/* Email */}
               <div>
                 <label htmlFor="contact-email" className="sr-only">
-                  Email address
+                  {t("contact.form.email")}
                 </label>
                 <input
                   id="contact-email"
@@ -127,7 +126,7 @@ const ContactForm = () => {
                   name="user_email"
                   autoComplete="email"
                   maxLength={254}
-                  placeholder="Enter your email"
+                  placeholder={t("contact.form.emailPlaceholder")}
                   required
                   className="h-13 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
                 />
@@ -137,10 +136,10 @@ const ContactForm = () => {
               <textarea
                 id="contact-message"
                 name="message"
-                placeholder="Your Message"
+                placeholder={t("contact.form.messagePlaceholder")}
                 required
                 maxLength={2_000}
-                aria-label="Message"
+                aria-label={t("contact.form.message")}
                 rows={5}
                 className="w-full resize-none rounded-xl border border-gray-300 px-4 py-4 text-sm outline-none transition focus:border-orange-600 focus:ring-1 focus:ring-orange-600"
               />
@@ -168,11 +167,11 @@ const ContactForm = () => {
                 {loading ? (
                   <>
                     <span aria-hidden="true" className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Sending...
+                    {t("contact.form.sending")}
                   </>
                 ) : (
                   <>
-                    Send Message
+                    {t("contact.form.send")}
                     <Send size={18} />
                   </>
                 )}
@@ -193,7 +192,7 @@ const ContactForm = () => {
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              title="GTBS Store Location"
+              title={t("contact.mapTitle")}
             />
           </div>
         </div>

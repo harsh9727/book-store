@@ -51,8 +51,8 @@ export default async function Home() {
       <FeaturesSection />
       <div id="new-releases">
         <ProductCarouselSection
-          title="New Releases"
-          description="Explore the latest Christian books, devotionals, study guides, children’s books, and inspiring titles recently added to our collection."
+          titleKey="home.new.title"
+          descriptionKey="home.new.description"
           href="/allproducts?collection=new"
           products={newReleases}
         />
@@ -62,8 +62,8 @@ export default async function Home() {
       </div>
       <div id="best-sellers">
         <ProductCarouselSection
-          title="Best Sellers"
-          description="Discover the books readers return to most, from trusted faith resources to practical guides and memorable stories."
+          titleKey="home.best.title"
+          descriptionKey="home.best.description"
           href="/allproducts?collection=bestseller"
           products={bestSellers}
           background="bg-[#fffaf5]"
@@ -71,8 +71,8 @@ export default async function Home() {
       </div>
       <div id="trending-books">
         <ProductCarouselSection
-          title="Trending Products"
-          description="Explore popular books, Bibles, devotionals, and inspirational titles currently attracting readers."
+          titleKey="home.trending.title"
+          descriptionKey="home.trending.description"
           href="/allproducts?collection=trending"
           products={trending}
         />
@@ -80,8 +80,8 @@ export default async function Home() {
       <CategorySection categories={categories} products={products} />
       <WhyChoose />
       <ProductCarouselSection
-        title="Our Accessories"
-        description="Thoughtful essentials for readers, gifting, and creating a peaceful study space with comfort and style."
+        titleKey="home.accessories.title"
+        descriptionKey="home.accessories.description"
         href="/allproducts?collection=accessories"
         products={accessories}
         background="bg-[#fffaf5]"

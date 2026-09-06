@@ -80,7 +80,7 @@ test("visible catalog links use the canonical All Products route", () => {
   }
 
   const breadcrumb = readFileSync(files[0], "utf8");
-  assert.match(breadcrumb, /label: usesStoredGujarati \? .+ : "Products"/);
+  assert.match(breadcrumb, /label: t\("product\.products"\)/);
   assert.match(breadcrumb, /href: "\/allproducts"/);
   assert.match(
     breadcrumb,
@@ -174,12 +174,140 @@ test("Gujarati home hero uses a bounded compact desktop layout", () => {
     "utf8",
   );
 
-  assert.doesNotMatch(source, /"use client"|useLanguage/);
+  assert.match(source, /"use client"/);
+  assert.match(source, /useLanguage/);
+  assert.match(source, /t\("home\.hero\.titleLine1"\)/);
   assert.match(source, /home-hero-heading-group flex flex-col items-start gap-6/);
   assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-heading-group \{\s*gap: 0\.5rem;/);
   assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-description \{\s*margin-top: 0\.75rem;/);
   assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-actions \{\s*margin-top: 1\.5rem;/);
   assert.match(globalStyles, /height: 420px;\s*min-height: 0;/);
+});
+
+test("storefront dictionaries stay in sync without a DOM translation runtime", () => {
+  interface TranslationSection {
+    [key: string]: string | TranslationSection;
+  }
+  const englishDictionary = JSON.parse(
+    readFileSync(
+      path.join(root, "src", "data", "english.json"),
+      "utf8",
+    ),
+  ) as TranslationSection;
+  const gujaratiDictionary = JSON.parse(
+    readFileSync(
+      path.join(root, "src", "data", "gujarati.json"),
+      "utf8",
+    ),
+  ) as TranslationSection;
+  const languageContext = readFileSync(
+    path.join(root, "src", "contexts", "LanguageContext.tsx"),
+    "utf8",
+  );
+  const i18n = readFileSync(
+    path.join(root, "src", "lib", "storefrontI18n.ts"),
+    "utf8",
+  );
+
+  const flatten = (
+    section: TranslationSection,
+    prefix = "",
+  ): Record<string, string> =>
+    Object.entries(section).reduce<Record<string, string>>(
+      (result, [segment, value]) => {
+        const key = prefix ? `${prefix}.${segment}` : segment;
+        return typeof value === "string"
+          ? { ...result, [key]: value }
+          : { ...result, ...flatten(value, key) };
+      },
+      {},
+    );
+  const english = flatten(englishDictionary);
+  const gujarati = flatten(gujaratiDictionary);
+
+  assert.deepEqual(Object.keys(english).sort(), Object.keys(gujarati).sort());
+  assert.equal(Object.keys(english).length > 150, true);
+  assert.deepEqual(Object.keys(englishDictionary), [
+    "language",
+    "nav",
+    "search",
+    "action",
+    "home",
+    "product",
+    "cart",
+    "catalog",
+    "blog",
+    "gallery",
+    "contact",
+    "errors",
+    "common",
+    "whatsapp",
+    "about",
+    "policies",
+    "faqContent",
+    "footer",
+  ]);
+  assert.deepEqual(
+    Object.keys(englishDictionary),
+    Object.keys(gujaratiDictionary),
+  );
+  for (const key of Object.keys(english)) {
+    const placeholders = (value: string) =>
+      [...value.matchAll(/\{([A-Za-z][A-Za-z0-9]*)\}/g)]
+        .map((match) => match[1])
+        .sort();
+    assert.deepEqual(
+      placeholders(english[key]),
+      placeholders(gujarati[key]),
+      `Interpolation placeholders differ for ${key}`,
+    );
+  }
+  assert.match(languageContext, /translateStorefront\(language, key, params\)/);
+  assert.match(i18n, /replaceAll\(`\{\$\{name\}\}`/);
+  assert.doesNotMatch(languageContext, /translate\.google\.com|google_translate_element|goog-te-combo|window\.location\.reload/);
+});
+
+test("remaining public page copy is sourced from the storefront dictionaries", () => {
+  const source = (relativePath: string) =>
+    readFileSync(path.join(root, relativePath), "utf8");
+
+  assert.match(
+    source("src/components/about/OurStory.tsx"),
+    /t\("about\.story\.titleLine1"\)/,
+  );
+  assert.match(
+    source("src/components/about/VisionMission.tsx"),
+    /t\("about\.mission\.description"\)/,
+  );
+  assert.match(source("src/data/faqs.ts"), /faqContent\.\$\{section\}/);
+  assert.match(
+    source("src/components/common/Faq.tsx"),
+    /t\(faq\.answerKey\)/,
+  );
+  assert.match(
+    source("src/components/common/LegalPolicyPage.tsx"),
+    /policies\.\$\{policy\}/,
+  );
+  assert.match(
+    source("src/app/privacy-policy/page.tsx"),
+    /<LegalPolicyPage policy="privacy" \/>/,
+  );
+  assert.match(
+    source("src/app/terms-and-conditions/page.tsx"),
+    /<LegalPolicyPage policy="terms" \/>/,
+  );
+  assert.match(
+    source("src/app/shipping-and-delivery-policy/page.tsx"),
+    /<LegalPolicyPage policy="shipping" \/>/,
+  );
+  assert.match(
+    source("src/components/layout/SiteChrome.tsx"),
+    /translationKey="common\.skipToContent"/,
+  );
+  assert.match(
+    source("src/components/product/ProductGrid.tsx"),
+    /translationKey="catalog\.noProductsCriteria"/,
+  );
 });
 
 test("Contact phone numbers stay on one untranslated line", () => {
@@ -401,7 +529,7 @@ test("homepage Magazines use only the canonical admin Product category", () => {
   assert.doesNotMatch(magazineSource, /return null/);
   assert.match(
     magazineSource,
-    /No products are currently assigned to this collection\./,
+    /t\("home\.collection\.empty"\)/,
   );
 });
 

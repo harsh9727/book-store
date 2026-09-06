@@ -11,9 +11,9 @@ const FaqAndBlog = () => {
           <div className="lg:col-span-5 bg-orange-50/70 rounded-3xl p-6 md:p-8 border border-orange-100/80 shadow-sm">
             <Faq
               faqs={homeFaqs}
-              badge="Got Questions?"
-              title="Frequently Asked Questions"
-              subtitle="Quick answers to common questions about orders, deliveries, and books."
+              badgeKey="home.faq.badge"
+              titleKey="home.faq.title"
+              subtitleKey="home.faq.subtitle"
             />
           </div>
 

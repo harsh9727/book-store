@@ -15,7 +15,7 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedProduct = localizeProduct(product, language);
   const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
   const variantGroups = usesStoredGujarati
@@ -49,11 +49,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const handleAddToCart = () => {
     const variantSummary = getVariantSummary();
     if (!addCartItem(productSnapshot, quantity, variantSummary)) {
-      toast.error("Your browser could not save the cart. Check storage permissions.");
+      toast.error(t("product.storageError"));
       return;
     }
     toast.success(
-      `Added ${quantity}x "${localizedProduct.title}"${variantSummary ? ` (${variantSummary})` : ""} to your cart!`,
+      `${t("product.added", {
+        quantity,
+        title: localizedProduct.title,
+      })}${variantSummary ? ` (${variantSummary})` : ""}`,
     );
   };
 
@@ -99,7 +102,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       try {
         await navigator.share({
           title: localizedProduct.title,
-          text: `View ${localizedProduct.title} at GTBS Book Store`,
+          text: t("product.shareMessage", { title: localizedProduct.title }),
           url,
         });
         return;
@@ -112,9 +115,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
     try {
       await copyProductLink(url);
-      toast.success("Product link copied to clipboard!");
+      toast.success(t("product.linkCopied"));
     } catch {
-      toast.error("Unable to share this product. Please copy the page URL.");
+      toast.error(t("product.shareError"));
     }
   };
 
@@ -132,10 +135,12 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           onClick={handleShare}
           type="button"
           className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-orange-600"
-          aria-label={`Share ${localizedProduct.title}`}
+          aria-label={t("product.shareLabel", {
+            title: localizedProduct.title,
+          })}
         >
           <Share2 size={14} />
-          <span>Share</span>
+          <span>{t("action.share")}</span>
         </button>
       </div>
 
@@ -164,9 +169,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           lang={usesStoredGujarati ? "gu" : undefined}
         >
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            {usesStoredGujarati
-              ? `${variant.name} પસંદ કરો`
-              : `Select ${variant.name}`}
+            {t("product.selectVariant", { name: variant.name })}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {variant.options.map((option, optionIndex) => (
@@ -213,7 +216,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <button
             type="button"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            aria-label="Decrease quantity"
+            aria-label={t("product.decreaseQuantity")}
             className="flex h-7 w-7 items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Minus size={15} />
@@ -222,7 +225,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <button
             type="button"
             onClick={() => setQuantity(Math.min(99, quantity + 1))}
-            aria-label="Increase quantity"
+            aria-label={t("product.increaseQuantity")}
             className="flex h-7 w-7 items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm"
           >
             <Plus size={15} />
@@ -236,15 +239,17 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-orange-600 bg-white px-3 text-sm font-semibold text-orange-700 transition-colors hover:bg-orange-50 active:scale-[0.98] sm:min-w-36 sm:px-5"
           >
             <ShoppingCart size={17} aria-hidden="true" />
-            <span>Add to Cart</span>
+            <span>{t("action.addToCart")}</span>
           </button>
           <button
             type="button"
             onClick={handleBuyNow}
             className="flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg bg-gray-900 px-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 active:scale-[0.98] sm:min-w-32 sm:px-5"
-            aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
+            aria-label={t("product.buyWhatsAppLabel", {
+              title: localizedProduct.title,
+            })}
           >
-            <span>Buy Now</span>
+            <span>{t("action.buyNow")}</span>
           </button>
         </div>
       </div>

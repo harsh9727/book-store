@@ -10,6 +10,7 @@ import {
   LocalizedBlogText,
 } from "@/components/blog/LocalizedBlogContent";
 import JsonLd from "@/components/seo/JsonLd";
+import StorefrontText from "@/components/common/StorefrontText";
 import {
   absoluteUrl,
   createPageMetadata,
@@ -164,15 +165,13 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             <div className="space-y-2 max-w-xl">
               <div className="flex items-center gap-2 text-orange-600 font-semibold text-sm description tracking-wide">
                 <Sparkles size={16} />
-                <span>Recommended Next Step</span>
+                <span><StorefrontText translationKey="blog.detail.recommended" /></span>
               </div>
               <h3 className="title text-xl sm:text-2xl font-bold text-gray-900">
-                Want to read more? Grab the complete book!
+                <StorefrontText translationKey="blog.detail.moreTitle" />
               </h3>
               <p className="description text-sm leading-relaxed text-gray-600">
-                Discover the full edition, author insights, and transformative
-                chapters in our bookstore collection. Get your copy with fast
-                delivery.
+                <StorefrontText translationKey="blog.detail.moreDescription" />
               </p>
             </div>
 
@@ -181,7 +180,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
               className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
             >
               <ShoppingBag size={18} />
-              <span>Browse Bookstore</span>
+              <span><StorefrontText translationKey="blog.detail.browse" /></span>
               <ArrowRight size={16} />
             </Link>
           </div>
@@ -192,13 +191,13 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
           <section className="mt-10 border-t border-gray-100 pt-8">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="title text-2xl font-bold text-gray-900">
-                Related Articles
+                <StorefrontText translationKey="blog.detail.related" />
               </h2>
               <Link
                 href="/blogs"
                 className="text-sm font-bold description tracking-wide text-orange-600 hover:underline flex items-center gap-1"
               >
-                View All <ArrowRight size={18} />
+                <StorefrontText translationKey="action.viewAll" /> <ArrowRight size={18} />
               </Link>
             </div>
 

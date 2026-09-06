@@ -35,7 +35,7 @@ export function LocalizedGalleryBreadcrumb({
 }: {
   gallery: GalleryItem;
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedGallery = localizeGallery(gallery, language);
   const usesStoredGujarati = language === "gu" && Boolean(gallery.gujarati);
 
@@ -46,9 +46,9 @@ export function LocalizedGalleryBreadcrumb({
     >
       <Breadcrumb
         items={[
-          { label: usesStoredGujarati ? "મુખ્ય પૃષ્ઠ" : "Home", href: "/" },
+          { label: t("nav.home"), href: "/" },
           {
-            label: usesStoredGujarati ? "ગેલેરી" : "Gallery",
+            label: t("nav.gallery"),
             href: "/gallery",
           },
           { label: localizedGallery.title },
@@ -63,7 +63,7 @@ export function LocalizedGalleryOrganizer({
 }: {
   gallery: GalleryItem;
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedGallery = localizeGallery(gallery, language);
   const usesStoredGujarati = language === "gu" && Boolean(gallery.gujarati);
 
@@ -76,7 +76,7 @@ export function LocalizedGalleryOrganizer({
         className={usesStoredGujarati ? "notranslate" : undefined}
         translate={usesStoredGujarati ? "no" : undefined}
       >
-        {usesStoredGujarati ? "આયોજક" : "Organized by"}{" "}
+        {t("gallery.organizedBy")}{" "}
         <strong className="ml-1 text-gray-800">
           {localizedGallery.organizer}
         </strong>

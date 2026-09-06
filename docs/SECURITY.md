@@ -34,7 +34,7 @@ This records implemented controls and known risks; it is not a formal security c
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
 - The persistent Admin panel shell uses the pathname only for chrome visibility and active-link styling. It does not authorize access; every protected Admin page/API continues to verify the signed session server-side, and hidden panel UI must never be treated as a security control.
-- Admin pages are outside `LanguageProvider`; they neither initialize Google Translate nor load its third-party script. Gujarati translation remains an explicit public-storefront opt-in only.
+- Admin pages are outside `LanguageProvider` and stay English. All storefront-owned English/Gujarati copy, including legal/privacy presentation text, comes from checked-in JSON and renders as escaped React text, so language switching makes no third-party translation request, loads no translator script, and introduces no raw-HTML translation path. Policy wording documents behavior but does not replace the implemented controls described here.
 - Product/category/blog/gallery/testimonial/team mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
 - Product and Category mutation bodies are capped at 64 KiB and validated with strict schemas. Product drafts reject client-supplied IDs, while Category drafts reject client-supplied slugs and require bounded English/Gujarati names; repository create mutations generate route keys from validated English titles/names and update mutations retain stored keys. Product writes also verify the referenced Category inside the serialized repository mutation, preventing stale clients from creating orphan relationships.
 - Product card image references are restricted to local paths or UploadThing hosts. Managed detail-image records and legacy extra references accept only local paths, UploadThing, or the two already configured Unsplash hosts; arbitrary remote hosts are rejected before persistence.
@@ -55,7 +55,7 @@ This records implemented controls and known risks; it is not a formal security c
 
 - The former storefront cookie-consent banner and `gtbs_cookie_consent` cookie have been removed.
 - The language provider clears the legacy consent cookie and local-storage choice for returning visitors.
-- Google Translate is loaded only after Gujarati is selected and may then use its `googtrans` language cookie.
+- The language preference is stored in `localStorage`; no storefront translation cookie or third-party translator is used. The provider expires the former `googtrans` cookie for returning visitors.
 - No analytics, advertising, or personalization cookies are implemented in the storefront.
 
 ## Browser-local Cart data

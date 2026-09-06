@@ -37,7 +37,7 @@ function AllProductsContent({
   products,
   categories,
 }: AllProductsContentProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   // Filters: Category, Price Range, Collections
   const [selectedCategory, setSelectedCategory] = useState(() =>
     initialCategory === "all" ||
@@ -203,8 +203,8 @@ function AllProductsContent({
   };
 
   const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "All Products" },
+    { label: t("nav.home"), href: "/" },
+    { label: t("nav.products") },
   ];
 
   return (
@@ -214,10 +214,10 @@ function AllProductsContent({
 
       <div className="mb-6 mt-4">
         <h1 className="title text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-          Browse All Products
+          {t("catalog.browseTitle")}
         </h1>
         <p className="description mt-2 max-w-2xl text-sm leading-6 text-gray-600">
-          Search and filter books, magazines, gifts, and reading resources.
+          {t("catalog.browseDescription")}
         </p>
       </div>
 
@@ -231,7 +231,7 @@ function AllProductsContent({
             className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-gray-800 shadow-sm active:scale-95 transition-all description shrink-0"
           >
             <Filter size={15} className="text-orange-600" />
-            <span>Filters</span>
+            <span>{t("catalog.filters")}</span>
             {hasActiveFilters && (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-bold text-white">
                 {activeFilterCount}
@@ -247,7 +247,7 @@ function AllProductsContent({
               onSearch={updateSearchQuery}
               debounceMs={300}
               size="sm"
-              placeholder="Search books..."
+              placeholder={t("catalog.searchBooks")}
             />
           </div>
         </div>
@@ -255,20 +255,24 @@ function AllProductsContent({
         {/* Sort & Count Row (Mobile) */}
         <div className="flex items-center justify-between px-1 text-xs text-gray-500">
           <span>
-            <strong>{filteredAndSortedProducts.length}</strong> books found
+            {t("catalog.booksFound", {
+              count: filteredAndSortedProducts.length,
+            })}
           </span>
           <div className="flex items-center gap-1.5">
-            <span className="description text-gray-400">Sort:</span>
+            <span className="description text-gray-400">
+              {t("catalog.sort")}
+            </span>
             <select
-              aria-label="Sort products"
+              aria-label={t("catalog.sortProducts")}
               value={sortBy}
               onChange={(e) => selectSort(e.target.value as SortOption)}
               className="rounded-lg border border-gray-200 bg-white py-1 px-2 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description"
             >
-              <option value="featured">Featured</option>
-              <option value="rating">Top Rated</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
+              <option value="featured">{t("catalog.featured")}</option>
+              <option value="rating">{t("catalog.topRated")}</option>
+              <option value="price-asc">{t("catalog.priceLowHigh")}</option>
+              <option value="price-desc">{t("catalog.priceHighLow")}</option>
             </select>
           </div>
         </div>
@@ -284,7 +288,7 @@ function AllProductsContent({
               <div className="flex items-center gap-2">
                 <SlidersHorizontal size={18} className="text-orange-600" />
                 <h2 className="title text-base font-bold text-gray-900">
-                  Filters
+                  {t("catalog.filters")}
                 </h2>
               </div>
 
@@ -295,7 +299,7 @@ function AllProductsContent({
                   className="flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700 description tracking-wide transition-colors"
                 >
                   <RotateCcw size={12} />
-                  <span>Reset</span>
+                  <span>{t("catalog.reset")}</span>
                 </button>
               )}
             </div>
@@ -303,7 +307,7 @@ function AllProductsContent({
             {/* 1. Category / Genre Filter */}
             <div className="py-4 border-b border-gray-100">
               <h3 className="title text-sm font-bold text-gray-900 mb-3">
-                Category
+                {t("catalog.category")}
               </h3>
 
               <div className="space-y-1 max-h-[280px] overflow-y-auto pr-1">
@@ -343,16 +347,16 @@ function AllProductsContent({
             {/* 2. Price Range Filter */}
             <div className="py-4 border-b border-gray-100">
               <h3 className="title text-sm font-bold text-gray-900 mb-3">
-                Price Range
+                {t("catalog.priceRange")}
               </h3>
 
               <div className="space-y-1.5">
                 {[
-                  { id: "all", label: "All Prices" },
-                  { id: "under-300", label: "Under ₹300" },
-                  { id: "300-600", label: "₹300 - ₹600" },
-                  { id: "600-1000", label: "₹600 - ₹1000" },
-                  { id: "above-1000", label: "Above ₹1000" },
+                  { id: "all", label: t("catalog.allPrices") },
+                  { id: "under-300", label: t("catalog.under300") },
+                  { id: "300-600", label: t("catalog.range300600") },
+                  { id: "600-1000", label: t("catalog.range6001000") },
+                  { id: "above-1000", label: t("catalog.above1000") },
                 ].map((item) => (
                   <label
                     key={item.id}
@@ -374,16 +378,16 @@ function AllProductsContent({
             {/* 3. Curated Collections Filter */}
             <div className="pt-4">
               <h3 className="title text-sm font-bold text-gray-900 mb-3">
-                Collections
+                {t("catalog.collections")}
               </h3>
 
               <div className="space-y-1.5">
                 {[
-                  { id: "all", label: "All Collections" },
-                  { id: "bestseller", label: "Best Sellers" },
-                  { id: "new", label: "New Releases" },
-                  { id: "trending", label: "Trending Products" },
-                  { id: "accessories", label: "Accessories" },
+                  { id: "all", label: t("catalog.allCollections") },
+                  { id: "bestseller", label: t("home.best.title") },
+                  { id: "new", label: t("home.new.title") },
+                  { id: "trending", label: t("home.trending.title") },
+                  { id: "accessories", label: t("catalog.accessories") },
                 ].map((item) => (
                   <label
                     key={item.id}
@@ -405,7 +409,10 @@ function AllProductsContent({
         </aside>
 
         {/* ================= RIGHT CATALOG AREA ================= */}
-        <section aria-label="Product results" className="col-span-12 lg:col-span-9">
+        <section
+          aria-label={t("catalog.productResults")}
+          className="col-span-12 lg:col-span-9"
+        >
           {/* Top Control Bar (Desktop) */}
           <div className="mb-6 hidden lg:flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             {/* Search Input */}
@@ -416,32 +423,32 @@ function AllProductsContent({
                 onSearch={updateSearchQuery}
                 debounceMs={300}
                 size="sm"
-                placeholder="Search by title, author, genre..."
+                placeholder={t("catalog.searchDetailed")}
               />
             </div>
 
             {/* Results Count & Sort Dropdown */}
             <div className="flex items-center justify-end gap-4">
               <span className="text-xs text-gray-500 description">
-                Showing{" "}
-                <strong className="text-gray-900 font-semibold">
-                  {filteredAndSortedProducts.length}
-                </strong>{" "}
-                books
+                {t("catalog.showingBooks", {
+                  count: filteredAndSortedProducts.length,
+                })}
               </span>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 description">Sort:</span>
+                <span className="text-xs text-gray-500 description">
+                  {t("catalog.sort")}
+                </span>
                 <select
-                  aria-label="Sort products"
+                  aria-label={t("catalog.sortProducts")}
                   value={sortBy}
                   onChange={(e) => selectSort(e.target.value as SortOption)}
                   className="rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 focus:border-orange-500 focus:outline-none description tracking-wide cursor-pointer"
                 >
-                  <option value="featured">Featured</option>
-                  <option value="rating">Top Rated</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
+                  <option value="featured">{t("catalog.featured")}</option>
+                  <option value="rating">{t("catalog.topRated")}</option>
+                  <option value="price-asc">{t("catalog.priceLowHigh")}</option>
+                  <option value="price-desc">{t("catalog.priceHighLow")}</option>
                 </select>
               </div>
             </div>
@@ -451,12 +458,12 @@ function AllProductsContent({
           {hasActiveFilters && (
             <div className="mb-5 flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span className="text-[11px] sm:text-xs text-gray-500 description font-medium">
-                Active:
+                {t("catalog.active")}
               </span>
 
               {selectedCategory !== "all" && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Genre: {selectedCategory}
+                  {t("catalog.genreChip", { value: selectedCategory })}
                   <button
                     type="button"
                     onClick={() => selectCategory("all")}
@@ -469,7 +476,7 @@ function AllProductsContent({
 
               {priceRange !== "all" && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Price: {priceRange}
+                  {t("catalog.priceChip", { value: priceRange })}
                   <button
                     type="button"
                     onClick={() => selectPriceRange("all")}
@@ -482,14 +489,16 @@ function AllProductsContent({
 
               {selectedCollection !== "all" && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Collection:{" "}
-                  {selectedCollection === "new"
-                    ? "New Releases"
-                    : selectedCollection === "bestseller"
-                      ? "Best Sellers"
-                      : selectedCollection === "accessories"
-                        ? "Accessories"
-                        : "Trending Products"}
+                  {t("catalog.collectionChip", {
+                    value:
+                      selectedCollection === "new"
+                        ? t("home.new.title")
+                        : selectedCollection === "bestseller"
+                          ? t("home.best.title")
+                          : selectedCollection === "accessories"
+                            ? t("catalog.accessories")
+                            : t("home.trending.title"),
+                  })}
                   <button
                     type="button"
                     onClick={() => selectCollection("all")}
@@ -502,7 +511,7 @@ function AllProductsContent({
 
               {searchQuery && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-orange-700 description">
-                  Query: {searchQuery}
+                  {t("catalog.queryChip", { value: searchQuery })}
                   <button
                     type="button"
                     onClick={() => updateSearchQuery("")}
@@ -518,7 +527,7 @@ function AllProductsContent({
                 onClick={resetAllFilters}
                 className="text-[11px] sm:text-xs text-orange-600 hover:underline font-semibold description ml-1"
               >
-                Clear all
+                {t("catalog.clearAll")}
               </button>
             </div>
           )}
@@ -528,11 +537,10 @@ function AllProductsContent({
             <div className="py-16 sm:py-20 text-center rounded-3xl border border-gray-100 bg-white p-6 sm:p-8">
               <BookOpen size={40} className="mx-auto text-gray-300 mb-3" />
               <h3 className="title text-lg sm:text-xl font-bold text-gray-800">
-                No books match your filters
+                {t("catalog.noBooksTitle")}
               </h3>
               <p className="description text-xs sm:text-sm text-gray-500 mt-1 max-w-sm mx-auto">
-                Try selecting a different category or clearing your active
-                filters to browse the full catalog.
+                {t("catalog.noBooksDescription")}
               </p>
               <button
                 type="button"
@@ -540,7 +548,7 @@ function AllProductsContent({
                 className="mt-5 inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-all hover:bg-orange-700 active:scale-95"
               >
                 <RotateCcw size={14} />
-                <span>Reset All Filters</span>
+                <span>{t("catalog.resetAll")}</span>
               </button>
             </div>
           ) : (
@@ -555,15 +563,13 @@ function AllProductsContent({
                 <div className="flex flex-col items-center justify-center gap-3 pt-6 border-t border-gray-100">
                   <div className="flex items-center gap-2.5 text-xs text-gray-500 description tracking-wide">
                     <span>
-                      Showing{" "}
-                      <strong>
-                        {Math.min(
+                      {t("catalog.showingOf", {
+                        visible: Math.min(
                           visibleCount,
                           filteredAndSortedProducts.length,
-                        )}
-                      </strong>{" "}
-                      of <strong>{filteredAndSortedProducts.length}</strong>{" "}
-                      books
+                        ),
+                        total: filteredAndSortedProducts.length,
+                      })}
                     </span>
                     <div className="h-1.5 w-24 sm:w-28 overflow-hidden rounded-full bg-gray-200">
                       <div
@@ -584,7 +590,7 @@ function AllProductsContent({
                     onClick={() => setVisibleCount((count) => count + 8)}
                     className="group inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-600/20 transition-all duration-200 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-600/30 active:scale-[0.98] description tracking-wide"
                   >
-                    <span>View More Books (+8)</span>
+                    <span>{t("catalog.viewMore")}</span>
                     <ChevronDown
                       size={16}
                       className="transition-transform duration-200 group-hover:translate-y-0.5"
@@ -594,8 +600,9 @@ function AllProductsContent({
               ) : filteredAndSortedProducts.length > 8 ? (
                 <div className="pt-6 border-t border-gray-100 text-center">
                   <p className="text-xs text-gray-400 description tracking-wide">
-                    You have viewed all {filteredAndSortedProducts.length} books
-                    in this collection.
+                    {t("catalog.viewedAll", {
+                      count: filteredAndSortedProducts.length,
+                    })}
                   </p>
                 </div>
               ) : null}
@@ -625,13 +632,13 @@ function AllProductsContent({
               <div className="flex items-center gap-2">
                 <SlidersHorizontal size={18} className="text-orange-600" />
                 <h3 id="mobile-filter-title" className="title text-base sm:text-lg font-bold text-gray-900">
-                  Filter Books
+                  {t("catalog.filterBooks")}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
-                aria-label="Close filters"
+                aria-label={t("catalog.closeFilters")}
                 className="rounded-full p-2 text-gray-500 hover:bg-gray-100 active:scale-95"
               >
                 <X size={18} />
@@ -643,7 +650,7 @@ function AllProductsContent({
               {/* 1. Category */}
               <div>
                 <h4 className="title text-xs sm:text-sm font-bold text-gray-900 mb-2.5">
-                  Category / Genre
+                  {t("catalog.categoryGenre")}
                 </h4>
                 <div className="space-y-1 max-h-52 overflow-y-auto pr-1">
                   {categoryList.map((cat) => (
@@ -679,15 +686,15 @@ function AllProductsContent({
               {/* 2. Price Range */}
               <div className="border-t border-gray-100 pt-4">
                 <h4 className="title text-xs sm:text-sm font-bold text-gray-900 mb-2.5">
-                  Price Range
+                  {t("catalog.priceRange")}
                 </h4>
                 <div className="space-y-1.5 text-xs">
                   {[
-                    { id: "all", label: "All Prices" },
-                    { id: "under-300", label: "Under ₹300" },
-                    { id: "300-600", label: "₹300 - ₹600" },
-                    { id: "600-1000", label: "₹600 - ₹1000" },
-                    { id: "above-1000", label: "Above ₹1000" },
+                    { id: "all", label: t("catalog.allPrices") },
+                    { id: "under-300", label: t("catalog.under300") },
+                    { id: "300-600", label: t("catalog.range300600") },
+                    { id: "600-1000", label: t("catalog.range6001000") },
+                    { id: "above-1000", label: t("catalog.above1000") },
                   ].map((item) => (
                     <label
                       key={item.id}
@@ -709,15 +716,15 @@ function AllProductsContent({
               {/* 3. Collections */}
               <div className="border-t border-gray-100 pt-4">
                 <h4 className="title text-xs sm:text-sm font-bold text-gray-900 mb-2.5">
-                  Collections
+                  {t("catalog.collections")}
                 </h4>
                 <div className="space-y-1.5 text-xs">
                   {[
-                    { id: "all", label: "All Collections" },
-                    { id: "bestseller", label: "Best Sellers" },
-                    { id: "new", label: "New Releases" },
-                    { id: "trending", label: "Trending Products" },
-                    { id: "accessories", label: "Accessories" },
+                    { id: "all", label: t("catalog.allCollections") },
+                    { id: "bestseller", label: t("home.best.title") },
+                    { id: "new", label: t("home.new.title") },
+                    { id: "trending", label: t("home.trending.title") },
+                    { id: "accessories", label: t("catalog.accessories") },
                   ].map((item) => (
                     <label
                       key={item.id}
@@ -744,14 +751,16 @@ function AllProductsContent({
                 onClick={resetAllFilters}
                 className="flex-1 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 description"
               >
-                Reset All
+                {t("catalog.resetAll")}
               </button>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="flex-1 rounded-xl bg-orange-600 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-orange-700 description"
               >
-                Show {filteredAndSortedProducts.length} Books
+                {t("catalog.showBooks", {
+                  count: filteredAndSortedProducts.length,
+                })}
               </button>
             </div>
           </div>
@@ -763,9 +772,9 @@ function AllProductsContent({
         <div className="bg-orange-50/70 rounded-3xl p-5 sm:p-8 md:p-10 border border-orange-100/80 shadow-sm max-w-5xl mx-auto">
           <Faq
             faqs={shopFaqs}
-            badge="Shopping Guide"
-            title="Bookstore & Catalog FAQs"
-            subtitle="Frequently asked questions about book editions, shipping, and ordering."
+            badgeKey="catalog.faq.badge"
+            titleKey="catalog.faq.title"
+            subtitleKey="catalog.faq.subtitle"
           />
         </div>
       </div>

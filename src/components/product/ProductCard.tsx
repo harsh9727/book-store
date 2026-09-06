@@ -27,7 +27,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedProduct = localizeProduct(product as Product, language);
   const usesStoredGujarati =
     language === "gu" && "gujarati" in product && Boolean(product.gujarati);
@@ -60,9 +60,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     event.preventDefault();
     event.stopPropagation();
     if (addCartItem(storageProduct)) {
-      toast.success(`Added "${localizedProduct.title}" to your cart.`);
+      toast.success(
+        t("product.added", {
+          quantity: 1,
+          title: localizedProduct.title,
+        }),
+      );
     } else {
-      toast.error("Your browser could not save the cart. Check storage permissions.");
+      toast.error(t("product.storageError"));
     }
   };
 
@@ -93,7 +98,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Link
           href={productHref}
           className="relative block h-full w-full"
-          aria-label={`View details for ${localizedProduct.title}`}
+          aria-label={t("product.viewDetailsLabel", {
+            title: localizedProduct.title,
+          })}
         >
           {coverSrc && (
             <Image
@@ -109,7 +116,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col p-3.5">
         <span className="description text-[13px] font-semibold tracking-wide text-orange-600">
-          {product.category || "Products"}
+          {product.category || t("product.products")}
         </span>
 
         <Link href={productHref}>
@@ -131,18 +138,22 @@ export default function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={handleBuyNow}
             className="flex h-12 min-w-0 items-center justify-center whitespace-nowrap rounded-xl bg-gray-900 px-2 text-xs font-semibold text-white transition-colors hover:bg-orange-600 2xl:text-sm"
-            aria-label={`Buy ${localizedProduct.title} now on WhatsApp`}
+            aria-label={t("product.buyWhatsAppLabel", {
+              title: localizedProduct.title,
+            })}
           >
-            <span>Buy Now</span>
+            <span>{t("action.buyNow")}</span>
           </button>
           <button
             type="button"
             onClick={handleAddToCart}
             className="flex h-12 min-w-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl border border-orange-600 bg-white px-1.5 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-50 2xl:text-sm"
-            aria-label={`Add ${localizedProduct.title} to cart`}
+            aria-label={t("product.addToCartLabel", {
+              title: localizedProduct.title,
+            })}
           >
             <ShoppingCart className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>Add to Cart</span>
+            <span>{t("action.addToCart")}</span>
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ProductImagesProps {
   images?: string[];
@@ -16,6 +17,7 @@ export default function ProductImages({
   title,
   badge,
 }: ProductImagesProps) {
+  const { t } = useLanguage();
   const allImages = [...new Set([mainImage, ...(images || [])])];
   const [selectedImage, setSelectedImage] = useState(allImages[0]);
 
@@ -45,14 +47,17 @@ export default function ProductImages({
       {allImages.length > 1 && (
         <div
           className="flex max-w-full gap-3 overflow-x-auto pb-2"
-          aria-label={`${title} image thumbnails`}
+          aria-label={t("product.images.thumbnails", { title })}
         >
           {allImages.map((img, idx) => (
             <button
               key={img}
               type="button"
               onClick={() => setSelectedImage(img)}
-              aria-label={`Show ${title} image ${idx + 1}`}
+              aria-label={t("product.images.show", {
+                title,
+                index: idx + 1,
+              })}
               aria-pressed={selectedImage === img}
               className={`relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 transition-all duration-200 ${
                 selectedImage === img
