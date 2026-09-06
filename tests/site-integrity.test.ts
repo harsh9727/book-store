@@ -456,6 +456,32 @@ test("Admin navigation lives in the persistent route layout", () => {
   assert.doesNotMatch(contentShell, /<aside |Admin navigation|min-h-screen/);
 });
 
+test("Admin Overview derives every managed section from repository data", () => {
+  const source = readFileSync(
+    path.join(root, "src", "app", "admin", "dashboard", "page.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /export const dynamic = "force-dynamic"/);
+  for (const getter of [
+    "getProducts",
+    "getCategories",
+    "getBlogs",
+    "getGalleries",
+    "getTestimonials",
+    "getTeamMembers",
+  ]) {
+    assert.match(source, new RegExp(`${getter}\\(\\)`));
+  }
+  assert.match(source, /await Promise\.all/);
+  assert.match(source, /Products by category/);
+  assert.match(source, /Content snapshot/);
+  assert.doesNotMatch(
+    source,
+    /Total revenue|Total orders|Sales overview|Recent orders/,
+  );
+});
+
 test("Admin Storefront action opens safely in a new tab", () => {
   const source = readFileSync(
     path.join(root, "src", "components", "admin", "AdminPanelShell.tsx"),

@@ -40,6 +40,7 @@
 - In narrow Admin form cards, stack paired actions on mobile and assign secondary actions a compact fixed desktop width; keep primary submit labels/icons non-shrinking and non-wrapping.
 - Product and Gallery multi-image forms store pending `File` objects separately from persisted image records, revoke every object URL on removal/unmount, and never treat a local preview as proof of provider upload.
 - Extract repeated/stateful dashboard behavior before adding more admin modules.
+- Dashboard metrics must be derived from typed repository data; never ship illustrative counts or charts as though they were operational data.
 - Avoid abstractions that do not clarify reuse, domain, or server/client boundaries.
 - Avoid one-use components that only forward fixed props into a shared component; compose the shared component at the page or feature boundary unless the wrapper owns meaningful behavior or domain semantics.
 - Export only declarations consumed outside their module. Keep implementation-only props, helper types, constants, and schemas module-private.

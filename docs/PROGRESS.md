@@ -10,7 +10,7 @@
 | Product sales     | WhatsApp-assisted                    | Card/detail Buy Now and Cart send itemized requests; GTBS confirms availability, delivery, total, and payment         |
 | Customer utilities | Intentionally out of scope         | No Wishlist, Checkout, customer account, profile, or order-history pages                                              |
 | Admin auth        | Production-hardened baseline        | Single environment-backed admin, scrypt + TOTP, signed cookie                                                        |
-| Admin dashboard   | Catalog/content navigation complete | Dashboard figures remain presentation data; product/category/blog/gallery/testimonial/team management is implemented |
+| Admin dashboard   | Repository-driven overview           | Live Product, Category, Blog, Gallery, Testimonial, and Team totals, catalog distribution, and content snapshots      |
 | SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
 | Documentation     | Active                              | Must evolve with every change                                                                                        |
 | Automated quality | Healthy baseline                    | ESLint, TypeScript, 54 focused/integrity tests, production build, and dependency audit pass                           |
@@ -20,10 +20,17 @@
 1. Configure and verify the real HTTPS `NEXT_PUBLIC_SITE_URL`, production secrets, provider origins, and shared WAF rate limiting.
 2. Replace single-instance filesystem content storage with a shared production database.
 3. Operationally verify WhatsApp order handling, current Product availability, delivery pricing, and payment-confirmation procedures.
-4. Replace dashboard presentation figures with repository data where those figures remain in scope.
-5. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
+4. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-06 - Dynamic repository-backed Admin Overview
+
+- Outcome: replaced the hard-coded revenue, order, customer, sales-chart, and inventory presentation data with a force-dynamic content Overview backed by the authoritative repository. The page now loads Products, Categories, Blogs, Galleries, Testimonials, and Team members concurrently after server-side session verification. Six responsive cards show live totals plus domain details; the lower dashboard derives Product distribution by Category, Gallery extra-photo totals, average Testimonial rating, distinct Team roles, overall managed-record count, and one current content snapshot for every module. Empty states, compact mobile actions, direct management links, and an unavailable-Category warning are included.
+- Main files/areas: protected Admin Overview composition, repository-backed dashboard regression coverage, project overview, Admin data-flow architecture, dashboard rules/code standards, troubleshooting, and progress documentation.
+- Data/API/security impact: no schema, storage format, endpoint, mutation, image, or authentication change. Overview reads through existing typed repository functions only after the existing signed Admin session check; it does not read the runtime content file directly or expose protected data publicly.
+- Verification and exact result: focused dashboard ESLint passed; `pnpm exec tsc --noEmit` passed; the documented single-process site-integrity suite passed 24/24 including the new repository-driven Overview assertion; repository-wide `pnpm lint` passed with 0 errors/warnings; the direct single-process combined suite passed 55/55 (7 admin-auth, 24 content-management, and 24 site-integrity). The restricted `pnpm test:site` and `pnpm build` commands encountered the documented Windows sandbox `spawn EPERM`; the equivalent single-process test passed, and the approved build compiled in 1.143 seconds, completed TypeScript in 7.5 seconds, generated 32/32 static pages, retained `/admin/dashboard` as dynamic, and exited 0. `git diff --check` passed with repository line-ending notices only.
+- Known limitations or next step: the repository schema has no creation/update timestamps, so the content snapshot deliberately reflects current repository order rather than claiming to be a recent-activity feed. Order, revenue, customer, and analytics metrics remain absent until those domains have authoritative models.
 
 ### 2026-09-06 - Complete public-page JSON translation coverage
 

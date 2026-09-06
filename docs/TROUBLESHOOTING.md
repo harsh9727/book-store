@@ -8,6 +8,16 @@
 4. Identify code, cache, dependency, or OS-permission origin.
 5. Apply the smallest fix, rerun the check, and update this file plus `PROGRESS.md`.
 
+## Admin Overview shows sample sales and order figures
+
+**Symptom:** Overview displays revenue, orders, inventory, customers, or sales history that does not change when Product, Category, Blog, Gallery, Testimonial, or Team content changes.
+
+**Cause resolved 2026-09-06:** the original dashboard was a presentation mock with hard-coded commerce figures and no connection to the content repository.
+
+**Solution:** the protected Overview now loads all six managed content arrays concurrently from `contentRepository.ts` and derives its summary cards, Product-by-Category distribution, Gallery photo total, Testimonial rating average, Team role count, and content snapshots from those records.
+
+**Prevention:** add dashboard metrics only when backed by a typed authoritative data source, and retain the integrity check that rejects the former mock revenue/order sections.
+
 ## Admin Storefront action replaces the current tab
 
 **Symptom:** selecting Storefront from the Admin header navigates away from the management panel, interrupting the current Admin context.
