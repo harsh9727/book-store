@@ -40,11 +40,7 @@ export default function AdminBlogManager({
   const normalizedQuery = query.trim().toLowerCase();
   const filteredItems = items.filter((blog) => {
     const matchesCategory = category === "all" || blog.category === category;
-    const searchableText = [
-      blog.title,
-      blog.category,
-      blog.author.name,
-    ]
+    const searchableText = [blog.title, blog.category, blog.author.name]
       .join(" ")
       .toLowerCase();
     return (

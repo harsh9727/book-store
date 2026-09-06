@@ -79,8 +79,7 @@ function cleanup(now: number) {
   }
 
   for (const [challengeId, challenge] of store.challenges) {
-    const expiresAt =
-      challenge.resetTokenExpiresAt ?? challenge.otpExpiresAt;
+    const expiresAt = challenge.resetTokenExpiresAt ?? challenge.otpExpiresAt;
     if (expiresAt <= now) store.challenges.delete(challengeId);
   }
   for (const [key, record] of store.requests) {
@@ -112,11 +111,7 @@ function activeRequestRecord(key: string, now: number) {
   return record;
 }
 
-function getRequestLimit(
-  clientIdentifier: string,
-  email: string,
-  now: number,
-) {
+function getRequestLimit(clientIdentifier: string, email: string, now: number) {
   cleanup(now);
   const keys = requestKeys(clientIdentifier, email);
   const clientRecord = activeRequestRecord(keys.client, now);
@@ -128,9 +123,7 @@ function getRequestLimit(
     pairRecord && pairRecord.attempts >= MAX_PAIR_REQUESTS
       ? pairRecord.windowStartedAt + REQUEST_WINDOW_MS
       : 0,
-    pairRecord
-      ? pairRecord.lastAttemptAt + REQUEST_COOLDOWN_MS
-      : 0,
+    pairRecord ? pairRecord.lastAttemptAt + REQUEST_COOLDOWN_MS : 0,
   ];
   const retryAt = Math.max(...retryTimes);
 

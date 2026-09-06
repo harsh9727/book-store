@@ -182,10 +182,7 @@ export function getAdminAuthConfigurationIssues() {
   ) {
     issues.push("Persisted admin credentials are invalid.");
   }
-  if (
-    !environmentPasswordHash &&
-    (production || !process.env.ADMIN_PASSWORD)
-  ) {
+  if (!environmentPasswordHash && (production || !process.env.ADMIN_PASSWORD)) {
     issues.push("ADMIN_PASSWORD_HASH must be a valid supported scrypt hash.");
   }
   if (production && process.env.ADMIN_REQUIRE_MFA !== "true") {

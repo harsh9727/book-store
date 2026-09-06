@@ -125,7 +125,8 @@ export async function POST(request: Request) {
     if (result.status === "rate-limited") {
       return jsonResponse(
         {
-          message: "Too many recovery requests. Please wait before trying again.",
+          message:
+            "Too many recovery requests. Please wait before trying again.",
           retryAfterSeconds: result.retryAfterSeconds,
         },
         429,

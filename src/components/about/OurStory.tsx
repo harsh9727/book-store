@@ -56,14 +56,18 @@ const OurStory = () => {
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   8K+
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.happyReaders")}</p>
+                <p className="mt-1 text-[11px] text-gray-500">
+                  {t("about.story.happyReaders")}
+                </p>
               </div>
 
               <div className="pl-4">
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   4.9/5
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.readerRating")}</p>
+                <p className="mt-1 text-[11px] text-gray-500">
+                  {t("about.story.readerRating")}
+                </p>
               </div>
             </div>
           </div>

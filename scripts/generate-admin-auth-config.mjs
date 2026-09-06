@@ -12,7 +12,10 @@ function encodeBase32(buffer) {
 
   let encoded = "";
   for (let offset = 0; offset < bits.length; offset += 5) {
-    encoded += BASE32_ALPHABET[Number.parseInt(bits.slice(offset, offset + 5).padEnd(5, "0"), 2)];
+    encoded +=
+      BASE32_ALPHABET[
+        Number.parseInt(bits.slice(offset, offset + 5).padEnd(5, "0"), 2)
+      ];
   }
   return encoded;
 }
@@ -67,11 +70,13 @@ const readline = createInterface({ input: stdin, output: stdout });
 try {
   const email = (await readline.question("Admin email: ")).trim().toLowerCase();
   readline.close();
-  if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error("Enter a valid admin email address.");
+  if (!/^\S+@\S+\.\S+$/.test(email))
+    throw new Error("Enter a valid admin email address.");
 
   const password = await readHidden("Admin password (minimum 12 characters): ");
   const confirmation = await readHidden("Confirm admin password: ");
-  if (password.length < 12) throw new Error("Password must contain at least 12 characters.");
+  if (password.length < 12)
+    throw new Error("Password must contain at least 12 characters.");
   if (password !== confirmation) throw new Error("Passwords do not match.");
 
   const salt = randomBytes(16);
@@ -93,16 +98,22 @@ try {
   const issuer = "GTBS Book Store";
   const otpAuthUrl = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${totpSecret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
 
-  stdout.write("\nCopy these values directly into the deployment secret manager; do not commit them:\n\n");
+  stdout.write(
+    "\nCopy these values directly into the deployment secret manager; do not commit them:\n\n",
+  );
   stdout.write(`ADMIN_EMAIL=${email}\n`);
   stdout.write(`ADMIN_PASSWORD_HASH=${passwordHash}\n`);
-  stdout.write(`ADMIN_SESSION_SECRET=${randomBytes(48).toString("base64url")}\n`);
+  stdout.write(
+    `ADMIN_SESSION_SECRET=${randomBytes(48).toString("base64url")}\n`,
+  );
   stdout.write("ADMIN_SESSION_VERSION=1\n");
   stdout.write("ADMIN_REQUIRE_MFA=true\n");
   stdout.write(`ADMIN_TOTP_SECRET=${totpSecret}\n\n`);
   stdout.write(`Authenticator setup URI:\n${otpAuthUrl}\n`);
 } catch (error) {
   readline.close();
-  process.stderr.write(`${error instanceof Error ? error.message : "Setup failed."}\n`);
+  process.stderr.write(
+    `${error instanceof Error ? error.message : "Setup failed."}\n`,
+  );
   process.exitCode = 1;
 }

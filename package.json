@@ -9,6 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write --ignore-unknown .",
+    "format:check": "prettier --check --ignore-unknown .",
     "admin:setup": "node scripts/generate-admin-auth-config.mjs",
     "test:admin-auth": "node --experimental-strip-types --test tests/admin-auth.test.ts",
     "test:content": "node --experimental-strip-types --test tests/content-management.test.ts",

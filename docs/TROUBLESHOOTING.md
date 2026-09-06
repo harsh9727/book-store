@@ -448,6 +448,8 @@
 
 **Resolved 2026-09-01:** on Node 22, run the scoped dependency command with `NODE_USE_SYSTEM_CA=1` (PowerShell: `$env:NODE_USE_SYSTEM_CA='1'`) so Node adds the operating system's trusted CA store while keeping TLS verification enabled. The Tiptap install then completed and pnpm's lockfile supply-chain policy check passed.
 
+**Observed 2026-09-06:** the Prettier dependency install emitted the same certificate warnings while retrying registry metadata. pnpm retained TLS verification, reused its verified package store, passed the lockfile supply-chain policy, added the two exact development dependencies, and exited 0. No insecure TLS override was used.
+
 **Prevention:** keep `strict-ssl` enabled. Configure the organization/root certificate through the system store or an approved `NODE_EXTRA_CA_CERTS` file; never solve this by disabling certificate verification.
 
 ## `pnpm list` cannot open its SQLite database

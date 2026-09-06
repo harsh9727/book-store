@@ -9,7 +9,8 @@ export default async function AllProductsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const category = typeof params.category === "string" ? params.category : "all";
+  const category =
+    typeof params.category === "string" ? params.category : "all";
   const collection =
     typeof params.collection === "string" ? params.collection : "all";
   const search = typeof params.search === "string" ? params.search : "";

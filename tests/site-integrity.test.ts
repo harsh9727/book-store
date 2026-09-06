@@ -3,10 +3,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { categories } from "../src/data/categories.ts";
-import {
-  addCartItem,
-  markCartAsViewed,
-} from "../src/lib/storefrontStorage.ts";
+import { addCartItem, markCartAsViewed } from "../src/lib/storefrontStorage.ts";
 import { createWhatsAppOrderUrl } from "../src/lib/whatsappOrder.ts";
 
 const root = process.cwd();
@@ -27,7 +24,9 @@ test("all literal public image references resolve to existing files", () => {
 
   for (const file of sourceFiles) {
     const source = readFileSync(file, "utf8");
-    for (const match of source.matchAll(/["'`](\/images\/[A-Za-z0-9_./ -]+)["'`]/g)) {
+    for (const match of source.matchAll(
+      /["'`](\/images\/[A-Za-z0-9_./ -]+)["'`]/g,
+    )) {
       const publicFile = path.join(root, "public", match[1]);
       if (!existsSync(publicFile)) {
         missing.push(`${path.relative(root, file)} -> ${match[1]}`);
@@ -51,7 +50,8 @@ test("literal internal links target an App Router page", () => {
       return new RegExp(`^/${route}$`.replace("//$", "/$"));
     });
   const broken: string[] = [];
-  const hrefPattern = /(?:href\s*=\s*|href:\s*)["'](\/[A-Za-z0-9_./?=&%#-]*)["']/g;
+  const hrefPattern =
+    /(?:href\s*=\s*|href:\s*)["'](\/[A-Za-z0-9_./?=&%#-]*)["']/g;
 
   for (const file of sourceFiles) {
     const source = readFileSync(file, "utf8");
@@ -68,7 +68,13 @@ test("literal internal links target an App Router page", () => {
 
 test("visible catalog links use the canonical All Products route", () => {
   const files = [
-    path.join(root, "src", "components", "product", "LocalizedProductBreadcrumb.tsx"),
+    path.join(
+      root,
+      "src",
+      "components",
+      "product",
+      "LocalizedProductBreadcrumb.tsx",
+    ),
     path.join(root, "src", "app", "not-found.tsx"),
     path.join(root, "src", "app", "blogs", "[id]", "page.tsx"),
     path.join(root, "src", "app", "product", "layout.tsx"),
@@ -177,10 +183,22 @@ test("Gujarati home hero uses a bounded compact desktop layout", () => {
   assert.match(source, /"use client"/);
   assert.match(source, /useLanguage/);
   assert.match(source, /t\("home\.hero\.titleLine1"\)/);
-  assert.match(source, /home-hero-heading-group flex flex-col items-start gap-6/);
-  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-heading-group \{\s*gap: 0\.5rem;/);
-  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-description \{\s*margin-top: 0\.75rem;/);
-  assert.match(globalStyles, /html\[lang="gu"\] \.home-hero-actions \{\s*margin-top: 1\.5rem;/);
+  assert.match(
+    source,
+    /home-hero-heading-group flex flex-col items-start gap-6/,
+  );
+  assert.match(
+    globalStyles,
+    /html\[lang="gu"\] \.home-hero-heading-group \{\s*gap: 0\.5rem;/,
+  );
+  assert.match(
+    globalStyles,
+    /html\[lang="gu"\] \.home-hero-description \{\s*margin-top: 0\.75rem;/,
+  );
+  assert.match(
+    globalStyles,
+    /html\[lang="gu"\] \.home-hero-actions \{\s*margin-top: 1\.5rem;/,
+  );
   assert.match(globalStyles, /height: 420px;\s*min-height: 0;/);
 });
 
@@ -189,16 +207,10 @@ test("storefront dictionaries stay in sync without a DOM translation runtime", (
     [key: string]: string | TranslationSection;
   }
   const englishDictionary = JSON.parse(
-    readFileSync(
-      path.join(root, "src", "data", "english.json"),
-      "utf8",
-    ),
+    readFileSync(path.join(root, "src", "data", "english.json"), "utf8"),
   ) as TranslationSection;
   const gujaratiDictionary = JSON.parse(
-    readFileSync(
-      path.join(root, "src", "data", "gujarati.json"),
-      "utf8",
-    ),
+    readFileSync(path.join(root, "src", "data", "gujarati.json"), "utf8"),
   ) as TranslationSection;
   const languageContext = readFileSync(
     path.join(root, "src", "contexts", "LanguageContext.tsx"),
@@ -264,7 +276,10 @@ test("storefront dictionaries stay in sync without a DOM translation runtime", (
   }
   assert.match(languageContext, /translateStorefront\(language, key, params\)/);
   assert.match(i18n, /replaceAll\(`\{\$\{name\}\}`/);
-  assert.doesNotMatch(languageContext, /translate\.google\.com|google_translate_element|goog-te-combo|window\.location\.reload/);
+  assert.doesNotMatch(
+    languageContext,
+    /translate\.google\.com|google_translate_element|goog-te-combo|window\.location\.reload/,
+  );
 });
 
 test("remaining public page copy is sourced from the storefront dictionaries", () => {
@@ -280,10 +295,7 @@ test("remaining public page copy is sourced from the storefront dictionaries", (
     /t\("about\.mission\.description"\)/,
   );
   assert.match(source("src/data/faqs.ts"), /faqContent\.\$\{section\}/);
-  assert.match(
-    source("src/components/common/Faq.tsx"),
-    /t\(faq\.answerKey\)/,
-  );
+  assert.match(source("src/components/common/Faq.tsx"), /t\(faq\.answerKey\)/);
   assert.match(
     source("src/components/common/LegalPolicyPage.tsx"),
     /policies\.\$\{policy\}/,
@@ -317,7 +329,14 @@ test("Contact phone numbers stay on one untranslated line", () => {
   );
 
   assert.match(source, /flex flex-nowrap items-center gap-3/);
-  assert.equal((source.match(/notranslate whitespace-nowrap|notranslate mt-1 whitespace-nowrap/g) || []).length, 2);
+  assert.equal(
+    (
+      source.match(
+        /notranslate whitespace-nowrap|notranslate mt-1 whitespace-nowrap/g,
+      ) || []
+    ).length,
+    2,
+  );
   assert.equal((source.match(/translate="no"/g) || []).length, 2);
   assert.equal((source.match(/dir="ltr"/g) || []).length, 2);
 });
@@ -340,7 +359,10 @@ test("Admin Product variants use individual option inputs", () => {
   assert.match(source, /aria-label=\{`Remove option /);
   assert.match(source, /\{ name: "", options: \[""\] \}/);
   assert.match(source, /getCollectionError\(/);
-  assert.doesNotMatch(source, /focus:border-orange-500|focus:ring-2 focus:ring-orange/);
+  assert.doesNotMatch(
+    source,
+    /focus:border-orange-500|focus:ring-2 focus:ring-orange/,
+  );
   assert.match(source, /admin-product-input/);
 
   const globalStyles = readFileSync(
@@ -423,9 +445,15 @@ test("Admin Category CRUD uses English then Gujarati final submission", () => {
 
   assert.match(categoryManager, /AdminBilingualFormSteps/);
   assert.match(categoryManager, /useState<AdminContentLanguage>\("en"\)/);
-  assert.match(categoryManager, /formLanguage === "en"[\s\S]+setFormLanguage\("gu"\)[\s\S]+return;/);
+  assert.match(
+    categoryManager,
+    /formLanguage === "en"[\s\S]+setFormLanguage\("gu"\)[\s\S]+return;/,
+  );
   assert.match(categoryManager, /name="gujaratiName"/);
-  assert.match(categoryManager, /const payload = \{ name, gujarati: \{ name: gujaratiName \} \}/);
+  assert.match(
+    categoryManager,
+    /const payload = \{ name, gujarati: \{ name: gujaratiName \} \}/,
+  );
   assert.match(categoryManager, /formLanguage === "en"[\s\S]+\? "Next"/);
   assert.match(categoryManager, /flex-col-reverse gap-2 sm:flex-row/);
   assert.match(categoryManager, /whitespace-nowrap[^"]+sm:w-\[118px\]/);
@@ -521,15 +549,7 @@ test("Admin password recovery uses the server-owned email OTP flow", () => {
     "utf8",
   );
   const resetRoute = readFileSync(
-    path.join(
-      root,
-      "src",
-      "app",
-      "api",
-      "admin",
-      "password-reset",
-      "route.ts",
-    ),
+    path.join(root, "src", "app", "api", "admin", "password-reset", "route.ts"),
     "utf8",
   );
 
@@ -582,7 +602,10 @@ test("client modules do not reference server-only secrets", () => {
 });
 
 test("homepage Magazines use only the canonical admin Product category", () => {
-  const homeSource = readFileSync(path.join(root, "src", "app", "page.tsx"), "utf8");
+  const homeSource = readFileSync(
+    path.join(root, "src", "app", "page.tsx"),
+    "utf8",
+  );
   const magazineSource = readFileSync(
     path.join(root, "src", "components", "home", "Magazines.tsx"),
     "utf8",
@@ -601,10 +624,7 @@ test("homepage Magazines use only the canonical admin Product category", () => {
     /fallbackMagazines|DefaultMagazineCover|Faith & Life Magazine|Christian Living Digest|The Good News Monthly/,
   );
   assert.doesNotMatch(magazineSource, /return null/);
-  assert.match(
-    magazineSource,
-    /t\("home\.collection\.empty"\)/,
-  );
+  assert.match(magazineSource, /t\("home\.collection\.empty"\)/);
 });
 
 test("cart notification is unread after adding and acknowledged after viewing", () => {
@@ -665,7 +685,10 @@ test("single-Product WhatsApp orders include greeting, quantity, details, and li
   assert.match(message, /Gujarati Study Bible/);
   assert.match(message, /Quantity: 3/);
   assert.match(message, /Details: Edition: Hardcover/);
-  assert.match(message, /https:\/\/example\.com\/product\/gujarati-study-bible/);
+  assert.match(
+    message,
+    /https:\/\/example\.com\/product\/gujarati-study-bible/,
+  );
 });
 
 test("multi-Product WhatsApp orders include every line and the aggregate total", () => {

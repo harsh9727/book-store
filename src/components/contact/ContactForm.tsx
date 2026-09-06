@@ -33,14 +33,9 @@ const ContactForm = () => {
     }
 
     try {
-      await emailjs.sendForm(
-        serviceId,
-        templateId,
-        form.current,
-        {
-          publicKey,
-        },
-      );
+      await emailjs.sendForm(serviceId, templateId, form.current, {
+        publicKey,
+      });
 
       setSuccess(t("contact.form.success"));
 
@@ -146,14 +141,20 @@ const ContactForm = () => {
 
               {/* Success Message */}
               {success && (
-                <div role="status" className="rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+                <div
+                  role="status"
+                  className="rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700"
+                >
                   {success}
                 </div>
               )}
 
               {/* Error Message */}
               {error && (
-                <div role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                <div
+                  role="alert"
+                  className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-600"
+                >
                   {error}
                 </div>
               )}
@@ -166,7 +167,10 @@ const ContactForm = () => {
               >
                 {loading ? (
                   <>
-                    <span aria-hidden="true" className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span
+                      aria-hidden="true"
+                      className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+                    />
                     {t("contact.form.sending")}
                   </>
                 ) : (

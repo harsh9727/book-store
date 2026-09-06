@@ -2,18 +2,18 @@
 
 ## Status
 
-| Area              | Status                              | Notes                                                                                                                |
-| ----------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Public storefront | Functional baseline                 | Main pages work; catalog/editorial content is file-backed and public cache revalidation is implemented               |
-| Product catalog   | Dynamic filesystem baseline         | Admin CRUD, category relation, storefront feeds, and product detail UI                                               |
-| Cart              | Browser-local implemented           | Multi-Product list, live count, quantity/remove controls, cross-tab updates, and WhatsApp handoff                     |
-| Product sales     | WhatsApp-assisted                    | Card/detail Buy Now and Cart send itemized requests; GTBS confirms availability, delivery, total, and payment         |
-| Customer utilities | Intentionally out of scope         | No Wishlist, Checkout, customer account, profile, or order-history pages                                              |
-| Admin auth        | Production-hardened single-instance | Scrypt + TOTP login, signed cookie, and server-mediated Email/OTP password reset with automatic session rotation      |
-| Admin dashboard   | Repository-driven overview           | Live Product, Category, Blog, Gallery, Testimonial, and Team totals, catalog distribution, and content snapshots      |
-| SEO               | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required              |
-| Documentation     | Active                              | Must evolve with every change                                                                                        |
-| Automated quality | Healthy baseline                    | ESLint, TypeScript, 58 focused/integrity tests, production build, and dependency audit pass                           |
+| Area               | Status                              | Notes                                                                                                            |
+| ------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Public storefront  | Functional baseline                 | Main pages work; catalog/editorial content is file-backed and public cache revalidation is implemented           |
+| Product catalog    | Dynamic filesystem baseline         | Admin CRUD, category relation, storefront feeds, and product detail UI                                           |
+| Cart               | Browser-local implemented           | Multi-Product list, live count, quantity/remove controls, cross-tab updates, and WhatsApp handoff                |
+| Product sales      | WhatsApp-assisted                   | Card/detail Buy Now and Cart send itemized requests; GTBS confirms availability, delivery, total, and payment    |
+| Customer utilities | Intentionally out of scope          | No Wishlist, Checkout, customer account, profile, or order-history pages                                         |
+| Admin auth         | Production-hardened single-instance | Scrypt + TOTP login, signed cookie, and server-mediated Email/OTP password reset with automatic session rotation |
+| Admin dashboard    | Repository-driven overview          | Live Product, Category, Blog, Gallery, Testimonial, and Team totals, catalog distribution, and content snapshots |
+| SEO                | Improved; deployment config pending | Metadata, headings, structured data, robots, sitemap, manifest; real HTTPS canonical URL still required          |
+| Documentation      | Active                              | Must evolve with every change                                                                                    |
+| Automated quality  | Healthy baseline                    | Prettier, ESLint, TypeScript, 58 focused/integrity tests, production build, and dependency audit pass            |
 
 ## Current priorities
 
@@ -23,6 +23,14 @@
 4. Run deployed-origin Core Web Vitals monitoring and authenticated/provider browser journeys in the target environment.
 
 ## Change log
+
+### 2026-09-06 - Repository-wide Prettier formatting
+
+- Outcome: installed exact project-local Prettier 3.9.6 plus `eslint-config-prettier` 10.1.8, added empty editor-discovery configuration, added explicit generated/runtime ignore rules, exposed `pnpm format` and `pnpm format:check`, and placed the flat compatibility config last in ESLint. Ran Prettier across every supported maintainable repository file; the follow-up write pass was fully idempotent. `AGENTS.md`, generated output, runtime storage, TypeScript build metadata, and the package-manager-generated lockfile are excluded from future formatting runs.
+- Main files/areas: package scripts/development dependencies, Prettier configuration and ignore rules, flat ESLint configuration, formatted TypeScript/TSX/JavaScript/CSS/JSON/Markdown sources, project overview, code standards, security baseline, troubleshooting, and progress documentation.
+- Data/API/security impact: formatting and developer-tooling only. No route, schema, persistence, authentication, cookie, request/response, translation value, or production runtime behavior changed. Both added packages are exact development-only dependencies and are not imported into application code.
+- Verification and exact result: `pnpm add --save-dev --save-exact prettier@3.9.6 eslint-config-prettier` passed its lockfile supply-chain policy and completed with the two requested versions after certificate-warning retries; TLS verification was not disabled. `pnpm format` exited 0, and its immediate second pass reported every included file unchanged. `pnpm format:check` reported that all matched files use Prettier style; `pnpm lint` and `pnpm exec tsc --noEmit` exited 0; the direct single-process combined suite passed 58/58 tests. The restricted `pnpm build` compiled in 4.0 seconds before its TypeScript worker hit the documented sandbox `spawn EPERM`; the approved rerun compiled in 1.031 seconds, completed TypeScript in 11.8 seconds, generated 33/33 pages, and exited 0.
+- Known limitations or next step: formatting enforcement is available through `pnpm format:check` but is not yet wired to a hosted CI workflow or pre-commit hook. The generated `pnpm-lock.yaml` remains owned by pnpm rather than Prettier.
 
 ### 2026-09-06 - Email OTP Admin password reset
 

@@ -148,9 +148,7 @@ function Footer() {
           <p className="text-white/40 text-xs">
             {t("footer.rights", { year: new Date().getFullYear() })}
           </p>
-          <p className="text-white/40 text-xs">
-            {t("footer.serving")}
-          </p>
+          <p className="text-white/40 text-xs">{t("footer.serving")}</p>
         </div>
       </div>
     </footer>

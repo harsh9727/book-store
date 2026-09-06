@@ -42,7 +42,9 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <h3 className="title font-bold text-gray-900">{t("contact.email")}</h3>
+                  <h3 className="title font-bold text-gray-900">
+                    {t("contact.email")}
+                  </h3>
 
                   <p className="mt-1 description text-sm text-gray-600 transition-colors group-hover:text-orange-600">
                     gtbs-1852@yahoo.in
@@ -57,7 +59,9 @@ const ContactSection = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="title font-bold text-gray-900">{t("contact.call")}</h3>
+                  <h3 className="title font-bold text-gray-900">
+                    {t("contact.call")}
+                  </h3>
 
                   <div className="flex flex-nowrap items-center gap-3">
                     <a
@@ -93,7 +97,9 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <h3 className="title font-bold text-gray-900">{t("contact.visit")}</h3>
+                  <h3 className="title font-bold text-gray-900">
+                    {t("contact.visit")}
+                  </h3>
 
                   <p className="mt-1 description text-sm leading-6 text-gray-600 transition-colors group-hover:text-orange-600">
                     Sahitya Seva Sadan, Shahid Veer Kinariwala Marg, I P Mission

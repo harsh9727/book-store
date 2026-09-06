@@ -169,7 +169,9 @@ export default function GalleryPageClient({
 
                     <span className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 pt-1 pb-1.5 text-xs font-medium tracking-wide text-white backdrop-blur-sm shadow-sm description">
                       <Camera size={14} />
-                      <span>{t("gallery.photos", { count: album.photos.length })}</span>
+                      <span>
+                        {t("gallery.photos", { count: album.photos.length })}
+                      </span>
                     </span>
                   </Link>
 

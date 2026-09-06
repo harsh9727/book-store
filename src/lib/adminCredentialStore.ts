@@ -65,14 +65,10 @@ export function writeAdminCredentialOverride(
 
     await mkdir(storageDirectory, { recursive: true });
     try {
-      await writeFile(
-        temporaryPath,
-        `${JSON.stringify(parsed, null, 2)}\n`,
-        {
-          encoding: "utf8",
-          mode: 0o600,
-        },
-      );
+      await writeFile(temporaryPath, `${JSON.stringify(parsed, null, 2)}\n`, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
       await rename(temporaryPath, storagePath);
     } catch (error) {
       await rm(temporaryPath, { force: true }).catch(() => undefined);

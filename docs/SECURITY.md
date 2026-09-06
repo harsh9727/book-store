@@ -20,6 +20,7 @@ This records implemented controls and known risks; it is not a formal security c
 
 - Next.js and `eslint-config-next` are pinned to 16.3.3, which contains the upstream fixes for the August 2026 unauthenticated RCE advisories affecting earlier 16.x releases.
 - UploadThing currently permits an older transitive `effect` range, so `pnpm-workspace.yaml` overrides `effect` to patched 3.20.0 until the upstream dependency selects it directly.
+- Prettier 3.9.6 and `eslint-config-prettier` 10.1.8 are exact, development-only dependencies; they are not imported into the production application runtime.
 - The 2026-09-05 production dependency audit reported no known vulnerabilities. Keep the audit in CI/release checks because this result is time-sensitive.
 
 ## Implemented admin controls

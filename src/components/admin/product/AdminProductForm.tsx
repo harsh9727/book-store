@@ -1000,7 +1000,10 @@ export default function AdminProductForm({
                                     ? {
                                         ...item,
                                         options: item.options.map(
-                                          (currentOption, currentOptionIndex) =>
+                                          (
+                                            currentOption,
+                                            currentOptionIndex,
+                                          ) =>
                                             currentOptionIndex === optionIndex
                                               ? event.target.value
                                               : currentOption,
@@ -1269,9 +1272,7 @@ export default function AdminProductForm({
               </button>
             </div>
             <div className="mt-5">
-              <AdminBilingualFormSteps
-                currentStep={categoryCreatorLanguage}
-              />
+              <AdminBilingualFormSteps currentStep={categoryCreatorLanguage} />
             </div>
             <div className="mt-5 space-y-4">
               <label

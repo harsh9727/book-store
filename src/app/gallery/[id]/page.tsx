@@ -165,7 +165,8 @@ export default async function GalleryDetailPage({
                 href="/gallery"
                 className="flex items-center gap-1 text-sm font-semibold text-orange-600 hover:underline"
               >
-                <StorefrontText translationKey="action.viewAll" /> <ArrowRight size={14} />
+                <StorefrontText translationKey="action.viewAll" />{" "}
+                <ArrowRight size={14} />
               </Link>
             </div>
 
