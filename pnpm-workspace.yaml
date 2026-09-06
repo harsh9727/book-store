@@ -2,3 +2,6 @@ allowBuilds:
   msgpackr-extract: false
   sharp: false
   unrs-resolver: false
+
+overrides:
+  effect: 3.20.0

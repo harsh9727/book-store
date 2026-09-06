@@ -19,18 +19,27 @@ import {
 const SESSION_HOURS = 8;
 const REMEMBERED_SESSION_DAYS = 7;
 const MAX_REQUEST_BYTES = 4_096;
-const GENERIC_LOGIN_ERROR = "The sign-in details are incorrect or temporarily unavailable.";
+const GENERIC_LOGIN_ERROR =
+  "The sign-in details are incorrect or temporarily unavailable.";
 
 const loginSchema = z
   .object({
     email: z.string().trim().email().max(254),
     password: z.string().min(1).max(1_024),
-    oneTimeCode: z.string().trim().regex(/^\d{6}$/u).optional(),
+    oneTimeCode: z
+      .string()
+      .trim()
+      .regex(/^\d{6}$/u)
+      .optional(),
     rememberMe: z.boolean().optional().default(false),
   })
   .strict();
 
-function jsonResponse(body: object, status: number, extraHeaders?: HeadersInit) {
+function jsonResponse(
+  body: object,
+  status: number,
+  extraHeaders?: HeadersInit,
+) {
   return NextResponse.json(body, {
     status,
     headers: {
@@ -44,7 +53,7 @@ function throttledResponse(retryAfterSeconds: number) {
   return jsonResponse(
     { message: GENERIC_LOGIN_ERROR, retryAfterSeconds },
     429,
-    { "Retry-After": String(retryAfterSeconds) }
+    { "Retry-After": String(retryAfterSeconds) },
   );
 }
 
@@ -54,7 +63,10 @@ export async function POST(request: Request) {
   }
 
   if (!isAdminAuthConfigured()) {
-    return jsonResponse({ message: "Admin login is not configured on the server." }, 503);
+    return jsonResponse(
+      { message: "Admin login is not configured on the server." },
+      503,
+    );
   }
 
   const contentLength = Number(request.headers.get("content-length") || "0");
@@ -84,11 +96,13 @@ export async function POST(request: Request) {
 
   const { email, password, oneTimeCode, rememberMe } = parsedBody.data;
   const currentLimit = getAdminLoginLimit(clientIdentifier, email);
-  if (!currentLimit.allowed) return throttledResponse(currentLimit.retryAfterSeconds);
+  if (!currentLimit.allowed)
+    return throttledResponse(currentLimit.retryAfterSeconds);
 
   if (!(await validateAdminCredentials(email, password, oneTimeCode))) {
     const nextLimit = recordAdminLoginFailure(clientIdentifier, email);
-    if (!nextLimit.allowed) return throttledResponse(nextLimit.retryAfterSeconds);
+    if (!nextLimit.allowed)
+      return throttledResponse(nextLimit.retryAfterSeconds);
     return jsonResponse({ message: GENERIC_LOGIN_ERROR }, 401);
   }
 

@@ -12,12 +12,23 @@ This records implemented controls and known risks; it is not a formal security c
 - Production requires `NEXT_PUBLIC_SITE_URL` to be a credential-free HTTPS origin; auth fails closed otherwise.
 - `ADMIN_SESSION_VERSION` can be incremented to invalidate every existing signed session.
 - `NEXT_PUBLIC_` variables are browser-visible and cannot contain secrets.
+- `EMAILJS_PRIVATE_KEY` and the password-reset template ID are server-owned recovery configuration. The private key must never use a `NEXT_PUBLIC_` prefix or appear in client code.
 - `UPLOADTHING_TOKEN` is server-only and must never be prefixed with `NEXT_PUBLIC_` or returned by an API.
 - Rotate a secret immediately if exposed in Git, logs, screenshots, chat, or docs.
+
+## Dependency baseline
+
+- Next.js and `eslint-config-next` are pinned to 16.3.3, which contains the upstream fixes for the August 2026 unauthenticated RCE advisories affecting earlier 16.x releases.
+- UploadThing currently permits an older transitive `effect` range, so `pnpm-workspace.yaml` overrides `effect` to patched 3.20.0 until the upstream dependency selects it directly.
+- The 2026-09-05 production dependency audit reported no known vulnerabilities. Keep the audit in CI/release checks because this result is time-sensitive.
 
 ## Implemented admin controls
 
 - Passwords are verified server-side against a memory-hard scrypt hash; the plaintext fallback is development-only.
+- Forgot password uses a server-mediated EmailJS flow with three client steps: normalized Admin email, six-digit OTP, and confirmed replacement password. The request response does not reveal whether the entered address matches the configured identity.
+- Password-reset requests use cryptographic OTP/challenge randomness, a 10-minute OTP expiry, five verification attempts, a one-minute resend cooldown, 15-minute pair/client caps, and a single-use 256-bit reset authorization that expires after 10 minutes.
+- OTPs and reset authorizations are retained only as HMAC digests in bounded process memory. They are never put in URLs, cookies, local storage, logs, or the credential file.
+- Successful completion derives a new scrypt hash, atomically persists only that hash with a change timestamp and randomized session version in ignored `storage/admin-credentials.json`, and invalidates all existing Admin sessions. Login prefers a valid persisted override and otherwise uses the environment bootstrap hash.
 - Production requires a six-digit TOTP authenticator code with a one-step clock-skew window.
 - Login bodies have a 4 KiB limit and a strict Zod schema.
 - Generic authentication errors reduce account enumeration; client/account failures lock for 15 minutes after five failures and client-wide failures after ten.
@@ -27,17 +38,36 @@ This records implemented controls and known risks; it is not a formal security c
 - Logout expires the browser cookie; global emergency revocation is available by incrementing `ADMIN_SESSION_VERSION`.
 - Admin responses are no-store and receive restrictive CSP, frame, referrer, MIME, permissions, and transport headers. Admin `img-src` permits `blob:` only so validated local Gallery selections can render short-lived previews before upload; other resource directives do not permit blob URLs.
 - Admin pages are no-index and excluded from public chrome.
-- Blog/gallery mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
-- Content JSON bodies are capped at 128 KiB and validated with strict Zod schemas.
-- Upload bodies are capped for one cover plus twelve 500 KiB photos and multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, and checked for the corresponding binary signature before UploadThing receives it.
+- The persistent Admin panel shell uses the pathname only for chrome visibility and active-link styling. It does not authorize access; every protected Admin page/API continues to verify the signed session server-side, and hidden panel UI must never be treated as a security control.
+- Admin pages are outside `LanguageProvider` and stay English. All storefront-owned English/Gujarati copy, including legal/privacy presentation text, comes from checked-in JSON and renders as escaped React text, so language switching makes no third-party translation request, loads no translator script, and introduces no raw-HTML translation path. Policy wording documents behavior but does not replace the implemented controls described here.
+- Product/category/blog/gallery/testimonial/team mutations require the existing signed session plus same-origin request checks and the explicit admin marker header.
+- Product and Category mutation bodies are capped at 64 KiB and validated with strict schemas. Product drafts reject client-supplied IDs, while Category drafts reject client-supplied slugs and require bounded English/Gujarati names; repository create mutations generate route keys from validated English titles/names and update mutations retain stored keys. Product writes also verify the referenced Category inside the serialized repository mutation, preventing stale clients from creating orphan relationships.
+- Product card image references are restricted to local paths or UploadThing hosts. Managed detail-image records and legacy extra references accept only local paths, UploadThing, or the two already configured Unsplash hosts; arbitrary remote hosts are rejected before persistence.
+- Product detail uploads accept at most 6 files per Product, with the same MIME, signature, positive-size, and 500 KiB checks as other managed images. Product update/delete cleans up unretained managed card/detail keys best-effort without deleting keyless legacy URLs.
+- Blog create/update JSON bodies are capped at 256 KiB for the two authored language documents; other content JSON bodies retain the 128 KiB default. Every payload is validated with a strict Zod schema. Blog and Gallery mutation drafts reject client-supplied slugs; their repositories generate unique route keys on create and retain stored keys on update.
+- Product specification and variant input is bounded at every nested level: at most 50 specification rows, 20 variant groups, and 50 options per group, with length-limited names and values. Legacy book fields are accepted only by the persisted-store schema and rejected by mutation schemas.
+- Product create/update validation requires a strict Gujarati content block with a bounded title, descriptions, overview, features, specifications, and variants. The same nested row, group, option, and text limits apply independently to English and Gujarati input; persisted legacy Products may omit the block for backward compatibility.
+- Legacy Product availability, stock-count, rating, and review-count fields are accepted only when validating stored content and are rejected at create/update boundaries.
+- Legacy Product author/creator and author-details fields are accepted only by persisted-content validation and are rejected by Product create/update schemas.
+- English and Gujarati Blog rich-text payloads are independently bounded and use the same allow-list of Tiptap node/mark types, primitive attributes, and `http:`, `https:`, `mailto:`, `tel:`, or same-site link targets. Both public language variants render through explicit React elements without `dangerouslySetInnerHTML`.
+- Gallery mutations require strict bounded English and Gujarati text blocks; unknown fields such as the removed Subtitle are rejected. Stored legacy Gallery records may retain optional Subtitle data but it is no longer accepted from create/update forms.
+- Testimonial mutations require strict bounded English and Gujarati name, role, and review text plus an integer Rating from 1 through 5. Unknown properties are rejected; stored backward-compatible records may omit Gujarati content, while new writes may not.
+- Team mutations require strict bounded English and Gujarati member names/roles plus a valid shared image reference. Unknown properties are rejected; stored backward-compatible records may omit Gujarati content, while new writes may not. Replaced and deleted managed Team image keys receive best-effort provider cleanup.
+- Upload bodies are capped for one cover/primary/Team image or twelve Gallery photos plus multipart overhead. Every file is limited to 500 KiB, allow-listed to JPG/PNG/WebP, checked for positive size, and verified against the corresponding binary signature before UploadThing receives it.
 - Gallery extra photos are capped at 12 independently in the browser, upload route, content schema, and focused tests.
 
 ## Storefront cookies
 
 - The former storefront cookie-consent banner and `gtbs_cookie_consent` cookie have been removed.
 - The language provider clears the legacy consent cookie and local-storage choice for returning visitors.
-- Google Translate is loaded only after Gujarati is selected and may then use its `googtrans` language cookie.
+- The language preference is stored in `localStorage`; no storefront translation cookie or third-party translator is used. The provider expires the former `googtrans` cookie for returning visitors.
 - No analytics, advertising, or personalization cookies are implemented in the storefront.
+
+## Browser-local Cart data
+
+- Cart persists only bounded Product display data, selected variants, price, quantity, and a non-sensitive read/unread header-badge marker in `localStorage`; no credential, payment, session, or admin data belongs there.
+- Stored values are treated as untrusted and normalized on read. They remain client-controlled and must never become authoritative price, inventory, or order data for a future payment backend.
+- Product Buy Now and Cart send prepared item details through an external WhatsApp link and explicitly require business confirmation of availability, delivery, final total, and payment. The site itself never collects payment credentials.
 
 ## Known gaps before mature production use
 
@@ -45,12 +75,14 @@ This records implemented controls and known risks; it is not a formal security c
 - Back login throttling with a shared store or deployment WAF for multi-process/multi-region deployments; the implemented bounded store is process-local and resets on restart.
 - Add CSRF review/protection to future state-changing admin endpoints.
 - Add database-backed per-session revocation and audit logs; current rotation invalidates all sessions together.
-- Implement short-lived, single-use password reset tokens; current recovery only prepares an email request and never changes credentials.
+- Move password-reset challenges, recovery throttling, and the credential override to shared durable stores before multi-process, serverless, or multi-region deployment. The current bounded challenge store is process-local and the credential override assumes one writable persistent filesystem.
 - Extend Content Security Policy coverage beyond admin routes after auditing storefront third-party scripts.
 - Replace local `storage/content.json` with a shared database before serverless, read-only, multi-process, or multi-region deployment. The current in-process write queue cannot coordinate replicas.
 - Add an orphan-file reconciliation job if UploadThing usage grows; a successful upload followed by a rejected content mutation can leave an unreferenced provider file.
-- Review EmailJS quotas, abuse protection, and allowed origins.
-- Add dependency vulnerability scanning to CI.
+- Configure and operationally verify the dedicated EmailJS password-reset template/private key, delivery/spam behavior, quota, and account security. The local audited environment is missing the reset template ID and private key.
+- Add server-side/contact-provider abuse protection if public form volume warrants it; EmailJS public identifiers are intentionally browser-visible and are not secrets.
+- Add dependency vulnerability scanning to CI even though the current production audit is clean.
+- Configure a real HTTPS `NEXT_PUBLIC_SITE_URL` in deployment. Without it, public canonical/social metadata falls back to localhost and production admin authentication rejects the configuration.
 
 ## Authentication invariants
 
@@ -59,7 +91,9 @@ This records implemented controls and known risks; it is not a formal security c
 - Hidden UI is not authorization.
 - Every future admin mutation performs its own authorization.
 - Every admin mutation also applies the shared same-origin request check; the marker header is defense-in-depth, not a secret.
+- Inline Category creation in the Product form uses the same protected Category mutation endpoint and must never rely on Product-form visibility as authorization.
 - Credentials never go in URLs, analytics, logs, or error responses.
+- A reset request for an unknown email must follow the same public response contract and must never trigger delivery. OTP verification and completion remain bound to the initiating client, normalized email, and random challenge.
 
 ## Input/output safety
 
@@ -72,6 +106,7 @@ This records implemented controls and known risks; it is not a formal security c
 ## Release checklist
 
 - [ ] Production secrets are unique and stored in a secret manager.
+- [ ] The EmailJS reset template sends only to `{{to_email}}`, includes the bounded OTP/expiry variables, uses server-only private-key authorization, and has been tested at the deployed origin.
 - [ ] HTTPS is enforced; the production `__Host-` admin cookie is observed as Secure.
 - [ ] Example credentials fail.
 - [ ] Protected pages/mutations reject missing, invalid, and expired sessions.

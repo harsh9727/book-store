@@ -7,6 +7,6 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return NextResponse.json(
     { items: await getBlogs() },
-    { headers: { "Cache-Control": "no-store" } }
+    { headers: { "Cache-Control": "no-store" } },
   );
 }

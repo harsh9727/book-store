@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import AdminLoginForm from "@/components/admin/AdminLoginForm";
+import AdminLoginForm from "@/components/admin/login/AdminLoginForm";
 import {
   ADMIN_SESSION_COOKIE,
   isAdminMfaRequired,
@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 
 export default async function AdminLoginPage() {
   const cookieStore = await cookies();
-  const session = verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value);
+  const session = verifyAdminSession(
+    cookieStore.get(ADMIN_SESSION_COOKIE)?.value,
+  );
 
   if (session) {
     redirect("/admin/dashboard");

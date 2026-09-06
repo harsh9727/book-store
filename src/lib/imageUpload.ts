@@ -31,21 +31,25 @@ export async function validateImageFile(file: File) {
   const selectionError = validateImageSelection(file);
   if (selectionError) return selectionError;
   const signature = new Uint8Array(await file.slice(0, 16).arrayBuffer());
-  if (!hasImageSignature(signature, file.type)) return "The uploaded file is not a valid image.";
+  if (!hasImageSignature(signature, file.type))
+    return "The uploaded file is not a valid image.";
   return null;
 }
 
 export async function uploadImages(files: File[]) {
   const token = process.env.UPLOADTHING_TOKEN?.trim();
   if (!token) throw new Error("UploadThing is not configured on the server.");
-  const results = await new UTApi({ token }).uploadFiles(files, { concurrency: 4 });
+  const results = await new UTApi({ token }).uploadFiles(files, {
+    concurrency: 4,
+  });
   const failed = results.find((result) => result.error);
   if (failed?.error) {
     await deleteUploadedImages(results.map((result) => result.data?.key));
     throw new Error("UploadThing rejected an image upload.");
   }
   return results.map((result) => {
-    if (!result.data) throw new Error("UploadThing returned an incomplete upload result.");
+    if (!result.data)
+      throw new Error("UploadThing returned an incomplete upload result.");
     return {
       key: result.data.key,
       url: result.data.ufsUrl,
@@ -56,7 +60,9 @@ export async function uploadImages(files: File[]) {
 }
 
 export async function deleteUploadedImages(keys: Array<string | undefined>) {
-  const fileKeys = [...new Set(keys.filter((key): key is string => Boolean(key)))];
+  const fileKeys = [
+    ...new Set(keys.filter((key): key is string => Boolean(key))),
+  ];
   const token = process.env.UPLOADTHING_TOKEN?.trim();
   if (!token || fileKeys.length === 0) return;
   try {

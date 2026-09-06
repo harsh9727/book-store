@@ -1,24 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
 
 import "./globals.css";
 
 import JsonLd from "@/components/seo/JsonLd";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import SiteChrome from "@/components/layout/SiteChrome";
+import { getCategories } from "@/lib/contentRepository";
 import { absoluteUrl, siteConfig, siteUrl } from "@/lib/seo";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -92,20 +79,18 @@ const storeStructuredData = {
   openingHours: "Mo-Sa 10:00-18:00",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories();
+
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="font-sans antialiased">
-        <LanguageProvider>
-          <JsonLd data={storeStructuredData} />
-          <SiteChrome>
-            {children}
-          </SiteChrome>
-        </LanguageProvider>
+        <JsonLd data={storeStructuredData} />
+        <SiteChrome categories={categories}>{children}</SiteChrome>
       </body>
     </html>
   );

@@ -1,23 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, CheckCircle, FileText, UserCheck } from "lucide-react";
-import { Product } from "@/types/product";
+import { CheckCircle, FileText, PackageOpen } from "lucide-react";
+import type { Product, ProductSpecification } from "@/types/product";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { localizeProduct } from "@/lib/localizedProduct";
+import type { TranslationKey } from "@/lib/storefrontI18n";
 
 interface ProductTabsProps {
   product: Product;
 }
 
-type ProductTab = "synopsis" | "specs" | "author";
+type ProductTab = "overview" | "specs";
 
 const tabs = [
-  { id: "synopsis", label: "Synopsis & Features", icon: BookOpen },
-  { id: "specs", label: "Book Specifications", icon: FileText },
-  { id: "author", label: "About the Author", icon: UserCheck },
-] as const;
+  { id: "overview", labelKey: "product.overviewTab", icon: PackageOpen },
+  { id: "specs", labelKey: "product.specificationsTab", icon: FileText },
+] as const satisfies ReadonlyArray<{
+  id: ProductTab;
+  labelKey: TranslationKey;
+  icon: typeof PackageOpen;
+}>;
+
+function getSpecifications(product: Product): ProductSpecification[] {
+  if (product.specifications?.length) return product.specifications;
+  return [
+    product.publisher ? { name: "Publisher", value: product.publisher } : null,
+    product.publishedDate
+      ? { name: "Publication date", value: product.publishedDate }
+      : null,
+    product.pages ? { name: "Pages", value: String(product.pages) } : null,
+    product.language ? { name: "Language", value: product.language } : null,
+    product.isbn ? { name: "ISBN", value: product.isbn } : null,
+    product.dimensions
+      ? { name: "Dimensions", value: product.dimensions }
+      : null,
+  ].filter((item): item is ProductSpecification => item !== null);
+}
 
 export default function ProductTabs({ product }: ProductTabsProps) {
-  const [activeTab, setActiveTab] = useState<ProductTab>("synopsis");
+  const { language, t } = useLanguage();
+  const localizedProduct = localizeProduct(product, language);
+  const usesStoredGujarati = language === "gu" && Boolean(product.gujarati);
+  const [activeTab, setActiveTab] = useState<ProductTab>("overview");
+  const specifications = usesStoredGujarati
+    ? localizedProduct.specifications || []
+    : getSpecifications(localizedProduct);
 
   return (
     <div className="mt-14">
@@ -38,96 +66,87 @@ export default function ProductTabs({ product }: ProductTabsProps) {
               }`}
             >
               <Icon size={17} />
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey)}</span>
             </button>
           );
         })}
       </div>
 
       <div className="pt-8">
-        {activeTab === "synopsis" && (
+        {activeTab === "overview" && (
           <div className="max-w-4xl space-y-6 text-gray-700">
             <div>
               <h3 className="title mb-3 text-xl font-bold text-gray-900">
-                Book Overview
+                {t("product.overview")}
               </h3>
-              <p className="description text-base leading-relaxed text-gray-600">
-                {product.synopsis || product.description}
+              <p
+                className={`description text-base leading-relaxed text-gray-600 ${usesStoredGujarati ? "notranslate" : ""}`}
+                translate={usesStoredGujarati ? "no" : undefined}
+                lang={usesStoredGujarati ? "gu" : undefined}
+              >
+                {localizedProduct.synopsis ||
+                  localizedProduct.description ||
+                  t("product.noOverview")}
               </p>
             </div>
 
-            {product.features && product.features.length > 0 && (
-              <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-6">
-                <h4 className="title mb-3 text-base font-bold text-orange-950">
-                  Key Highlights
-                </h4>
-                <ul className="space-y-2.5 text-sm text-gray-700">
-                  {product.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
-                      <CheckCircle
-                        size={17}
-                        className="mt-0.5 shrink-0 text-orange-600"
-                      />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {localizedProduct.features &&
+              localizedProduct.features.length > 0 && (
+                <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-6">
+                  <h4 className="title mb-3 text-base font-bold text-orange-950">
+                    {t("product.highlights")}
+                  </h4>
+                  <ul
+                    className={`space-y-2.5 text-sm text-gray-700 ${usesStoredGujarati ? "notranslate" : ""}`}
+                    translate={usesStoredGujarati ? "no" : undefined}
+                    lang={usesStoredGujarati ? "gu" : undefined}
+                  >
+                    {localizedProduct.features.map((feature, index) => (
+                      <li
+                        key={`${feature}-${index}`}
+                        className="flex items-start gap-2.5"
+                      >
+                        <CheckCircle
+                          size={17}
+                          className="mt-0.5 shrink-0 text-orange-600"
+                        />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
           </div>
         )}
 
         {activeTab === "specs" && (
           <div className="max-w-3xl">
             <h3 className="title mb-5 text-xl font-bold text-gray-900">
-              Technical Details
+              {t("product.specifications")}
             </h3>
-            <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Publisher</span>
-                <span className="text-gray-900">
-                  {product.publisher || "Global Publishing House"}
-                </span>
+            {specifications.length ? (
+              <div
+                className={`divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white ${usesStoredGujarati ? "notranslate" : ""}`}
+                translate={usesStoredGujarati ? "no" : undefined}
+                lang={usesStoredGujarati ? "gu" : undefined}
+              >
+                {specifications.map((specification, index) => (
+                  <div
+                    key={`${specification.name}-${index}`}
+                    className={`grid grid-cols-1 p-4 text-sm sm:grid-cols-2 ${index % 2 === 0 ? "bg-gray-50/50" : ""}`}
+                  >
+                    <span className="font-semibold text-gray-500">
+                      {specification.name}
+                    </span>
+                    <span className="text-gray-900">{specification.value}</span>
+                  </div>
+                ))}
               </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Publication Date</span>
-                <span className="text-gray-900">{product.publishedDate || "2023"}</span>
-              </div>
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Print Length</span>
-                <span className="text-gray-900">
-                  {product.pages ? `${product.pages} pages` : "320 pages"}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Language</span>
-                <span className="text-gray-900">{product.language || "English"}</span>
-              </div>
-              <div className="grid grid-cols-1 bg-gray-50/50 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">ISBN-13</span>
-                <span className="font-mono text-gray-900">
-                  {product.isbn || "978-0123456789"}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 p-4 text-sm sm:grid-cols-2">
-                <span className="font-semibold text-gray-500">Dimensions</span>
-                <span className="text-gray-900">
-                  {product.dimensions || "6.0 x 1.0 x 9.0 inches"}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "author" && (
-          <div className="max-w-3xl space-y-4">
-            <h3 className="title text-xl font-bold text-gray-900">
-              About {product.author}
-            </h3>
-            <p className="description text-base leading-relaxed text-gray-600">
-              {product.authorBio ||
-                `${product.author} is an internationally acclaimed author whose writings have captivated readers worldwide. Known for insightful prose and deep emotional authenticity.`}
-            </p>
+            ) : (
+              <p className="rounded-2xl border border-dashed border-gray-200 p-6 text-sm text-gray-500">
+                {t("product.noSpecifications")}
+              </p>
+            )}
           </div>
         )}
       </div>

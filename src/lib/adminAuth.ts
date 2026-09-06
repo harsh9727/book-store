@@ -1,9 +1,15 @@
 import {
   createHmac,
+  randomBytes,
   randomUUID,
   scrypt as nodeScrypt,
   timingSafeEqual,
 } from "node:crypto";
+
+import {
+  readAdminCredentialOverride,
+  writeAdminCredentialOverride,
+} from "./adminCredentialStore.ts";
 
 const SCRYPT_COST = 32_768;
 const SCRYPT_BLOCK_SIZE = 8;
@@ -28,7 +34,7 @@ function deriveScryptKey(password: string, salt: Buffer) {
       (error, derivedKey) => {
         if (error) reject(error);
         else resolve(derivedKey);
-      }
+      },
     );
   });
 }
@@ -70,6 +76,10 @@ function getSessionSecret() {
 }
 
 function getSessionVersion() {
+  const storedCredentials = readAdminCredentialOverride();
+  if (storedCredentials.status === "valid") {
+    return storedCredentials.credentials.sessionVersion;
+  }
   return process.env.ADMIN_SESSION_VERSION?.trim() || "1";
 }
 
@@ -80,8 +90,14 @@ function normalizeEmail(email: string) {
 function parsePasswordHash(value?: string): ScryptPasswordHash | null {
   if (!value) return null;
 
-  const [algorithm, costValue, blockSizeValue, parallelizationValue, saltValue, keyValue] =
-    value.split("$");
+  const [
+    algorithm,
+    costValue,
+    blockSizeValue,
+    parallelizationValue,
+    saltValue,
+    keyValue,
+  ] = value.split("$");
   const cost = Number(costValue);
   const blockSize = Number(blockSizeValue);
   const parallelization = Number(parallelizationValue);
@@ -99,7 +115,8 @@ function parsePasswordHash(value?: string): ScryptPasswordHash | null {
     const salt = Buffer.from(saltValue, "base64url");
     const derivedKey = Buffer.from(keyValue, "base64url");
 
-    if (salt.length < 16 || derivedKey.length !== SCRYPT_KEY_LENGTH) return null;
+    if (salt.length < 16 || derivedKey.length !== SCRYPT_KEY_LENGTH)
+      return null;
     return { cost, blockSize, parallelization, salt, derivedKey };
   } catch {
     return null;
@@ -108,7 +125,10 @@ function parsePasswordHash(value?: string): ScryptPasswordHash | null {
 
 function decodeBase32(value: string) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  const normalized = value.toUpperCase().replace(/=+$/u, "").replace(/\s+/gu, "");
+  const normalized = value
+    .toUpperCase()
+    .replace(/=+$/u, "")
+    .replace(/\s+/gu, "");
   let bits = "";
 
   for (const character of normalized) {
@@ -143,15 +163,29 @@ function createTotp(secret: Buffer, counter: number) {
 export function getAdminAuthConfigurationIssues() {
   const issues: string[] = [];
   const email = process.env.ADMIN_EMAIL?.trim() || "";
-  const passwordHash = parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
+  const environmentPasswordHash = parsePasswordHash(
+    process.env.ADMIN_PASSWORD_HASH,
+  );
+  const storedCredentials = readAdminCredentialOverride();
   const sessionSecret = getSessionSecret();
   const production = process.env.NODE_ENV === "production";
 
-  if (!/^\S+@\S+\.\S+$/u.test(email)) issues.push("ADMIN_EMAIL must be a valid email address.");
+  if (!/^\S+@\S+\.\S+$/u.test(email))
+    issues.push("ADMIN_EMAIL must be a valid email address.");
   if (Buffer.byteLength(sessionSecret) < 32) {
     issues.push("ADMIN_SESSION_SECRET must contain at least 32 characters.");
   }
-  if (!passwordHash && (production || !process.env.ADMIN_PASSWORD)) {
+  if (
+    storedCredentials.status === "invalid" ||
+    (storedCredentials.status === "valid" &&
+      !parsePasswordHash(storedCredentials.credentials.passwordHash))
+  ) {
+    issues.push("Persisted admin credentials are invalid.");
+  }
+  if (
+    !environmentPasswordHash &&
+    (production || !process.env.ADMIN_PASSWORD)
+  ) {
     issues.push("ADMIN_PASSWORD_HASH must be a valid supported scrypt hash.");
   }
   if (production && process.env.ADMIN_REQUIRE_MFA !== "true") {
@@ -160,18 +194,28 @@ export function getAdminAuthConfigurationIssues() {
   if (production) {
     try {
       const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL || "");
-      if (siteUrl.protocol !== "https:" || siteUrl.username || siteUrl.password) {
-        issues.push("NEXT_PUBLIC_SITE_URL must be a credential-free HTTPS URL in production.");
+      if (
+        siteUrl.protocol !== "https:" ||
+        siteUrl.username ||
+        siteUrl.password
+      ) {
+        issues.push(
+          "NEXT_PUBLIC_SITE_URL must be a credential-free HTTPS URL in production.",
+        );
       }
     } catch {
-      issues.push("NEXT_PUBLIC_SITE_URL must be a valid HTTPS URL in production.");
+      issues.push(
+        "NEXT_PUBLIC_SITE_URL must be a valid HTTPS URL in production.",
+      );
     }
   }
   if (
     process.env.ADMIN_REQUIRE_MFA === "true" &&
     !decodeBase32(process.env.ADMIN_TOTP_SECRET || "")
   ) {
-    issues.push("ADMIN_TOTP_SECRET must be a valid Base32 secret of at least 20 bytes.");
+    issues.push(
+      "ADMIN_TOTP_SECRET must be a valid Base32 secret of at least 20 bytes.",
+    );
   }
 
   return issues;
@@ -186,12 +230,18 @@ export function isAdminMfaRequired() {
 }
 
 async function verifyPassword(password: string) {
-  const parsedHash = parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
+  const storedCredentials = readAdminCredentialOverride();
+  const parsedHash =
+    storedCredentials.status === "valid"
+      ? parsePasswordHash(storedCredentials.credentials.passwordHash)
+      : parsePasswordHash(process.env.ADMIN_PASSWORD_HASH);
 
   if (!parsedHash) {
-    return process.env.NODE_ENV !== "production" &&
+    return (
+      process.env.NODE_ENV !== "production" &&
       Boolean(process.env.ADMIN_PASSWORD) &&
-      safeCompare(password, process.env.ADMIN_PASSWORD || "");
+      safeCompare(password, process.env.ADMIN_PASSWORD || "")
+    );
   }
 
   const derivedKey = await deriveScryptKey(password, parsedHash.salt);
@@ -202,14 +252,14 @@ async function verifyPassword(password: string) {
 export async function validateAdminCredentials(
   email: string,
   password: string,
-  oneTimeCode?: string
+  oneTimeCode?: string,
 ) {
   if (!isAdminAuthConfigured()) return false;
 
   const passwordMatches = await verifyPassword(password);
   const emailMatches = safeCompare(
     normalizeEmail(email),
-    normalizeEmail(process.env.ADMIN_EMAIL || "")
+    normalizeEmail(process.env.ADMIN_EMAIL || ""),
   );
 
   if (!passwordMatches || !emailMatches) return false;
@@ -221,13 +271,15 @@ export async function validateAdminCredentials(
 
   const currentCounter = Math.floor(Date.now() / 30_000);
   return [-1, 0, 1].some((offset) =>
-    safeCompare(submittedCode, createTotp(secret, currentCounter + offset))
+    safeCompare(submittedCode, createTotp(secret, currentCounter + offset)),
   );
 }
 
 export async function createAdminPasswordHash(password: string, salt: Buffer) {
-  if (password.length < 12) throw new Error("Admin passwords must contain at least 12 characters.");
-  if (salt.length < 16) throw new Error("Password salts must contain at least 16 bytes.");
+  if (password.length < 12)
+    throw new Error("Admin passwords must contain at least 12 characters.");
+  if (salt.length < 16)
+    throw new Error("Password salts must contain at least 16 bytes.");
 
   const derivedKey = await deriveScryptKey(password, salt);
 
@@ -239,6 +291,16 @@ export async function createAdminPasswordHash(password: string, salt: Buffer) {
     salt.toString("base64url"),
     derivedKey.toString("base64url"),
   ].join("$");
+}
+
+export async function replaceAdminPassword(password: string) {
+  const passwordHash = await createAdminPasswordHash(password, randomBytes(16));
+  await writeAdminCredentialOverride({
+    version: 1,
+    passwordHash,
+    sessionVersion: randomUUID(),
+    passwordChangedAt: new Date().toISOString(),
+  });
 }
 
 export function createAdminSession(email: string, expiresAt: number) {
@@ -258,7 +320,7 @@ export function createAdminSession(email: string, expiresAt: number) {
       issuedAt: now,
       sessionId: randomUUID(),
       version: getSessionVersion(),
-    } satisfies AdminSessionPayload)
+    } satisfies AdminSessionPayload),
   ).toString("base64url");
   const signature = createHmac("sha256", getSessionSecret())
     .update(payload)
@@ -281,14 +343,15 @@ export function verifyAdminSession(token?: string) {
 
   try {
     const session = JSON.parse(
-      Buffer.from(payload, "base64url").toString("utf8")
+      Buffer.from(payload, "base64url").toString("utf8"),
     ) as Partial<AdminSessionPayload>;
     const now = Date.now();
 
     if (
       session.audience !== "gtbs-admin" ||
       typeof session.email !== "string" ||
-      normalizeEmail(session.email) !== normalizeEmail(process.env.ADMIN_EMAIL || "") ||
+      normalizeEmail(session.email) !==
+        normalizeEmail(process.env.ADMIN_EMAIL || "") ||
       typeof session.expiresAt !== "number" ||
       typeof session.issuedAt !== "number" ||
       typeof session.sessionId !== "string" ||

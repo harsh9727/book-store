@@ -1,50 +1,43 @@
 "use client";
 
 import Image from "next/image";
-import {
-  BookOpen,
-} from "lucide-react";
-
+import { BookOpen } from "lucide-react";
 import OurStoryImage from "../../../public/images/about/story.webp";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const OurStory = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden bg-white py-10">
-
       <div className="container relative px-3 lg:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
-
           {/* ================= LEFT CONTENT ================= */}
           <div>
             {/* Label */}
             <div className="mb-5 flex items-center gap-3">
               <span className="text-xs description font-bold uppercase tracking-[0.18em] text-orange-600">
-                Our Story
+                {t("about.story.badge")}
               </span>
             </div>
 
             {/* Heading */}
-            <h2 className="max-w-2xl text-3xl title font-bold leading-[1.12] tracking-tight text-gray-900 sm:text-4xl md:text-[46px]">
-              More Than a Bookstore,
+            <h1 className="max-w-2xl text-3xl title font-bold leading-[1.12] tracking-tight text-gray-900 sm:text-4xl md:text-[46px]">
+              {t("about.story.titleLine1")}
               <br />
               <span className="text-orange-600">
-                We Create Reading Experiences.
+                {t("about.story.titleLine2")}
               </span>
-            </h2>
+            </h1>
 
             {/* Description */}
             <div className="mt-6 space-y-4">
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                At ProBooks, our story began with a simple belief — every
-                great book has the power to change the way we think, learn,
-                and see the world.
+                {t("about.story.paragraph1")}
               </p>
 
               <p className="text-sm leading-7 text-gray-600 md:text-[16px] description">
-                What started as a passion for discovering meaningful books has
-                grown into a trusted destination for readers everywhere. From
-                timeless classics to modern bestsellers, we carefully bring
-                together books that inspire curiosity and imagination.
+                {t("about.story.paragraph2")}
               </p>
             </div>
 
@@ -55,7 +48,7 @@ const OurStory = () => {
                   1K+
                 </p>
                 <p className="mt-1 text-[11px] text-gray-500">
-                  Books Available
+                  {t("about.story.booksAvailable")}
                 </p>
               </div>
 
@@ -63,34 +56,30 @@ const OurStory = () => {
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   8K+
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Happy Readers
-                </p>
+                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.happyReaders")}</p>
               </div>
 
               <div className="pl-4">
                 <p className="text-xl font-bold text-gray-900 md:text-2xl">
                   4.9/5
                 </p>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Reader Rating
-                </p>
+                <p className="mt-1 text-[11px] text-gray-500">{t("about.story.readerRating")}</p>
               </div>
             </div>
           </div>
 
           {/* ================= RIGHT IMAGE ================= */}
           <div className="relative lg:pl-4">
-
             {/* Image */}
             <div className="relative overflow-hidden rounded-[28px] bg-gray-100 shadow-xl">
               <div className="aspect-[1.3/1] w-full">
                 <Image
                   src={OurStoryImage}
-                  alt="A cozy reading space surrounded by books"
+                  alt={t("about.story.imageAlt")}
                   fill
                   priority
                   className="object-cover transition-transform duration-700 hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
                 />
               </div>
 
@@ -99,11 +88,11 @@ const OurStory = () => {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600">
-                      Since 2020
+                      {t("about.story.since")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-gray-900">
-                      Inspiring Readers, One Book at a Time.
+                      {t("about.story.overlay")}
                     </p>
                   </div>
 

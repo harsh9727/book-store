@@ -1,12 +1,19 @@
 export class JsonBodyError extends Error {
-  constructor(message: string, readonly status: 400 | 413) {
+  readonly status: 400 | 413;
+
+  constructor(message: string, status: 400 | 413) {
     super(message);
+    this.status = status;
   }
 }
 
-export async function readBoundedJson(request: Request, maximumBytes = 128 * 1024) {
+export async function readBoundedJson(
+  request: Request,
+  maximumBytes = 128 * 1024,
+) {
   const contentLength = Number(request.headers.get("content-length") || "0");
-  if (contentLength > maximumBytes) throw new JsonBodyError("Request body is too large.", 413);
+  if (contentLength > maximumBytes)
+    throw new JsonBodyError("Request body is too large.", 413);
   const text = await request.text();
   if (Buffer.byteLength(text) > maximumBytes) {
     throw new JsonBodyError("Request body is too large.", 413);

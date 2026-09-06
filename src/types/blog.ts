@@ -1,4 +1,4 @@
-export interface BlogComment {
+interface BlogComment {
   id: string;
   name: string;
   avatar?: string;
@@ -6,7 +6,7 @@ export interface BlogComment {
   content: string;
 }
 
-export interface BlogContentSection {
+interface BlogContentSection {
   heading?: string;
   body: string;
   subsections?: {
@@ -18,6 +18,48 @@ export interface BlogContentSection {
     author: string;
   };
   keyTakeaways?: string[];
+}
+
+export interface BlogRichTextMark {
+  type: "bold" | "italic" | "underline" | "strike" | "code" | "link";
+  attrs?: Record<string, boolean | number | string | null>;
+}
+
+export interface BlogRichTextNode {
+  type:
+    | "doc"
+    | "paragraph"
+    | "heading"
+    | "bulletList"
+    | "orderedList"
+    | "listItem"
+    | "blockquote"
+    | "codeBlock"
+    | "horizontalRule"
+    | "hardBreak"
+    | "text";
+  attrs?: Record<string, boolean | number | string | null>;
+  content?: BlogRichTextNode[];
+  marks?: BlogRichTextMark[];
+  text?: string;
+}
+
+export interface BlogRichTextDocument extends BlogRichTextNode {
+  type: "doc";
+  content: BlogRichTextNode[];
+}
+
+interface BlogLocalizedContent {
+  title: string;
+  category: string;
+  summary: string;
+  author: {
+    name: string;
+    role: string;
+    bio?: string;
+  };
+  richContent?: BlogRichTextDocument;
+  content: BlogContentSection[];
 }
 
 export interface BlogPost {
@@ -36,6 +78,8 @@ export interface BlogPost {
     bio?: string;
   };
   tags?: string[];
+  richContent?: BlogRichTextDocument;
   content: BlogContentSection[];
+  gujarati?: BlogLocalizedContent;
   comments?: BlogComment[];
 }

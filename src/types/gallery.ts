@@ -6,6 +6,14 @@ export interface GalleryPhoto {
   caption?: string;
 }
 
+interface GalleryLocalizedContent {
+  title: string;
+  category: string;
+  location: string;
+  description: string;
+  organizer?: string;
+}
+
 export interface GalleryItem {
   id: string | number;
   slug: string;
@@ -19,4 +27,5 @@ export interface GalleryItem {
   description: string;
   organizer?: string;
   photos: GalleryPhoto[];
+  gujarati?: GalleryLocalizedContent;
 }

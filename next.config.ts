@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  agentRules: false,
   experimental: {
     cpus: 1,
+    preloadEntriesOnStart: false,
+    webpackMemoryOptimizations: true,
   },
   images: {
     remotePatterns: [
@@ -23,6 +26,45 @@ const nextConfig: NextConfig = {
         hostname: "utfs.io",
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/shop",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/product",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/checkout",
+        destination: "/cart",
+        permanent: true,
+      },
+      {
+        source: "/wishlist",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/login",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/register",
+        destination: "/allproducts",
+        permanent: true,
+      },
+      {
+        source: "/profile",
+        destination: "/allproducts",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     const baselineSecurityHeaders = [

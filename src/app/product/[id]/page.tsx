@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
-import Breadcrumb from "@/components/common/Breadcrumb";
 import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductTabs from "@/components/product/ProductTabs";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import LocalizedProductBreadcrumb from "@/components/product/LocalizedProductBreadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   absoluteUrl,
@@ -14,22 +13,19 @@ import {
   siteUrl,
   truncateDescription,
 } from "@/lib/seo";
+import { getProduct, getProducts } from "@/lib/contentRepository";
+
+export const revalidate = 300;
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
-}
-
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }));
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = products.find((item) => item.id === id);
+  const product = await getProduct(id);
 
   if (!product) {
     return {
@@ -40,56 +36,42 @@ export async function generateMetadata({
 
   const description = truncateDescription(
     product.description ||
-      `Buy ${product.title} by ${product.author} from Gujarat Tract Book Store.`
+      `Buy ${product.title} from Gujarat Tract Book Store.`,
   );
 
   return {
     ...createPageMetadata({
-      title: `${product.title} by ${product.author}`,
+      title: product.title,
       description,
       path: `/product/${product.id}`,
       image: product.image,
     }),
-    keywords: [product.title, product.author, product.category, "Christian books"],
+    keywords: [product.title, product.category, "GTBS products"],
   };
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
+  const products = await getProducts();
+  const product = products.find((item) => item.id === id);
 
   if (!product) {
     notFound();
   }
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Shop", href: "/shop" },
-    { label: product.category, href: `/shop?category=${product.category}` },
-    { label: product.title },
+  const detailImageUrls = [
+    ...(product.detailImages || []).map((image) => image.url),
+    ...(product.images || []),
   ];
 
   const productStructuredData = {
     "@context": "https://schema.org",
-    "@type": ["Book", "Product"],
+    "@type": "Product",
     "@id": `${absoluteUrl(`/product/${product.id}`)}#product`,
     name: product.title,
     description: product.description,
-    image: [product.image, ...(product.images || [])].map(absoluteUrl),
-    author: {
-      "@type": "Person",
-      name: product.author,
-    },
-    isbn: product.isbn,
-    bookFormat: product.format,
-    numberOfPages: product.pages,
-    inLanguage: product.language || "English",
+    image: [...new Set([product.image, ...detailImageUrls])].map(absoluteUrl),
     category: product.category,
-    brand: {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#store`,
-      name: siteConfig.legalName,
-    },
     offers: {
       "@type": "Offer",
       url: absoluteUrl(`/product/${product.id}`),
@@ -111,36 +93,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     <>
       <JsonLd data={productStructuredData} />
       <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Breadcrumbs */}
-      <Breadcrumb items={breadcrumbItems} />
+        {/* Breadcrumbs */}
+        <LocalizedProductBreadcrumb product={product} />
 
-      {/* Main Product Hero Grid */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
-        {/* Left Gallery */}
-        <div className="lg:col-span-5">
-          <ProductImages
-            mainImage={product.image}
-            images={product.images}
-            title={product.title}
-            badge={product.badge}
-          />
+        {/* Main Product Hero Grid */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
+          {/* Left Gallery */}
+          <div className="lg:col-span-5">
+            <ProductImages
+              mainImage={product.image}
+              images={detailImageUrls}
+              title={product.title}
+              badge={product.badge}
+            />
+          </div>
+
+          {/* Right Info & Purchase Actions */}
+          <div className="lg:col-span-7">
+            <ProductInfo product={product} />
+          </div>
         </div>
 
-        {/* Right Info & Purchase Actions */}
-        <div className="lg:col-span-7">
-          <ProductInfo product={product} />
-        </div>
-      </div>
+        {/* Product Information Tabs */}
+        <ProductTabs product={product} />
 
-      {/* Product Information Tabs */}
-      <ProductTabs product={product} />
-
-      {/* Related Products Carousel / Grid */}
-      <RelatedProducts
-        currentProductId={product.id}
-        category={product.category}
-        allProducts={products}
-      />
+        {/* Related Products Carousel / Grid */}
+        <RelatedProducts
+          currentProductId={product.id}
+          category={product.category}
+          allProducts={products}
+        />
       </div>
     </>
   );

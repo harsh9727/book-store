@@ -1,18 +1,10 @@
 import { validateImageSelection } from "@/lib/imageRules";
 
-export interface UploadedImage {
+interface UploadedImage {
   key: string;
   url: string;
   name: string;
   size: number;
-}
-
-export function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "");
 }
 
 export function validateClientImages(files: File[]) {
@@ -24,8 +16,15 @@ export function validateClientImages(files: File[]) {
 }
 
 export async function uploadAdminImages(
-  purpose: "blog-banner" | "blog-avatar" | "gallery-cover" | "gallery-photos",
-  files: File[]
+  purpose:
+    | "blog-banner"
+    | "blog-avatar"
+    | "gallery-cover"
+    | "gallery-photos"
+    | "product-image"
+    | "product-detail-images"
+    | "team-member-image",
+  files: File[],
 ) {
   const body = new FormData();
   body.set("purpose", purpose);
@@ -35,12 +34,20 @@ export async function uploadAdminImages(
     headers: { "X-GTBS-Admin-Request": "1" },
     body,
   });
-  const result = (await response.json()) as { files?: UploadedImage[]; message?: string };
-  if (!response.ok || !result.files) throw new Error(result.message || "Image upload failed.");
+  const result = (await response.json()) as {
+    files?: UploadedImage[];
+    message?: string;
+  };
+  if (!response.ok || !result.files)
+    throw new Error(result.message || "Image upload failed.");
   return result.files;
 }
 
-export async function adminJsonRequest<T>(url: string, method: "POST" | "PUT" | "DELETE", body?: object) {
+export async function adminJsonRequest<T>(
+  url: string,
+  method: "POST" | "PUT" | "DELETE",
+  body?: object,
+) {
   const response = await fetch(url, {
     method,
     headers: {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SearchBarProps {
   value?: string;
@@ -28,6 +29,7 @@ export default function SearchBar({
   size = "md",
 }: SearchBarProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [query, setQuery] = useState(controlledValue || "");
   const isFirstMount = useRef(true);
 
@@ -85,8 +87,8 @@ export default function SearchBar({
     size === "sm"
       ? "h-10 text-xs"
       : size === "lg"
-      ? "h-12 text-sm"
-      : "h-11 text-sm";
+        ? "h-12 text-sm"
+        : "h-11 text-sm";
 
   const btnSize =
     size === "sm" ? "h-8 w-8" : size === "lg" ? "h-10 w-10" : "h-9 w-9";
@@ -95,10 +97,13 @@ export default function SearchBar({
   return (
     <form
       onSubmit={handleSubmit}
+      role="search"
       className={`relative w-full overflow-hidden rounded-full border border-gray-300 bg-white transition-all duration-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 ${className}`}
     >
       <input
         type="text"
+        name="search"
+        autoComplete="off"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
@@ -111,7 +116,7 @@ export default function SearchBar({
         <button
           type="button"
           onClick={handleClear}
-          aria-label="Clear search"
+          aria-label={t("search.clear")}
           className="absolute right-11 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X size={14} />
@@ -121,7 +126,7 @@ export default function SearchBar({
       {/* Search Submit Button */}
       <button
         type="submit"
-        aria-label="Search"
+        aria-label={t("search.submit")}
         className={`absolute right-1 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-orange-500 hover:text-white active:scale-95 cursor-pointer ${btnSize}`}
       >
         <Search size={iconSize} />

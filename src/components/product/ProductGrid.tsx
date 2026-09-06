@@ -1,5 +1,6 @@
 import { Product } from "@/types/product";
 import ProductCard from "./ProductCard";
+import StorefrontText from "@/components/common/StorefrontText";
 
 interface ProductGridProps {
   products: Product[];
@@ -14,7 +15,7 @@ export default function ProductGrid({
     return (
       <div className="py-12 text-center">
         <p className="text-gray-500 description text-sm">
-          No books found matching the selected criteria.
+          <StorefrontText translationKey="catalog.noProductsCriteria" />
         </p>
       </div>
     );

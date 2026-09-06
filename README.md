@@ -2,11 +2,13 @@
 
 Responsive e-commerce storefront and administration workspace for Gujarat Tract Book Store, built with Next.js, React, TypeScript, and Tailwind CSS.
 
+Product sales are WhatsApp-assisted: Buy Now sends one Product with quantity/details/link, while the browser-local Cart sends multiple selected Products in one itemized message. Wishlist, Checkout, and customer-account pages are intentionally outside the storefront scope.
+
 ## Start locally
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Copy `.env.example` to `.env` and configure required values before using integrations or admin login. Never commit real environment values.
@@ -19,12 +21,15 @@ For production admin credentials, run `npm run admin:setup` in a private interac
 
 ```bash
 npx tsc --noEmit
-npm run test:admin-auth
-npm run lint
-npm run build
+pnpm test:admin-auth
+pnpm test:content
+pnpm test:site
+pnpm lint
+pnpm audit --prod
+pnpm build
 ```
 
-All repository lint checks currently pass. Windows sandbox environments may still block build/test child processes with `spawn EPERM`; see troubleshooting for the verified fallback checks.
+All repository lint, type, focused test, and production dependency audit checks currently pass. Windows sandbox environments may still block build/test child processes with `spawn EPERM`; see troubleshooting for the verified fallback checks.
 
 ## Documentation
 

@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
-  title: "Shop Christian Books & Bibles",
+  title: "Products",
   description:
-    "Discover Christian books, Bibles, devotionals, and faith resources available from GTBS Book Store.",
-  path: "/shop",
+    "Discover books, gifts, accessories, and other products available from GTBS Book Store.",
+  path: "/allproducts",
 });
 
 export default function ProductLayout({ children }: { children: ReactNode }) {
